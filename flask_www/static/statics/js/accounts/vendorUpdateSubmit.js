@@ -34,7 +34,7 @@ vendorUpdateSubmitBtn.addEventListener('click', function (e) {
                     if (response.error) {
                         alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
                     } else {
-                        window.location.reload()
+                        window.location.reload();
                         /*
                         const corpEmailTag = document.querySelector("#profile_corp_email");
                         const corpNumberTag = document.querySelector("#profile_corp_number");
