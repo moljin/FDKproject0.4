@@ -34,13 +34,8 @@ vendorUpdateSubmitBtn.addEventListener('click', function (e) {
                     if (response.error) {
                         alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
                     } else {
-                        console.log('corp_email ==> ', response.corp_email);
-                        console.log('corp_number ==> ', response.corp_number);
-                        console.log('corp_image_path ==> ', response.corp_image_path);
-                        console.log('corp_address ==> ', response.corp_address);
-                        console.log('main_phonenumber ==> ', response.main_phonenumber);
-                        console.log('main_cellphone ==> ', response.main_cellphone);
-                        // window.location.reload()
+                        window.location.reload()
+                        /*
                         const corpEmailTag = document.querySelector("#profile_corp_email");
                         const corpNumberTag = document.querySelector("#profile_corp_number");
                         const corpImagePathTag = document.querySelector("#profile_corp_image_path");
@@ -56,6 +51,7 @@ vendorUpdateSubmitBtn.addEventListener('click', function (e) {
                         mainPhonenumberTag.innerHTML = response.main_phonenumber;
                         mainCellphoneTag.innerHTML = response.main_cellphone;
                         levelTag.innerHTML = response.profile_level;
+                        */
                     }
                 },
                 error: function (err) {

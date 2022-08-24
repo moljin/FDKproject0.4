@@ -35,10 +35,10 @@ services:
     volumes:
       - type: volume
         source: static-volume
-        target: /home/moljin/FDKproject0.4/flask_www/static
-#      - type: volume
-#        source: media-volume
-#        target: /home/moljin/FDKproject0.2.1/flask_www/media
+        target: /home/moljin/FDKproject0.4/flask_www/static/statics
+      - type: volume
+        source: media-volume
+        target: /home/moljin/FDKproject0.4/flask_www/static/media
 #    secrets:
 #      - SECRET_KEY
 #      - MYSQL_ROOT_PASSWORD
@@ -56,13 +56,14 @@ services:
     image: nginx:1.23.1
     container_name: nginx
     volumes:
+      - /home/moljin/FDKproject0.4/nginx/nginx.conf:/etc/nginx/nginx.conf
       - type: volume
         source: static-volume
         target: /data/static
 #        media-volume은 추후에 보존되야 하므로 yml 에는 포함시키지 않는다.
-#      - type: volume
-#        source: media-volume
-#        target: /data/media
+      - type: volume
+        source: media-volume
+        target: /data/media
     restart: always
     build: /home/moljin/FDKproject0.4/nginx
     ports:
@@ -74,7 +75,7 @@ services:
 
 volumes:
   static-volume:
-#  media-volume:
+  media-volume:
   mysqldb-volume:
 
 networks:
