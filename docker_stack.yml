@@ -1,0 +1,90 @@
+version: '3.7'
+
+services:
+  mysqldb:
+    image: mysql:8.0.29
+    container_name: mysqldb
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - type: volume
+        source: mysqldb-volume
+        target: /var/lib/mysql
+#    secrets:
+#      - MYSQL_PASSWORD
+#      - MYSQL_ROOT_PASSWORD
+    restart: always
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: fdk_project0.4
+      MYSQL_USER: moljin
+#      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
+#      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_ROOT_PASSWORD
+      MYSQL_PASSWORD: moljin!981011
+      MYSQL_ROOT_PASSWORD: moljin!981011
+
+#      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    networks:
+      - my_network
+
+  flask_www:
+    image: flask_www:04
+    container_name: flask_www
+    volumes:
+      - type: volume
+        source: static-volume
+        target: /home/moljin/FDKproject0.4/flask_www/static
+#      - type: volume
+#        source: media-volume
+#        target: /home/moljin/FDKproject0.2.1/flask_www/media
+#    secrets:
+#      - SECRET_KEY
+#      - MYSQL_ROOT_PASSWORD
+    restart: always
+    build: /home/moljin/FDKproject0.4/flask_www
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysqldb
+    networks:
+      - my_network
+    command: gunicorn -w 1 -b 0.0.0.0:5000 app:app
+
+  nginx:
+    image: nginx:1.23.1
+    container_name: nginx
+    volumes:
+      - type: volume
+        source: static-volume
+        target: /data/static
+#        media-volume은 추후에 보존되야 하므로 yml 에는 포함시키지 않는다.
+#      - type: volume
+#        source: media-volume
+#        target: /data/media
+    restart: always
+    build: /home/moljin/FDKproject0.4/nginx
+    ports:
+      - "50808:80"
+    depends_on:
+      - flask_www
+    networks:
+      - my_network
+
+volumes:
+  static-volume:
+#  media-volume:
+  mysqldb-volume:
+
+networks:
+  my_network:
+
+#    아직 docker secrets는 적용시키지 않았다. config 파일을 수정하지 않았으므로...
+#secrets:
+#  SECRET_KEY:
+#    external: true
+#  MYSQL_PASSWORD:
+#    external: true
+#  MYSQL_ROOT_PASSWORD:
+#    external: true
