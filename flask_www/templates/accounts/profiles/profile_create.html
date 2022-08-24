@@ -1,0 +1,58 @@
+{% extends "accounts/dashboard/dashboard_base.html" %}
+{% block title %}
+    프로필 설정
+{% endblock %}
+
+{% block head_account %}
+    <link href="{{ url_for('static', filename='statics/css/account.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('accounts.dashboard') }}">마이 보드</a></li>
+            <li><span>프로필 설정</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block dashboard_section %}
+    <section class="sign-section">
+        <div class="form-container">
+            {% include 'includes/messages.html' %}
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <legend class="uk-legend">프로필 만들기</legend>
+
+                    <div class="uk-margin">
+                        {{ form.nickname(class="uk-input mt-5", placeholder="닉네임") }}
+                    </div>
+
+                    <div class="uk-margin">
+                        {{ form.message(class="uk-textarea mt-5", placeholder="간단 메시지") }}
+                    </div>
+
+                    <div class="profile-img">
+                        <img class="img-preview" id="img-preview" src="" style="margin: 0 auto;">
+                    </div>
+
+                    <div class="uk-margin" style="position: relative">
+                        <label class="profile-img uk-button uk-button-default custom-button-default" type="button" for="profile_image">이미지</label>
+{#                        {{ form.profile_image(class="uk-input mt-5", style="display: none", accept="image/*", placeholder="프로필 이미지") }}#}
+                        {{ form.profile_image(class="uk-input mt-5", accept="image/*", placeholder="프로필 이미지") }}
+                    </div>
+
+                    <p uk-margin>
+                        <button class="uk-button uk-button-primary uk-width-1-1 mt-10">프로필 등록</button>
+                    </p>
+
+                </fieldset>
+            </form>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='statics/js/accounts/imagePreview.js') }}"></script>
+    <script>
+        profileImagePath = document.getElementById("img-preview").getAttribute("src");
+    </script>
+{% endblock %}

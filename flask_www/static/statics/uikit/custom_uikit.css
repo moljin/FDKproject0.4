@@ -1,0 +1,20 @@
+/* a tag 초기화*/
+.uk-link, a {color: black; text-decoration: none}
+.uk-link:hover, a:hover {color: black; text-decoration: none}
+/*a tag 필요한 곳에 적용*/
+.link-div .uk-link-reset {color: darkblue !important}
+.link-div .uk-link-reset:hover { color: #b33939 !important}
+
+.uk-button-default.custom-button-default {background: #5f27cd; border: none; color: white;}/* width: 100%*/
+.uk-button-default.custom-button-default:hover {background: #7d5fff}
+.uk-button-default.custom-button-green {background: #006400; border: none; color: white;}/* width: 100%*/
+.uk-button-default.custom-button-green:hover {background: #008000}
+.uk-button-primary {background: #0652DD}
+/*.uk-button-primary:hover {background: #0652DD}*/
+/*.uk-button-primary {background: #0000FF}*/
+
+.uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px 0 calc(5px - 4px)}
+
+
+
+

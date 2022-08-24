@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block head_dashboard %}
+    <link href="{{ url_for('static', filename='statics/dashboard/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <section class="dashboard-section">
+        <div class="dashboard-body">
+
+            {% include "accounts/dashboard/dashboard_sidebar.html" %}
+
+            <div class="body-main">
+
+                <div class="body-top" uk-grid>
+                    <div class="uk-width-auto uk-flex">
+                        <a uk-toggle="target: #body-sidebar">
+                            <span uk-icon="icon: table"></span>
+                        </a>
+                    </div>
+                    {% block breadcrumb %}
+                    {% endblock %}
+                </div>
+
+                <section class="body-section">
+                    {% block dashboard_section %}
+                    {% endblock %}
+                </section>
+
+            </div>
+
+        </div>
+    </section>
+
+    {% block dashboard_script %}
+    {% endblock %}
+
+{% endblock %}
+
+

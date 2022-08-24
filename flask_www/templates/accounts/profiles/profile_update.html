@@ -1,0 +1,81 @@
+{% extends "accounts/dashboard/dashboard_base.html" %}
+{% block title %}
+    프로필 수정
+{% endblock %}
+
+{% block head_account %}
+    <link href="{{ url_for('static', filename='statics/css/account.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    {% if getprofile.image_path %}
+        <script>
+            profileImagePath = "{{ getprofile.image_path }}"
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="uk-width-expand uk-flex uk-flex-right">
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ url_for('accounts.dashboard') }}">마이 보드</a></li>
+            <li><span>프로필 수정</span></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block dashboard_section %}
+    <section class="sign-section">
+        <div class="form-container">
+            {% include 'includes/messages.html' %}
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset class="uk-fieldset">
+                    <legend class="uk-legend">프로필 수정</legend>
+
+                    <div class="uk-margin">
+                        {{ form. nickname.label}}
+                        <input class="uk-input mt-5" type="text" name="nickname" value="{{ getprofile.nickname }}"/>
+                    </div>
+
+                    <div class="uk-margin">
+                        {{ form.message.label("간단 메시지") }}
+                        <textarea class="uk-textarea mt-5" id="message" name="message" placeholder="간단 메시지" required="">{{ getprofile.message }}</textarea>
+                    </div>
+
+                    {% if getprofile.image_path %}
+                        <div class="profile-img get-image">
+                            <img class="img-preview" id="img-preview" src="/{{ getprofile.image_path }}" style="margin: 0 auto;">
+                        </div>
+
+                        <div class="uk-margin" style="position: relative">
+                            <label class="profile-img uk-button uk-button-default custom-button-default" type="button" for="profile_image">이미지</label>
+                            <input class="uk-input mt-5" id="profile_image" name="profile_image" placeholder="프로필 이미지" type="file" accept="image/*" value=""/>
+{#                            <input class="uk-input mt-5" id="profile_image" name="profile_image" placeholder="프로필 이미지" style="display: none" type="file" accept="image/*" value=""/>#}
+    {#                        {{ form.profile_image(class="uk-input mt-5", style="display: none", placeholder="프로필 이미지") }}#}
+                        </div>
+                    {% else %}
+                        <div class="profile-img">
+                            <img class="img-preview" id="img-preview" src="" style="margin: 0 auto;">
+                        </div>
+
+                        <div class="uk-margin">
+                            <label class="profile-img uk-button uk-button-default custom-button-default" type="button" for="profile_image">프로필 이미지</label>
+                            {{ form.profile_image(class="uk-input mt-5", style="display: none", accept="image/*", placeholder="프로필 이미지") }}
+{#                            {{ form.profile_image(class="uk-input mt-5", accept="image/*", placeholder="프로필 이미지") }}#}
+                        </div>
+                    {% endif %}
+
+                    <p uk-margin>
+                        <button class="uk-button uk-button-primary uk-width-1-1 mt-10">프로필 등록</button>
+                    </p>
+
+                </fieldset>
+            </form>
+        </div>
+    </section>
+    <script src="{{ url_for('static', filename='statics/js/accounts/imagePreview.js') }}"></script>
+
+
+            <div>3. {{ request.path }}</div>
+{% endblock %}
