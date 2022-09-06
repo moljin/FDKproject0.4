@@ -33,6 +33,10 @@ footer, header, hgroup, menu, nav, section {
 }
 
 hr {background-color: grey; height: 1px}
+#flashes-close-btn, #flashes-close-btn2 {padding-top: 5px}
+button.check-btn {padding: 3px 7px; border: solid 1px #dcdde1;font-size: 14px; color: red; max-width: 100px; cursor: pointer; border-radius: 3px}
+button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
+.grid-section {padding: 10px}
 
 .mt-5 {margin-top: 5px}
 .mt-10 {margin-top: 10px}
@@ -51,9 +55,9 @@ hr {background-color: grey; height: 1px}
 .ml-15 {margin-left: 15px}
 .ml-20 {margin-left: 20px}
 
-.above_main {padding-top: 55px}
+/*.above_main {padding-top: 55px}*/
 
-main {max-width: 1280px; padding-top: 10px; margin: auto;}
+main {max-width: 1280px; margin: auto;}/*padding-top: 10px; */
 .section-container {padding: 15px}
 .flashes {display: flex; align-items: center; margin-bottom: 20px; width: 100%; min-height: 45px; border-radius: 5px; background: #c56cf0; color: white}
 .flashes .uk-alert-close {top: 16px}

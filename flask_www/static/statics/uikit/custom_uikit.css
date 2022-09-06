@@ -5,6 +5,8 @@
 .link-div .uk-link-reset {color: darkblue !important}
 .link-div .uk-link-reset:hover { color: #b33939 !important}
 
+.uk-input {border-radius: 5px}
+.uk-input:focus, .uk-textarea:focus {outline: none !important; border: solid 2px #1a73e8; background: #e8f0fe; opacity: 1; color: black;}
 .uk-button-default.custom-button-default {background: #5f27cd; border: none; color: white;}/* width: 100%*/
 .uk-button-default.custom-button-default:hover {background: #7d5fff}
 .uk-button-default.custom-button-green {background: #006400; border: none; color: white;}/* width: 100%*/

@@ -18,7 +18,7 @@ class LoginForm(FlaskForm):
 class ProfileForm(FlaskForm):
     nickname = StringField("닉네임", validators=[DataRequired(), Length(min=2, max=100)], render_kw={"placeholder": "닉네임"})
     message = TextAreaField("메시지", validators=[DataRequired()], render_kw={"placeholder": "간단 메시지"})
-    profile_image = FileField("프로필 이미지", validators=[DataRequired()], render_kw={"placeholder": "프로필 이미지"})
+    # profile_image = FileField("프로필 이미지", validators=[DataRequired()], render_kw={"placeholder": "프로필 이미지"})
 
 
 class AccountsUpdateForm(FlaskForm):

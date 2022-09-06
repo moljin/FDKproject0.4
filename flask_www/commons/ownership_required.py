@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask import flash, abort
 
 from flask_www.accounts.models import User, Profile
+from flask_www.ecomm.products.models import ShopCategory, Product
 
 
 def account_ownership_required(function):
@@ -37,6 +38,24 @@ def profile_ownership_required(function):
     def decorated_function(_id, *args, **kwargs):
         profile = Profile.query.get_or_404(_id)
         created_obj_ownership(profile)
+        return function(_id, *args, **kwargs)
+    return decorated_function
+
+
+def shopcategory_ownership_required(function):
+    @wraps(function)
+    def decorated_function(_id, *args, **kwargs):
+        category = ShopCategory.query.get_or_404(_id)
+        created_obj_ownership(category)
+        return function(_id, *args, **kwargs)
+    return decorated_function
+
+
+def product_ownership_required(function):
+    @wraps(function)
+    def decorated_function(_id, *args, **kwargs):
+        category = Product.query.get_or_404(_id)
+        created_obj_ownership(category)
         return function(_id, *args, **kwargs)
     return decorated_function
 

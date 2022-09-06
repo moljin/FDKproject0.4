@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+    상품 등록
+{% endblock %}
+
+{% block head_css %}
+    <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/unit_editor/css/unitsEditor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/product.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ url_for('static', filename='statics/unit_editor/js/unitsEditor.js') }}"></script>
+    <script>
+        unitsImagesSaveAjax = "{{ url_for("products.units_images_save_ajax") }}"
+        CSRF_TOKEN = "{{ csrf_token() }}"
+        HOME_URL = "{{ url_for('commons.index') }}"
+    </script>
+{% endblock %}
+
+{% block above_main %}
+{% endblock %}
+
+{% block body %}
+    상품 생성
+    <section class="product-section">
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+               <div class="form-input mb-5">{{ form.title(class="uk-input") }}</div>
+
+                {% block wysiwyg %}
+                    <section class="wysiwyg-wrapper">
+                        {% include 'includes/unit_editor/unit_editor.html' %}
+                    </section>
+                {% endblock %}
+
+                <div class="units-submit-div">
+                    <button id="form-submit" class="units-submit" type="submit">저장</button>
+                </div>
+                <input type="hidden" id="orm_id" name="orm_id" value="{{ orm_id }}">
+                <input type="hidden" name="shopcategory_id" value="{{ request.full_path }}">
+                {{ request.full_path }}
+                <p>orm_id::: {{ orm_id }}</p>
+            </form>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block content %}
+    <section class="body-wrapper other-body mb-15" >
+        <a href="https://github.com/improvise0828/stone-editor" target="_blank">Github: stone editor :: Reference</a>
+    </section>
+
+    <div class="uk-inline div">
+        <span><button class="" type="button">Click</button></span>
+{#        <div class="" uk-drop="mode: click">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>#}
+    </div>
+
+{% endblock %}
+
+{% block units_script %}
+    <script>
+        document.querySelector(".units-btn-group.cancel-group > span:nth-child(1)").style.display = "none";
+        document.querySelector(".units-btn-group.cancel-group > span:nth-child(2)").style.display = "none";
+    </script>
+
+    <script src="{{ url_for('static', filename='statics/js/commons/slideToggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/unit_editor/js/toolbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/unit_editor/js/toolbarMediaQuery.js') }}"></script>
+    <script src="{{ url_for('static', filename='statics/unit_editor/js/submit.js') }}"></script>
+{% endblock %}

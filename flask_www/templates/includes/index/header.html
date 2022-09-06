@@ -17,7 +17,7 @@
         <div class="uk-button-group uk-width-auto">
             <div class="uk-inline">
                 <button class="uk-button uk-button-default" type="button">머라도라</button>
-                <div uk-drop="mode: click; duration:300">
+                <div uk-drop="mode: click; animation: slide-top; animate-out: true; duration: 500">
                     <a href="#"><div class="drop-item">머라도... 만들기</div></a>
                     <a href="#"><div class="drop-item">머라도... 만들기</div></a>
                     <a href="#"><div class="drop-item">머라도... 만들기</div></a>
@@ -26,7 +26,7 @@
             </div>
             <div class="uk-inline">
                 <button class="uk-button uk-button-default" type="button">라도머라</button>
-                <div uk-drop="mode: click; duration:300">
+                <div uk-drop="mode: click; animation: slide-top; animate-out: true; duration: 500">
                     <a href="#"><div class="drop-item">만들기 머라도... </div></a>
                     <a href="#"><div class="drop-item">만들기 머라도... </div></a>
                     <a href="#"><div class="drop-item">만들기 머라도... </div></a>
@@ -37,13 +37,17 @@
                 <button class="uk-button uk-button-default" type="button">마이 페이지
                     {% if current_user.is_authenticated and current_profile %}
                         <span class="header-profile-img-div">
-                        <img class="header-profile-img" src="/{{ current_profile.image_path }}" alt="mdo">
+                        {% if current_profile.image_path %}
+                            <img class="header-profile-img" id="global-profile-img" src="/{{ current_profile.image_path }}" alt="mdo">
+                        {% else %}
+                            <img class="header-profile-img" id="global-profile-img" src="{{ url_for('static', filename='statics/images/user_none.png') }}" alt="mdo">
+                        {% endif %}
                     </span>
                     {% else %}
-                        <img class="user-svg" src="{{ url_for('static', filename='statics/images/user_profile.svg') }}" alt="mdo">
+                        <img class="user-svg" id="global-profile-img" src="{{ url_for('static', filename='statics/images/user_profile.svg') }}" alt="mdo">
                     {% endif %}
                 </button>
-                <div uk-drop="mode: click; duration:300">
+                <div uk-drop="mode: click; animation: slide-top; animate-out: true; duration: 500">
                     {% if current_user.is_authenticated and current_user.is_admin %}
                         <a href="#"><div class="drop-item">Admin</div></a>
                     {% endif %}
@@ -136,10 +140,10 @@
                     <button class="uk-accordion-title uk-button uk-button-default" type="button">마이 페이지
                         {% if current_user.is_authenticated and current_profile %}
                             <span class="header-profile-img-div">
-                        <img class="header-profile-img" src="/{{ current_profile.image_path }}" alt="mdo">
-                    </span>
+                                <img class="header-profile-img" id="global-profile-img" src="/{{ current_profile.image_path }}" alt="mdo">
+                            </span>
                         {% else %}
-                            <img class="user-svg" src="{{ url_for('static', filename='statics/images/user_profile.svg') }}" alt="mdo">
+                            <img class="user-svg" id="global-profile-img" src="{{ url_for('static', filename='statics/images/user_profile.svg') }}" alt="mdo">
                         {% endif %}
                     </button>
                     <div  class="uk-accordion-content">

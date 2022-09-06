@@ -37,7 +37,7 @@ def filename_format(now, filename):
 
 
 def base_file_path(filename):
-    base_relative_path="static/media/user_images/{request_path}/{year}/{month}/{day}/{user_id}/{username}/{random_word}/{filename}".format(
+    base_relative_path = "static/media/user_images/{request_path}/{year}/{month}/{day}/{user_id}/{username}/{random_word}/{filename}".format(
         request_path=request.path.split('/')[2],
         year=NOW.year,
         month=NOW.month,
@@ -95,7 +95,8 @@ def base64_to_file(img_string, file_name):
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
 
     img = Image.open(io.BytesIO(img_data))
-    img.save(image_path)
+    # img.save(image_path) ## flask_www 폴더를 만들면 먼가 아구가 안맞아서 이미지가 저장이 안되는 군.... flask_www 폴더가 없으면 v0.0.3에서 처럼... 저장된다.
+    img.save(upload_path)
 
     return image_path, file_name  # filename
 

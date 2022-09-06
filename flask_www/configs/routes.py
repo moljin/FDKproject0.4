@@ -6,5 +6,8 @@ def routes_init(app):
     app.register_blueprint(accounts.accounts_bp)
     app.register_blueprint(profiles.profiles_bp)
 
+    from flask_www.ecomm.products import products
+    app.register_blueprint(products.products_bp)
+
 
 

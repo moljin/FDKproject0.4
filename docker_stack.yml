@@ -60,7 +60,6 @@ services:
       - type: volume
         source: static-volume
         target: /data/static
-#        media-volume은 추후에 보존되야 하므로 yml 에는 포함시키지 않는다.
       - type: volume
         source: media-volume
         target: /data/media
@@ -80,6 +79,7 @@ volumes:
 
 networks:
   my_network:
+#    더 많은 것들을 넣을 수 있지만 기본적인 것만 했다. ????
 
 #    아직 docker secrets는 적용시키지 않았다. config 파일을 수정하지 않았으므로...
 #secrets:

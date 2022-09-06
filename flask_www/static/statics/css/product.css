@@ -1,0 +1,56 @@
+/*shop category*/
+.shopcategory-section {padding: 15px}
+.shopcategory-section .form-container {max-width: 500px; border: solid 1px #ced6e0; border-radius: 5px; padding: 2rem; margin: 2rem auto}
+.shopcategory-section .uk-margin input {border-radius: 5px}
+.shopcategory-section .uk-margin textarea {border-radius: 5px; height: 5rem; resize: none}
+.shopcategory-section > div > form > fieldset > div:nth-child(6) > label {position: absolute; top: 5px; width: 102px; border: solid 1px #5f27cd; padding-left: 5px; padding-right: 5px; border-radius: 5px 0 0 5px}
+.shopcategory-section > div > form > fieldset > p > button {border-radius: 5px}
+.shopcategory-section > div > form > fieldset > div.symbol-img img {display: none}
+.shopcategory-section > div > form > fieldset > div.symbol-img img.active {display: block}
+
+body > main > section > div:nth-child(1) > button.symbol-img-modal-delete-btn.inactive{display: none}
+body > main > section > div:nth-child(1) > button.symbol-img-modal-upload-btn {position: absolute; top: 460px; left: calc(50% + 80px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
+body > main > section > div:nth-child(1) > button.symbol-img-modal-delete-btn {position: absolute; top: 460px; left: calc(50% + 120px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
+#symbol_img_upload_modal-container > div > div.uk-margin {position: relative; margin-bottom: 10px}
+#symbol_img_upload_modal-container > div > div.uk-margin > label {position: absolute; top: 6px; width: 102px; padding: 0}
+
+body > section > section > button.shopcategory_cover-img-modal-delete-btn.inactive {display: none}
+body > section > section > button.shopcategory_cover-img-modal-delete-btn {position: absolute; top: 400px; left: 10px; cursor: pointer; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
+body > section > section > button.shopcategory_cover-img-modal-upload-btn {position: absolute; top: 400px; right: 10px; cursor: pointer; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
+#shop-symbol-image-src {position:absolute; top: -100px; left: calc(50% - 85px); width: 170px; height: 170px; border: solid 8px white; border-radius: 50%; object-fit: cover}
+
+body > main > section > div:nth-child(3) {padding-top: 75px; max-width: 500px; margin: auto}
+body > main > section > div:nth-child(3) > div > div > div:nth-child(1) {text-align: center}
+#shop-title {font-size: 36px; font-weight: 550}
+
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div > label,
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div > label,
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div > label {position: absolute; top: 6px; width: 101px; padding: 0; border-radius: 5px 0 0 5px}
+
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div,
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div,
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div {width: 100%}
+.modoal-submit-cancel-btn {float: right}
+
+#cover-img1-preview,
+#cover-img2-preview,
+#cover-img3-preview {width: 100%; height: 250px; display: block; margin: 0 auto; object-fit: cover}
+
+#shopcategory-content, #meta_description {overscroll-behavior: contain; resize: none; border-radius: 5px}
+
+.section-cover-img-container > a > .shop-target-profile {position:absolute; top: 462px; left: calc(50% + 80px)}
+.section-cover-img-container > a > .shop-target-profile > .img-div > img {width: 35px; height: 35px; border-radius: 50%; object-fit: cover}
+.section-cover-img-container > a > .shop-target-profile > .nickname {font-weight: 600; color: #666666}
+
+.shop-item.viewcount-subscribe-container {display: flex; justify-content: right; align-items: center}
+.shop-item.viewcount-subscribe-container .viewcount-subscribe-container {display: flex}
+.shop-item.viewcount-subscribe-container .viewcount-subscribe-container span {font-size: 15px; color: #57606f}
+.shop-item.viewcount-subscribe-container > div button.ml-15 {width: 60px; height: 30px; border-radius: 3px; background: #0652DD; color: white; cursor: pointer}
+.shop-item.viewcount-subscribe-container > div button.ml-15:hover {background: #0f7ae5}
+.shop-item.viewcount-subscribe-container > div button.ml-15.subscribed {background: #7f8c8d; color: white}
+.shop-item.viewcount-subscribe-container > div button.ml-15.subscribed:hover {background: #666666}
+
+/*product*/
+.form-input {padding: 7px}
+
+

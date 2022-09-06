@@ -24,8 +24,10 @@
             <a href="https://www.youtube.com/watch?v=BIcjT2Zz4bU&list=PLXmMXHVSvS-CoYS177-UvMAQYRfL3fBtX&index=66" target="_blank">[동영상] Flask-Admin - Custom Views</a><br>
             <a href="https://www.youtube.com/playlist?list=PLHHVSHrmEkdpzLwpKFcXq4vjCedWLAzxL" target="_blank">[동영상] Flask Admin - Customizing and Login Limitation</a><br>
             <hr>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
+            {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
+                <a href="{{ url_for("products.shopcategory_create") }}">상점 만들기</a><br>
+            {% endif %}
+            <a href="{{ url_for("products.shopcategory_list") }}">상점 리스트</a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>

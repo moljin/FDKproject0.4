@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+    상품 상세
+{% endblock %}
+
+{% block head_css %}
+{% endblock %}
+
+{% block head_js %}
+{% endblock %}
+
+{% block above_main %}
+{% endblock %}
+
+{% block body %}
+    <section class="section-container">
+        <article class="article-container">
+            <div class="board-container">
+                <h4>Detail</h4>
+                제목: {{ product_obj.title }}<br>
+                <hr>
+                <div class="detail-container" id="detail-container">
+                    {{ product_obj.content|safe }}<br>
+                </div>
+
+                <hr>
+            </div>
+        </article>
+    </section>
+    {{ product_obj.product_unitsproductimage_set }}
+    {% for ui in product_obj.product_unitsproductimage_set %}
+        <div>{{ ui.image_path }}</div>
+        <div><img src="/{{ ui.image_path }}" alt=""></div>
+    {% endfor %}
+{% endblock %}

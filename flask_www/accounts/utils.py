@@ -1,11 +1,14 @@
+import os
+import shutil
+
 from flask import url_for, render_template, flash, redirect, request, session, abort
 from flask_mail import Message
 from flask_login import current_user
 from functools import wraps
 
-from flask_www.accounts.models import User, Profile
-from flask_www.configs import mail
-from flask_www.configs.config import Config
+from flask_www.accounts.models import User, Profile, ProfileCoverImage
+from flask_www.configs import mail, db
+from flask_www.configs.config import Config, BASE_DIR
 
 
 def admin_required(function):
@@ -64,3 +67,29 @@ def send_mail_for_any(subject, email, token, msg_txt, msg_html):
     mail.send(msg)
 
     return True
+
+
+def profile_delete(profile):
+    try:
+        profile_image_origin_path = os.path.join(BASE_DIR, profile.image_path)
+        if os.path.isfile(profile_image_origin_path):
+            shutil.rmtree(os.path.dirname(profile_image_origin_path))
+        if profile.corp_image_path:
+            corp_image_origin_path = os.path.join(BASE_DIR, profile.corp_image_path)
+            if os.path.isfile(corp_image_origin_path):
+                shutil.rmtree(os.path.dirname(corp_image_origin_path))
+        existing_cover_img = db.session.query(ProfileCoverImage).filter_by(profile_id=profile.id).first()
+        if existing_cover_img:
+            old_image_1_path = os.path.join(BASE_DIR, existing_cover_img.image_1_path)
+            if os.path.isfile(old_image_1_path):
+                shutil.rmtree(os.path.dirname(old_image_1_path))
+            old_image_2_path = os.path.join(BASE_DIR, existing_cover_img.image_2_path)
+            if os.path.isfile(old_image_2_path):
+                shutil.rmtree(os.path.dirname(old_image_2_path))
+            old_image_3_path = os.path.join(BASE_DIR, existing_cover_img.image_3_path)
+            if os.path.isfile(old_image_3_path):
+                shutil.rmtree(os.path.dirname(old_image_3_path))
+        db.session.delete(existing_cover_img)
+    except Exception as e:
+        print(e)
+    db.session.delete(profile)

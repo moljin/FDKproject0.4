@@ -34,6 +34,7 @@ def create_app(config_name=None):
     else:
         migrate.init_app(application, db)
     from flask_www.accounts import models
+    from flask_www.ecomm.products import models
 
     login_manager.init_app(application)
     login_manager.login_view = 'login'

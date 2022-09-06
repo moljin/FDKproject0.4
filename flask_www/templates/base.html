@@ -21,7 +21,7 @@
     {% endblock %}
 
     <script src="{{ url_for('static', filename='statics/js/libs/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='statics/js/libs/popper.min.js') }}"></script>
+{#    <script src="{{ url_for('static', filename='statics/js/libs/popper.min.js') }}"></script>#}
 
     <script src="{{ url_for('static', filename='statics/uikit/uikit.min.js') }}"></script>
     <script src="{{ url_for('static', filename='statics/uikit/uikit-icons.min.js') }}"></script>
@@ -41,8 +41,14 @@
     </section>
 
     <main>
-        {% block body %}
+        {% block main %}
         {% endblock %}
+
+        {% block body %}
+            {% block wysiwyg %}
+            {% endblock %}
+        {% endblock %}
+
 
         {% block content %}
         {% endblock %}
@@ -53,6 +59,8 @@
     </footer>
 
     {% block script %}
+        {% block units_script %}
+        {% endblock %}
     {% endblock %}
 </body>
 

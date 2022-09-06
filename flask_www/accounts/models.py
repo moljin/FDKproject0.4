@@ -31,13 +31,15 @@ class Profile(BaseModel):
     user = db.relationship('User', backref=db.backref('profile_user_set'))
 
     nickname = db.Column(db.String(100), nullable=False, unique=True)
-    image_path = db.Column(db.String(200), nullable=False)
+    image_path = db.Column(db.String(200), nullable=True)
     message = db.Column(db.Text, nullable=False)
     level = db.Column(db.String(200), nullable=False, default=LEVELS[0])
 
+    corp_brand = db.Column(db.String(120), nullable=True)
     corp_email = db.Column(db.String(120), nullable=True)
-    corp_number = db.Column('사업자 등록번호', db.String(20), nullable=True)
-    corp_image_path = db.Column('사업자 등록증', db.String(200), nullable=True)
+    corp_number = db.Column('사업자등록번호', db.String(20), nullable=True)
+    corp_online_marketing_number = db.Column('통신판매업번호', db.String(20), nullable=True)
+    corp_image_path = db.Column('사업자등록증', db.String(200), nullable=True)
     corp_address = db.Column(db.String(120), nullable=True)
     main_phonenumber = db.Column(db.String(20), nullable=True)
     main_cellphone = db.Column(db.String(20), nullable=True)

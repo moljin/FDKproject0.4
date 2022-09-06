@@ -1,24 +1,69 @@
 "use strict"
 
+const corpBrandCheckBtn = document.querySelector("#corp-brand-check-btn");
+corpBrandCheckBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    let corp_brand = document.querySelector("#corp_brand").value;
+    let formData = new FormData();
+    formData.append("corp_brand", corp_brand);
+    let request = $.ajax({
+                url: existingProfileCheckAjax,
+                type: 'POST',
+                data: formData,
+                headers: {"X-CSRFToken": CSRF_TOKEN,},
+                dataType: 'json',
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (response) {
+                    if (response.error) {
+                        alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
+                    } else {
+                        const flashAlert_div = document.querySelector(".vendor-update-alert");
+                        if (response.flash_message) {
+                            flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
+                                                        <div class="alert alert-danger" role="alert">`+response.flash_message+`</div>
+                                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
+                        } else {
+                            flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
+                                                        <div class="alert alert-danger" role="alert">상호명 중복체크 해주세요!</div>
+                                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
+                        }
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                    alert('내부 오류가 발생하였습니다.\n' + err);
+                }
+            });
+}, false);
+
+
 const vendorUpdateSubmitBtn = document.querySelector("#vendor-update-submit");
 vendorUpdateSubmitBtn.addEventListener('click', function (e) {
     e.preventDefault();
+    let corp_brand = document.querySelector("#corp_brand").value;
     let corp_email = document.querySelector("#corp_email").value;
     let corp_number = document.querySelector("#corp_number").value;
+    let corp_online_marketing_number = document.querySelector("#corp_online_marketing_number").value;
     let corp_image = document.querySelector("#corp_image").files[0];
     let corp_address = document.querySelector("#corp_address").value;
     let main_phonenumber = document.querySelector("#main_phonenumber").value;
     let main_cellphone = document.querySelector("#main_cellphone").value;
     let profile_level = document.querySelector("#profile_level").value;
     let formData = new FormData();
+    formData.append("corp_brand", corp_brand);
     formData.append("corp_email", corp_email);
     formData.append("corp_number", corp_number);
+    formData.append("corp_online_marketing_number", corp_online_marketing_number);
     formData.append("corp_image", corp_image);
     formData.append("corp_address", corp_address);
     formData.append("main_phonenumber", main_phonenumber);
     formData.append("main_cellphone", main_cellphone);
     formData.append("level", profile_level);
-
+    console.log(corp_brand)
     let request = $.ajax({
                 url: vendorUpdateAjax,
                 type: 'POST',
@@ -34,24 +79,50 @@ vendorUpdateSubmitBtn.addEventListener('click', function (e) {
                     if (response.error) {
                         alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
                     } else {
-                        window.location.reload();
-                        /*
-                        const corpEmailTag = document.querySelector("#profile_corp_email");
-                        const corpNumberTag = document.querySelector("#profile_corp_number");
-                        const corpImagePathTag = document.querySelector("#profile_corp_image_path");
-                        const corpAddressTag = document.querySelector("#profile_corp_address");
-                        const mainPhonenumberTag = document.querySelector("#profile_main_phonenumber");
-                        const mainCellphoneTag = document.querySelector("#profile_main_cellphone");
-                        const levelTag = document.querySelector("#level");
+                        const flashAlert_div = document.querySelector(".vendor-update-alert");
+                        if (response.checked_message) {
+                            flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
+                                                        <div class="alert alert-danger" role="alert">`+response.checked_message+`</div>
+                                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
+                        }
+                        else {
+                            window.location.reload();
+                        }
 
-                        corpEmailTag.innerHTML = response.corp_email;
-                        corpNumberTag.innerHTML = response.corp_number;
-                        corpImagePathTag.setAttribute("src", "/" + response.corp_image_path);
-                        corpAddressTag.innerHTML = response.corp_address;
-                        mainPhonenumberTag.innerHTML = response.main_phonenumber;
-                        mainCellphoneTag.innerHTML = response.main_cellphone;
-                        levelTag.innerHTML = response.profile_level;
-                        */
+                    }
+                },
+                error: function (err) {
+                    alert('내부 오류가 발생하였습니다.\n' + err);
+                }
+            });
+
+
+}, false);
+
+
+const corpImgSubmit = document.querySelector("#corp-img-submit");
+corpImgSubmit.addEventListener('click', function (e) {
+    e.preventDefault();
+    let corp_image = document.querySelector("#corp_image").files[0];
+    let formData = new FormData();
+    formData.append("corp_image", corp_image);
+    let request = $.ajax({
+                url: vendorCorpImageSaveAjax,
+                type: 'POST',
+                data: formData,
+                headers: {"X-CSRFToken": CSRF_TOKEN,},
+                dataType: 'json',
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (response) {
+                    if (response.error) {
+                        alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
+                    } else {
+                        console.log("corp_image save success", response.success_msg)
+                        document.querySelector("#corp-modal-image").style.display = "none";
                     }
                 },
                 error: function (err) {

@@ -1,7 +1,8 @@
 <script type="text/javascript">
-    csrf_token = "{{ csrf_token() }}";
-    accounts_delete_url = "{{ url_for('accounts.delete', _id=current_user.id) }}";
-    common_index_url = "{{ url_for('commons.index') }}";
+    CSRF_TOKEN = "{{ csrf_token() }}";
+    accountsDeleteAjax = "{{ url_for('accounts.delete_ajax', _id=current_user.id) }}";
+    {#accounts_delete_url = "{{ url_for('accounts.delete', _id=current_user.id) }}";#}
+    {#common_index_url = "{{ url_for('commons.index') }}";#}
 </script>
 <div id="body-sidebar" class="body-sidebar" uk-offcanvas="overlay: true;">
     <div class="uk-offcanvas-bar">
@@ -9,10 +10,10 @@
             <a href="{{ url_for('accounts.dashboard') }}">
                 <div class="sidebar-logo">
                     <div class="profile-img-div">
-                        {% if current_profile %}
+                        {% if current_profile.image_path %}
                             <img class="profile-img" src="/{{ current_profile.image_path }}" alt="">
                         {% else %}
-                            <img class="profile-img" src="../../../static/statics/images/person-circle.svg" alt="">
+                            <img class="profile-img" src="{{ url_for('static', filename='statics/images/user_none.png') }}" alt="">
                         {% endif %}
                     </div>
                     <div class="sidebar-title-div">
@@ -61,11 +62,25 @@
                             {% endif %}
                         {% endif %}
 
-                        <form method="post">
-                            <input type="hidden" name="_id" id="_id" value="{{ current_user.id }}">
-                            <div class="accordion-item" id="accounts-del">탈퇴</div>
-                        </form>
-                        <script src="{{ url_for('static', filename='statics/js/accounts/userDelete.js') }}"></script>
+                        <div class="delete-div">
+                            <a class="uk-link-reset" href="#account_delete_modal-container" uk-toggle><div class="accordion-item">탈퇴</div></a>
+                        </div>
+                        <div id="account_delete_modal-container" class="uk-modal-container" uk-modal>
+                            <form method="POST" class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                <button class="uk-modal-close-default" type="button" uk-close></button>
+                                정말로 탈퇴를 진행하시겠어요?
+                                <div style="float: right">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <div class="delete-btn-div mt-15 uk-inline">
+                                        <button id="accounts-delete-btn" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">삭제</button>
+                                    </div>
+                                    <div class="cover-img-delete-btn mt-15 uk-inline">
+                                        <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <script src="{{ url_for('static', filename='statics/js/accounts/accountDeleteSubmit.js') }}"></script>
 
                         <a href="#">
                             <div class="accordion-item">머라도... 만들기</div>
@@ -111,7 +126,7 @@
                 </div>
                 <div class="sidebar-item">
                     <button class="uk-accordion-title uk-button uk-button-default" type="button">페이지
-                        {% if current_profile %}
+                        {% if current_profile.image_path %}
                             <span class="header-profile-img-div">
                                 <img class="header-profile-img" src="/{{ current_profile.image_path }}" alt="mdo">
                             </span>

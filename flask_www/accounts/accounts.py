@@ -2,14 +2,14 @@ import os
 import re
 import shutil
 
-from flask import render_template, Blueprint, session, redirect, url_for, g, flash, request
+from flask import render_template, Blueprint, session, redirect, url_for, g, flash, request, make_response, jsonify, abort
 from flask_login import logout_user, current_user, login_user
 from itsdangerous import SignatureExpired
 from werkzeug import security
 
 from flask_www.accounts.forms import LoginForm, AccountRegisterForm, AccountsUpdateForm, PasswordUpdateForm
-from flask_www.accounts.models import User, Profile
-from flask_www.accounts.utils import login_required, send_mail_for_any
+from flask_www.accounts.models import User, Profile, ProfileCoverImage
+from flask_www.accounts.utils import login_required, send_mail_for_any, profile_delete
 from flask_www.commons.ownership_required import account_ownership_required
 from flask_www.commons.utils import flash_form_errors
 from flask_www.configs import db
@@ -288,31 +288,21 @@ def forget_password_update(_id, password_token):
     return render_template('accounts/resetting/forget_pw_update.html', user=user_obj, form=form)
 
 
-@accounts_bp.route('/delete/<_id>', methods=['POST', 'GET'])#
+@accounts_bp.route('/delete/ajax/<_id>', methods=['POST'])#
 @account_ownership_required
-def delete(_id):
-    if request.method == 'POST': # 이거는 꼭 없어도 된다.
-        # _id = request.form.get('_id')
-        print('999999999999999999999999', _id)
-        # user_obj = User.query.filter(User.id == _id)
+def delete_ajax(_id):
+    if request.method == 'POST':
         user_obj = db.session.query(User).filter_by(id=_id).first()
         profile = db.session.query(Profile).filter_by(user_id=_id).first()
         if profile:
-            try:
-                profile_image_origin_path = os.path.join(BASE_DIR, profile.image_path)
-                if os.path.isfile(profile_image_origin_path):
-                    shutil.rmtree(os.path.dirname(profile_image_origin_path))
-                corp_image_origin_path = os.path.join(BASE_DIR, profile.corp_image_path)
-                if os.path.isfile(corp_image_origin_path):
-                    shutil.rmtree(os.path.dirname(corp_image_origin_path))
-            except Exception as e:
-                print(e)
-            db.session.delete(profile)
-            # db.session.commit()
-        # user_obj.delete()
+            profile_delete(profile)
         db.session.delete(user_obj)
         db.session.commit()
-        return redirect(url_for('commons.index'))
+        data_response = {
+            "common_index_url": url_for('commons.index')
+        }
+        return make_response(jsonify(data_response))
+    abort(401)
 
 
 @accounts_bp.route('accounts/error')
