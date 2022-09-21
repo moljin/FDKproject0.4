@@ -18,8 +18,8 @@
     <div class="uk-width-expand uk-flex uk-flex-right">
         <ul class="uk-breadcrumb">
             <li><a href="{{ url_for('admin_accounts.index') }}">관리 홈</a></li>
-            <li><a href="{{ url_for('admin_products.shop_create') }}">상점등록</a></li>
-            <li><a href="{{ url_for('admin_products.shop_list') }}">상점리스트</a></li>
+            <li><a href="{{ url_for('admin_shops.shop_create') }}">상점등록</a></li>
+            <li><a href="{{ url_for('admin_shops.shop_list') }}">상점리스트</a></li>
             <li><span>상점변경</span></li>
         </ul>
     </div>
@@ -36,7 +36,7 @@
     <section class="admin-section">
         <div class="products-container">
             <div class="form-container">
-                <form class="shops" method="POST" action="{{ url_for("admin_products.save") }}" enctype="multipart/form-data">
+                <form class="shops" method="POST" action="{{ url_for("admin_shops.save") }}" enctype="multipart/form-data">
                     {{ form.csrf_token }}
                     <fieldset class="uk-fieldset">
                         <div class="uk-margin" uk-grid>

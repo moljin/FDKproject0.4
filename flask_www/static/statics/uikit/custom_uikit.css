@@ -23,6 +23,8 @@ a.uk-link-reset:hover {color: #b33939 !important}
 .uk-button-danger {background: #faa05a}
 .uk-button-danger:hover {background: coral}
 
+.uk-card-body {padding: 20px}
+
 .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px 0 calc(5px - 4px)}
 
 

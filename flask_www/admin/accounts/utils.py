@@ -1,9 +1,5 @@
-from flask import url_for, render_template, flash, redirect, request
+from flask import url_for, render_template
 from flask_mail import Message
-from werkzeug import security
-
-from flask_www.accounts.utils import optimal_password_check
-from flask_www.commons.utils import existing_img_and_dir_delete_for_update
 from flask_www.configs import db, mail
 from flask_www.configs.config import Config
 

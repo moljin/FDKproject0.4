@@ -185,8 +185,10 @@ function profileUpdateInit() {
                     if (response.error) {
                         alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
                     } else {
+                        const globalProfileImgTag = document.querySelector("#global-profile-img");
                         const profileImgPathTag = document.querySelector("#image_path");
                         let image_path = response.image_path;
+                        globalProfileImgTag.setAttribute("src", "/" + image_path);
                         profileImgPathTag.setAttribute("src", "/" + image_path);
                         profileImgPathTag.classList.remove('inactive');
                         profileImgPathTag.style.display = "block";

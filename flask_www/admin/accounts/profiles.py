@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort, flash
-from flask_login import current_user
 from sqlalchemy import desc
 
 from flask_www.accounts.forms import ProfilesForm

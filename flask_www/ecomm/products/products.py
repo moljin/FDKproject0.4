@@ -132,19 +132,6 @@ def shopcategory_cover_img_save_ajax(_id):
         else:
             request_path = "shopcategory_cover_images"
             new_shop_cover_image_save(user, shopcategory, cover_img1, cover_img2, cover_img3, request_path)
-            # new_cover_image = ShopCategoryCoverImage()
-            # new_cover_image.user_id = user_id
-            # new_cover_image.shopcategory_id = shopcategory.id
-            # if cover_img1:
-            #     relative_path1, _ = save_file(NOW, cover_img1, request_path)
-            #     new_cover_image.image_1_path = relative_path1
-            # if cover_img2:
-            #     relative_path2, _ = save_file(NOW, cover_img2, request_path)
-            #     new_cover_image.image_2_path = relative_path2
-            # if cover_img3:
-            #     relative_path3, _ = save_file(NOW, cover_img3, request_path)
-            #     new_cover_image.image_3_path = relative_path3
-            # db.session.add(new_cover_image)
             db.session.commit()
             new_cover_image = ShopCategoryCoverImage.query.filter_by(user_id=user_id).first()
             session.pop('ajax_post_key', None)
@@ -333,7 +320,7 @@ def shopcategory_delete_ajax():
                 return make_response(jsonify(shop_data_response))
             if current_user.is_admin:
                 shop_data_response = {
-                    "redirect_url": url_for('admin_products.shop_list')
+                    "redirect_url": url_for('admin_shops.shop_list')
                 }
                 return make_response(jsonify(shop_data_response))
         abort(401)
@@ -448,7 +435,8 @@ def units_images_save_ajax():
         file_name = request.form.get('file_name')
         orm_id = request.form.get('orm_id')
         img_alt = request.form.get('alt')
-        image_path, file_name = base64_to_file(image_string, file_name)
+        request_path = "product_units_images"
+        image_path, file_name = base64_to_file(image_string, file_name, request_path, g.user)
         """
         # 원판
         print('YYYYYYYYYYYYYYYYYY',request.files)

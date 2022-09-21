@@ -4,7 +4,7 @@ import shutil
 import unicodedata
 import uuid
 
-from flask import g, request, abort, flash, session
+from flask import g, abort, flash, session
 
 from flask_www.configs import db
 from flask_www.configs.config import NOW, BASE_DIR
@@ -103,12 +103,12 @@ def current_db_session_delete(obj):
     current_db_sessions.delete(obj)
 
 
-def base64_to_file(img_string, file_name):
+def base64_to_file(img_string, file_name, path, user):
     import base64
     from PIL import Image
     import io
     img_data = base64.b64decode(img_string)
-    image_path = base_file_path(file_name)
+    image_path = base_file_path(file_name, path, user)
     upload_path = os.path.join(BASE_DIR, image_path)
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
 

@@ -50,6 +50,7 @@ body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn {
 #profile-delete-modal > div > div > div:nth-child(3) > button,
 #vendor-delete-btn,
 #vendor-delete-modal > form > div > div:nth-child(3) > button {border-radius: 5px}
+#vendor-delete-modal > form > div {margin-top: 40px}
 
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div > label,
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div > label,
@@ -61,10 +62,12 @@ body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn {
 #cover-img2-preview,
 #cover-img3-preview {width: 100%; height: 250px; display: block; margin: 0 auto; object-fit: cover}
 
+#account_cover_img_upload_modal-container > form > div > div.cover-img-save-btn.uk-align-right.mt-15 {margin-bottom: 0}
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div.input-file-container {position: relative}
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div > div > label {position: absolute; top: 6px; width: 102px; padding: 0}
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div > div {width: 100%}
-#account_cover_img_upload_modal-container > form > div > div.cover-img-save-btn {float: right}
+/*#account_cover_img_upload_modal-container > form > div > div.cover-img-save-btn {float: right}*/
+#account_cover_img_delete_modal-container > form > div {margin-top: 40px}
 
 
 #profile-message {border-radius: 5px; height: 5rem; resize: none}

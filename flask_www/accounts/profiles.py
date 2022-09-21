@@ -103,7 +103,11 @@ def detail(_id):
     user_obj = User.query.get_or_404(user_id)
     cover_img_obj = db.session.query(ProfileCoverImage).filter_by(profile_id=profile_obj.id).first()
     shopcategory_objs = db.session.query(ShopCategory).filter_by(user_id=user_obj.id).all()  # .order_by(desc(ShopCategory.created_at))
-    return render_template('accounts/profiles/profile_detail.html', target_profile_user=user_obj, target_profile=profile_obj, shopcategory_objs=shopcategory_objs, cover_img=cover_img_obj)
+    return render_template('accounts/profiles/profile_detail.html',
+                           target_profile_user=user_obj,
+                           target_profile=profile_obj,
+                           shopcategory_objs=shopcategory_objs,
+                           cover_img=cover_img_obj)
 
 
 @profiles_bp.route('/profile/vendor/not', methods=['GET'])
@@ -165,7 +169,13 @@ def vendor_detail(_id):
     user_obj = db.session.query(User).filter_by(id=profile_obj.user_id).first()
     cover_img_obj = db.session.query(ProfileCoverImage).filter_by(profile_id=profile_obj.id).first()
     shopcategory_objs = db.session.query(ShopCategory).filter_by(user_id=user_obj.id).all()  # .order_by(desc(ShopCategory.created_at))
-    return render_template('accounts/profiles/profile_detail.html', target_profile_user=user_obj, target_profile=profile_obj, shopcategory_objs=shopcategory_objs, cover_img=cover_img_obj, form=form)
+    return render_template('accounts/profiles/profile_detail.html',
+                           target_profile_user=user_obj,
+                           target_profile=profile_obj,
+                           shopcategory_objs=shopcategory_objs,
+                           cover_img=cover_img_obj,
+                           # form=form
+                           )
 
 
 @profiles_bp.route('/corp_images/profile/vendor/save/ajax/<int:_id>', methods=['POST'])
