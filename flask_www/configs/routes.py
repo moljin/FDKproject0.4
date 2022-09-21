@@ -1,4 +1,11 @@
 def routes_init(app):
+    from flask_www.admin.accounts import accounts
+    app.register_blueprint(accounts.admin_accounts_bp)
+    from flask_www.admin.accounts import profiles
+    app.register_blueprint(profiles.admin_profiles_bp)
+    from flask_www.admin.ecomm import products
+    app.register_blueprint(products.admin_products_bp)
+
     from flask_www.commons import common
     app.register_blueprint(common.common_bp)
 

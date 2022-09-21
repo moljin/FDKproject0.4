@@ -22,7 +22,7 @@ HOVER 색   .units-btn button:hover /
 #slider_value {margin-left:10px; margin-right: 5px}
 
 .units-submit-div {display: flex; justify-content: flex-end; padding: 0 7px}
-#form-submit {cursor: pointer; width: 5.640625rem; height: 38px; background: #0652DD; border-radius: 5px; font-size: .875rem; color: white} /*#1a73e8*/
+#form-submit {cursor: pointer; width: 5.8rem; height: 38px; background: #0652DD; border-radius: 5px; font-size: .875rem; color: white} /*#1a73e8*/
 #form-submit:hover {background: #1a73e8 }
 .units-btn-group.cancel-group {margin-right: 7px}
 

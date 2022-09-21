@@ -1,13 +1,19 @@
 "use strict"
+/*jshint esversion: 6 */
+shopCategoryUpdateInit();
 
-const shopTitleCheckBtn = document.querySelector("#shoptitle-check-btn");
-shopTitleCheckBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let shopcategory_title = document.querySelector("#shopcategory-title").value;
-    console.log("shopcategory_title", shopcategory_title)
-    let formData = new FormData();
-    formData.append("title", shopcategory_title);
-    let request = $.ajax({
+function shopCategoryUpdateInit() {
+    try {
+        const shopTitleCheckBtn = document.querySelector("#shoptitle-check-btn");
+        shopTitleCheckBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let shopcategory_title = document.querySelector("#shopcategory-title").value;
+            let _id = document.querySelector("#shopcategory_id").value;
+            console.log("shopcategory_title", shopcategory_title)
+            let formData = new FormData();
+            formData.append("title", shopcategory_title);
+            formData.append("_id", _id);
+            let request = $.ajax({
                 url: existingShopcategoryCheckAjax,
                 type: 'POST',
                 data: formData,
@@ -25,7 +31,7 @@ shopTitleCheckBtn.addEventListener('click', function (e) {
                         const flashAlert_div = document.querySelector(".shop-update-alert");
                         if (response.flash_message) {
                             flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.flash_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
                             // window.location.reload();
                         } else {
@@ -40,22 +46,25 @@ shopTitleCheckBtn.addEventListener('click', function (e) {
                     alert('내부 오류가 발생하였습니다.\n' + err);
                 }
             });
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
+    try {
+        const shopUpdateSubmit = document.querySelector("#shop-update-submit");
+        shopUpdateSubmit.addEventListener('click', function (e) {
+            // shopTitleCheckBtn.click();
+            e.preventDefault();
+            let shopcategory_title = document.querySelector("#shopcategory-title").value;
+            let shopcategory_content = document.querySelector("#shopcategory-content").value;
+            let meta_description = document.querySelector("#meta_description").value;
+            let formData = new FormData();
+            formData.append("title", shopcategory_title);
+            formData.append("content", shopcategory_content);
+            formData.append("meta_description", meta_description);
 
-const shopUpdateSubmit = document.querySelector("#shop-update-submit");
-shopUpdateSubmit.addEventListener('click', function (e) {
-    // shopTitleCheckBtn.click();
-    e.preventDefault();
-    let shopcategory_title = document.querySelector("#shopcategory-title").value;
-    let shopcategory_content = document.querySelector("#shopcategory-content").value;
-    let meta_description = document.querySelector("#meta_description").value;
-    let formData = new FormData();
-    formData.append("title", shopcategory_title);
-    formData.append("content", shopcategory_content);
-    formData.append("meta_description", meta_description);
-
-    let request = $.ajax({
+            let request = $.ajax({
                 url: shopCategoryUpdateAjax,
                 type: 'POST',
                 data: formData,
@@ -73,15 +82,14 @@ shopUpdateSubmit.addEventListener('click', function (e) {
                         const flashAlert_div = document.querySelector(".shop-update-alert");
                         if (response.flash_message === "동일한 상점타이틀이 존재합니다.") {
                             flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.flash_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
                         } else {
                             if (response.checked_message) {
                                 flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.checked_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.checked_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
-                            }
-                            else {
+                            } else {
                                 const shopTitleTag = document.querySelector("#shop-title");
                                 const shopContent = document.querySelector("#shop-content");
                                 const shopMetaDescription = document.querySelector("#shop-meta-description");
@@ -89,6 +97,11 @@ shopUpdateSubmit.addEventListener('click', function (e) {
                                 shopTitleTag.innerHTML = response.shopcategory_title;
                                 shopContent.innerHTML = response.shopcategory_content;
                                 shopMetaDescription.innerHTML = response.meta_description;
+                                // window.location.reload();
+                                document.querySelector("#shop-create-update-modal").classList.add("uk-modal-close");
+                                setTimeout(ukModalCloseClassRemove, 500);
+                                // 스크롤바를 염두에 둔것: 사용할 수 있도록(display.none 방식으로는 스크롤바 에러발생)
+                                // document.querySelector("#shop-create-update-modal").classList.remove("uk-modal-close");
                                 // document.querySelector("#shop-create-update-modal").style.display = "none";
                             }
                         }
@@ -101,16 +114,23 @@ shopUpdateSubmit.addEventListener('click', function (e) {
             });
 
 
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
-
-const shopCategoryDeleteBtn = document.querySelector("#shop-delete-btn");
-shopCategoryDeleteBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let request = $.ajax({
+    try {
+        const shopCategoryDeleteBtn = document.querySelector("#shop-delete-btn");
+        shopCategoryDeleteBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let _id = document.querySelector("#shopcategory_id").value;
+            console.log("_id", _id)
+            let formData = new FormData();
+            formData.append("_id", _id);
+            let request = $.ajax({
                 url: shopCategoryDeleteAjax,
                 type: 'POST',
-                data: {},
+                data: formData,
                 headers: {"X-CSRFToken": CSRF_TOKEN,},
                 dataType: 'json',
                 async: false,
@@ -128,7 +148,7 @@ shopCategoryDeleteBtn.addEventListener('click', function (e) {
 
                         // similar behavior as clicking on a link
                         // window.location.href = "http://stackoverflow.com";
-                        window.location.href = response.profile_vendor_detail_url;
+                        window.location.href = response.redirect_url;
                     }
                 },
                 error: function (err) {
@@ -137,4 +157,14 @@ shopCategoryDeleteBtn.addEventListener('click', function (e) {
             });
 
 
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
+
+    function ukModalCloseClassRemove() {
+        document.querySelector('#shop-create-update-modal').classList.remove('uk-modal-close');
+    }
+
+
+}

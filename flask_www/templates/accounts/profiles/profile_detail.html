@@ -15,9 +15,11 @@
             profileImageSaveAjax = "{{ url_for("profiles.profile_img_save_ajax", _id=target_profile.id) }}"
             profileImageDeleteAjax = "{{ url_for("profiles.profile_img_delete_ajax", _id=target_profile.id) }}"
 
-            existingProfileCheckAjax = "{{ url_for("profiles.existing_profile_check_ajax", _id=target_profile.id) }}"
+            {#existingProfileCheckAjax = "{{ url_for("profiles.existing_profile_check_ajax", _id=target_profile.id) }}"#}
+            existingProfileCheckAjax = "{{ url_for("profiles.existing_profile_check_ajax") }}"
             profileUpdateAjax = "{{ url_for("profiles.update_ajax", _id=target_profile.id) }}"
-            profileDeleteAjax = "{{ url_for("profiles.delete_ajax", _id=target_profile.id) }}"
+            {#profileDeleteAjax = "{{ url_for("profiles.delete_ajax", _id=target_profile.id) }}"#}
+            profileDeleteAjax = "{{ url_for("profiles.delete_ajax") }}"
             vendorUpdateAjax = "{{ url_for("profiles.vendor_update_ajax", _id=target_profile.id) }}"
             vendorCorpImageSaveAjax = "{{ url_for("profiles.vendor_corp_image_save_ajax", _id=target_profile.id) }}"
             {% if target_profile.level != "일반이용자" %}
@@ -35,31 +37,31 @@
             <!--cover image display-->
             <div class="img-container account_cover-img">
                 <div class="img-item uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="min-height: 400; max-height: 400; autoplay: true; autoplay-interval: 3000">
-                    {% if cover_img %}
-                        <ul class="uk-slideshow-items">
-                            <li>
+
+                    <ul class="uk-slideshow-items">
+                        <li>
+                            {% if cover_img.image_1_path %}
                                 <img class="profile-cover-img" id="image_1_path" src="/{{ cover_img.image_1_path }}" uk-cover>
-                            </li>
-                            <li>
-                                <img class="profile-cover-img" id="image_2_path" src="/{{ cover_img.image_2_path }}" uk-cover>
-                            </li>
-                            <li>
-                                <img class="profile-cover-img" id="image_3_path" src="/{{ cover_img.image_3_path }}" uk-cover>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <ul class="uk-slideshow-items">
-                            <li>
+                            {% else %}
                                 <img class="profile-cover-img" id="image_1_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
-                            </li>
-                            <li>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if cover_img.image_2_path %}
+                                <img class="profile-cover-img" id="image_2_path" src="/{{ cover_img.image_2_path }}" uk-cover>
+                            {% else %}
                                 <img class="profile-cover-img" id="image_2_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
-                            </li>
-                            <li>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if cover_img.image_3_path %}
+                                <img class="profile-cover-img" id="image_3_path" src="/{{ cover_img.image_3_path }}" uk-cover>
+                            {% else %}
                                 <img class="profile-cover-img" id="image_3_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
-                            </li>
-                        </ul>
-                    {% endif %}
+                            {% endif %}
+                        </li>
+                    </ul>
+
                     <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
                     <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
                 </div>
@@ -82,7 +84,7 @@
                     <div class="uk-child-width-expand@m" uk-grid>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_1_path %}
                                     <img class="profile-cover-img" id="cover-img1-preview" src="/{{ cover_img.image_1_path }}">
                                 {% else %}
                                     <img class="profile-cover-img" id="cover-img1-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
@@ -100,7 +102,7 @@
                         </div>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_2_path %}
                                     <img class="profile-cover-img" id="cover-img2-preview" src="/{{ cover_img.image_2_path }}">
                                 {% else %}
                                     <img class="profile-cover-img" id="cover-img2-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
@@ -117,7 +119,7 @@
                         </div>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_3_path %}
                                     <img class="profile-cover-img" id="cover-img3-preview" src="/{{ cover_img.image_3_path }}">
                                 {% else %}
                                     <img class="profile-cover-img" id="cover-img3-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
@@ -270,7 +272,7 @@
                             <fieldset class="uk-fieldset">
 
                                 <legend class="uk-legend">프로필 수정</legend>
-                                <div class="profile-update-alert"></div>
+                                <div class="profile-update-alert mt-10"></div>
 
                                 <div class="uk-margin">
                                     <label>닉네임</label> <button type="button" class="check-btn" id="nickname-check-btn">중복 체크</button>
@@ -279,9 +281,9 @@
 
                                 <div class="uk-margin">
                                     <label>간단 메시지</label>
-                                    <textarea class="uk-textarea mt-5" id="profile-message" name="message" placeholder="간단 메시지" required="">{{ target_profile.message }}</textarea>
+                                    <textarea class="uk-textarea mt-5" id="profile-message" maxlength="100" minlength="2" rows="3"  name="message" placeholder="간단 메시지" required  onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)">{{ target_profile.message }}</textarea>
                                 </div>
-
+                                <input type="hidden" id="profile_id" name="_id" value="{{ target_profile.id }}">
                                 <p uk-margin>
                                     <button class="uk-button uk-button-primary uk-width-1-1 mt-10 uk-modal-close" id="profile-update-submit">프로필 등록</button>
                                 </p>
@@ -297,7 +299,7 @@
                             <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
                                 <button class="uk-modal-close-default" type="button" uk-close></button>
                                 <legend class="uk-legend">판매자 신청/정보 수정</legend>
-                                <div class="vendor-update-alert"></div>
+                                <div class="vendor-update-alert mt-10"></div>
                                 <div class="uk-margin">
                                     {% if target_profile.corp_brand %}
                                         <label>상호명</label> <button type="button" class="check-btn" id="corp-brand-check-btn">중복 체크</button>
@@ -389,7 +391,7 @@
                                 <input type="hidden" id="profile_level" name="level" value="{{ target_profile.level }}">
                                 <p class="uk-text-right">
                                     <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
-                                    <button id="vendor-update-submit" class="uk-button uk-button-primary uk-modal-close" type="button">저장</button>
+                                    <button id="vendor-update-submit" class="uk-button uk-button-primary" type="button">저장</button>
                                 </p>
                             </div>
                         </div>
@@ -511,7 +513,6 @@
                                                 <div class="uk-margin" style="position: relative">
                                                     <label class="corp-img uk-button uk-button-default custom-button-green" type="button" for="corp_image">등록증</label>
                                                     <input class="uk-input mt-5" id="corp_image" name="corp_image" type="file" accept="image/*" value=""/>
-                                                                                <input class="uk-input mt-5" id="corp_image" name="corp_image" placeholder="사업자 등록증" style="display: none" type="file" accept="image/*" value=""/>
                                                 </div>
                                             {% endif %}
                                             <!--신규 등록에 사용: 분리-->
@@ -549,11 +550,11 @@
                         <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
                             <button class="uk-modal-close-default" type="button" uk-close></button>
                             정말로 프로필을 삭제하시겠어요?
-                            <div class="modoal-submit-cancel-btn">
-                                <div class="cover-img-save-btn mt-15 uk-inline">
+                            <div class="modal-submit-cancel-btn uk-align-right">
+                                <div class="cover-img-save-btn uk-inline">
                                     <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                                 </div>
-                                <div class="cover-img-save-btn mt-15 uk-inline">
+                                <div class="cover-img-save-btn uk-inline ml-15">
                                     <button id="profile-delete-btn" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">삭제</button>
                                 </div>
                             </div>
@@ -720,12 +721,14 @@
         <script src="{{ url_for('static', filename='statics/js/accounts/profileCoverImageSubmit.js') }}"></script>
         <script src="{{ url_for('static', filename='statics/js/accounts/profileUpdateSubmit.js') }}"></script>
         <script src="{{ url_for('static', filename='statics/js/accounts/vendorUpdateSubmit.js') }}"></script>
+<!--
         <script>
             profileImagePath = document.getElementById("img-preview").getAttribute("src");
             corpImagePath = document.getElementById("corp-img-preview").getAttribute("src");
-            image1Path = document.getElementById("image_1_path").getAttribute("src");
-            image2Path = document.getElementById("image_2_path").getAttribute("src");
-            image3Path = document.getElementById("image_3_path").getAttribute("src");
+            existingImage1Path = document.getElementById("cover-img1-preview").getAttribute("src");
+            existingImage2Path = document.getElementById("cover-img2-preview").getAttribute("src");
+            existingImage3Path = document.getElementById("cover-img3-preview").getAttribute("src");
         </script>
+-->
     {% endif %}
 {% endblock %}

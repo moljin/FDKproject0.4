@@ -9,11 +9,13 @@ from sqlalchemy import desc
 from flask_www.accounts.models import Profile, User
 from flask_www.accounts.utils import login_required, vendor_required
 from flask_www.commons.ownership_required import shopcategory_ownership_required, product_ownership_required
-from flask_www.commons.utils import flash_form_errors, save_file, ajax_post_key, base64_to_file, c_slugify
+from flask_www.commons.utils import flash_form_errors, save_file, ajax_post_key, base64_to_file, existing_img_and_dir_delete_for_update, existing_img_and_dir_delete_without_update, \
+    existing_cover_image_save
 from flask_www.configs import db
 from flask_www.configs.config import NOW, BASE_DIR
 from flask_www.ecomm.products.forms import ShopCategoryForm, ProductForm
 from flask_www.ecomm.products.models import ShopCategory, ShopCategoryCoverImage, UnitsProductImage, Product
+from flask_www.ecomm.products.utils import new_shop_cover_image_save
 
 NAME = 'products'
 products_bp = Blueprint(NAME, __name__, url_prefix='/products')
@@ -24,24 +26,19 @@ products_bp = Blueprint(NAME, __name__, url_prefix='/products')
 def shopcategory_create():
     form = ShopCategoryForm()
     title = form.title.data
-    existing_title = ShopCategory.query.filter_by(title=title).first()
+    existing_title_shop = ShopCategory.query.filter_by(title=title).first()
     content = form.content.data
     meta_description = form.meta_description.data
-    symbol_image = form.data.get('symbol_image')
     try:
-        if existing_title:
+        if existing_title_shop:
             flash("등록된 상점타이틀이 존재합니다.")
-        elif form.validate_on_submit():
+        elif request.method == 'POST':#form.validate_on_submit():
             new_shopcategory = ShopCategory(
                 user_id=g.user.id,
                 title=title
             )
             new_shopcategory.content = content
             new_shopcategory.meta_description = meta_description
-
-            # if symbol_image:
-            #     relative_path, _ = save_file(NOW, symbol_image)
-            #     new_shopcategory.symbol_path = relative_path
             db.session.add(new_shopcategory)
             db.session.commit()
 
@@ -61,20 +58,17 @@ def shopcategory_symbol_img_save_ajax(_id):
     post_key = session["ajax_post_key"]
 
     shopcategory = db.session.query(ShopCategory).filter_by(id=_id).first()
-    existing_symbol_img = shopcategory.symbol_path
     symbol_image = request.files.get('symbol_image')
     if post_key and request.method == 'POST':
-        if existing_symbol_img:
-            if symbol_image:
-                relative_path, upload_path = save_file(NOW, symbol_image)
-                old_symbol_path = os.path.join(BASE_DIR, existing_symbol_img)
-                if old_symbol_path != upload_path:
-                    if os.path.isfile(old_symbol_path):
-                        shutil.rmtree(os.path.dirname(old_symbol_path))
-                shopcategory.symbol_path = relative_path
+        existing_symbol_img_path = shopcategory.symbol_path
+        if existing_symbol_img_path:
+            request_path = "shopcategory_symbol_images"
+            relative_path = existing_img_and_dir_delete_for_update(existing_symbol_img_path, symbol_image, request_path)
+            shopcategory.symbol_path = relative_path
         else:
             if symbol_image:
-                relative_path, _ = save_file(NOW, symbol_image)
+                request_path = "shopcategory_symbol_images"
+                relative_path, _ = save_file(NOW, symbol_image, request_path, current_user)
                 shopcategory.symbol_path = relative_path
         db.session.add(shopcategory)
         db.session.commit()
@@ -90,13 +84,11 @@ def shopcategory_symbol_img_save_ajax(_id):
 @shopcategory_ownership_required
 def shopcategory_symbol_img_delete_ajax(_id):
     shopcategory = db.session.query(ShopCategory).filter_by(id=_id).first()
-    existing_symbol_img = shopcategory.symbol_path
     if request.method == 'POST':
-        if existing_symbol_img:
+        existing_symbol_img_path = shopcategory.symbol_path
+        if existing_symbol_img_path:
             try:
-                old_symbol_path = os.path.join(BASE_DIR, existing_symbol_img)
-                if os.path.isfile(old_symbol_path):
-                    shutil.rmtree(os.path.dirname(old_symbol_path))
+                existing_img_and_dir_delete_without_update(existing_symbol_img_path)
                 shopcategory.symbol_path = ""
             except Exception as e:
                 print(e)
@@ -117,34 +109,16 @@ def shopcategory_cover_img_save_ajax(_id):
 
     shopcategory = db.session.query(ShopCategory).filter_by(id=_id).first()
     user_id = shopcategory.user_id
-    existing_cover_img = db.session.query(ShopCategoryCoverImage).filter_by(shopcategory_id=shopcategory.id).first()
-    cover_img1 = request.files.get('cover_img1')
-    cover_img2 = request.files.get('cover_img2')
-    cover_img3 = request.files.get('cover_img3')
-    if post_key and request.method == 'POST':
-        if existing_cover_img:
-            if cover_img1:
-                relative_path1, upload_path1 = save_file(NOW, cover_img1)
-                old_image_1_path = os.path.join(BASE_DIR, existing_cover_img.image_1_path)
-                if old_image_1_path != upload_path1:
-                    if os.path.isfile(old_image_1_path):
-                        shutil.rmtree(os.path.dirname(old_image_1_path))
-                existing_cover_img.image_1_path = relative_path1
-            if cover_img2:
-                relative_path2, upload_path2 = save_file(NOW, cover_img2)
-                old_image_2_path = os.path.join(BASE_DIR, existing_cover_img.image_2_path)
-                if old_image_2_path != upload_path2:
-                    if os.path.isfile(old_image_2_path):
-                        shutil.rmtree(os.path.dirname(old_image_2_path))
-                existing_cover_img.image_2_path = relative_path2
-            if cover_img3:
-                relative_path3, upload_path3 = save_file(NOW, cover_img3)
-                old_image_3_path = os.path.join(BASE_DIR, existing_cover_img.image_3_path)
-                if old_image_3_path != upload_path3:
-                    if os.path.isfile(old_image_3_path):
-                        shutil.rmtree(os.path.dirname(old_image_3_path))
-                existing_cover_img.image_3_path = relative_path3
+    user = User.query.get_or_404(user_id)
 
+    if post_key and request.method == 'POST':
+        cover_img1 = request.files.get('cover_img1')
+        cover_img2 = request.files.get('cover_img2')
+        cover_img3 = request.files.get('cover_img3')
+        existing_cover_img = db.session.query(ShopCategoryCoverImage).filter_by(shopcategory_id=shopcategory.id).first()
+        request_path = "shopcategory_cover_images"
+        if existing_cover_img:
+            existing_cover_image_save(existing_cover_img, cover_img1, cover_img2, cover_img3, request_path, current_user)
             db.session.add(existing_cover_img)
             db.session.commit()
             session.pop('ajax_post_key', None)
@@ -156,21 +130,23 @@ def shopcategory_cover_img_save_ajax(_id):
             return make_response(jsonify(shop_data_response))
 
         else:
-            new_cover_image = ShopCategoryCoverImage()
-            new_cover_image.user_id = user_id
-            new_cover_image.shopcategory_id = shopcategory.id
-            if cover_img1:
-                relative_path1, _ = save_file(NOW, cover_img1)
-                new_cover_image.image_1_path = relative_path1
-            if cover_img2:
-                relative_path2, _ = save_file(NOW, cover_img2)
-                new_cover_image.image_2_path = relative_path2
-            if cover_img3:
-                relative_path3, _ = save_file(NOW, cover_img3)
-                new_cover_image.image_3_path = relative_path3
-
-            db.session.add(new_cover_image)
+            request_path = "shopcategory_cover_images"
+            new_shop_cover_image_save(user, shopcategory, cover_img1, cover_img2, cover_img3, request_path)
+            # new_cover_image = ShopCategoryCoverImage()
+            # new_cover_image.user_id = user_id
+            # new_cover_image.shopcategory_id = shopcategory.id
+            # if cover_img1:
+            #     relative_path1, _ = save_file(NOW, cover_img1, request_path)
+            #     new_cover_image.image_1_path = relative_path1
+            # if cover_img2:
+            #     relative_path2, _ = save_file(NOW, cover_img2, request_path)
+            #     new_cover_image.image_2_path = relative_path2
+            # if cover_img3:
+            #     relative_path3, _ = save_file(NOW, cover_img3, request_path)
+            #     new_cover_image.image_3_path = relative_path3
+            # db.session.add(new_cover_image)
             db.session.commit()
+            new_cover_image = ShopCategoryCoverImage.query.filter_by(user_id=user_id).first()
             session.pop('ajax_post_key', None)
             shop_data_response = {
                 "image_1_path": new_cover_image.image_1_path,
@@ -190,15 +166,9 @@ def shopcategory_cover_img_delete_ajax(_id):
     if request.method == 'POST':
         if shopcategory and existing_cover_img:
             try:
-                old_image_1_path = os.path.join(BASE_DIR, existing_cover_img.image_1_path)
-                if os.path.isfile(old_image_1_path):
-                    shutil.rmtree(os.path.dirname(old_image_1_path))
-                old_image_2_path = os.path.join(BASE_DIR, existing_cover_img.image_2_path)
-                if os.path.isfile(old_image_2_path):
-                    shutil.rmtree(os.path.dirname(old_image_2_path))
-                old_image_3_path = os.path.join(BASE_DIR, existing_cover_img.image_3_path)
-                if os.path.isfile(old_image_3_path):
-                    shutil.rmtree(os.path.dirname(old_image_3_path))
+                existing_img_and_dir_delete_without_update(existing_cover_img.image_1_path)
+                existing_img_and_dir_delete_without_update(existing_cover_img.image_2_path)
+                existing_img_and_dir_delete_without_update(existing_cover_img.image_2_path)
             except Exception as e:
                 print(e)
         db.session.delete(existing_cover_img)
@@ -223,38 +193,52 @@ def shopcategory_detail(_id, slug):
         shopcategory_obj.view_count += 1
         db.session.commit()
     return render_template('ecomm/products/shopcategory_detail.html',
-                           shopcategory=shopcategory_obj,
+                           target_shop=shopcategory_obj,
                            product_objs=product_objs,
                            form=form,
                            cover_img=cover_img_obj,
                            target_profile=shopcategory_profile)
 
 
-@products_bp.route('/shop-category/existing/check/ajax/<int:_id>', methods=['POST'])
-@shopcategory_ownership_required
-def existing_shopcategory_check_ajax(_id):
+@products_bp.route('/shop-category/existing/check/ajax', methods=['POST'])
+def existing_shopcategory_check_ajax():
     """상점카테고리 타이틀을 체크하는 ajax"""
+    _id = request.form.get("_id")
     shopcategory = db.session.query(ShopCategory).filter_by(id=_id).first()
-    title = request.form.get("title")
-    print(title)
-    if title:
-        existing_title = ShopCategory.query.filter_by(title=title).first()
-        if existing_title and (title != shopcategory.title):
-            # flash("동일한 닉네임이 존재합니다.")
-            shop_data_response = {
-                "flash_message": "동일한 상점타이틀이 존재합니다.",
-            }
-        elif existing_title and (title == shopcategory.title):
-            shop_data_response = {
-                "flash_message": "상점타이틀이 그전과 동일해요. (사용가능)",
-            }
-        else:
-            # flash("사용가능한 닉네임입니다.")
-            print("else========================")
-            shop_data_response = {
-                "flash_message": "사용가능한 상점타이틀입니다.",
-            }
-        return make_response(jsonify(shop_data_response))
+    req_title = request.form.get("title")
+    existing_title_shop = ShopCategory.query.filter_by(title=req_title).first()
+    if shopcategory:
+        if req_title:
+            if existing_title_shop and (req_title != shopcategory.title):
+                # flash("동일한 닉네임이 존재합니다.")
+                shop_data_response = {
+                    "flash_message": "동일한 상점타이틀이 존재합니다.",
+                }
+            elif existing_title_shop and (req_title == shopcategory.title):
+                shop_data_response = {
+                    "flash_message": "상점타이틀이 그전과 동일해요. (사용가능)",
+                }
+            else:
+                # flash("사용가능한 닉네임입니다.")
+                print("else========================")
+                shop_data_response = {
+                    "flash_message": "사용가능한 상점타이틀입니다.",
+                }
+            return make_response(jsonify(shop_data_response))
+    else:
+        if req_title:
+            if existing_title_shop:
+                # flash("동일한 닉네임이 존재합니다.")
+                shop_data_response = {
+                    "flash_message": "동일한 상점타이틀이 존재합니다.",
+                }
+            else:
+                # flash("사용가능한 닉네임입니다.")
+                print("else========================")
+                shop_data_response = {
+                    "flash_message": "사용가능한 상점타이틀입니다.",
+                }
+            return make_response(jsonify(shop_data_response))
 
 
 data_response = ""
@@ -314,38 +298,44 @@ def shopcategory_list():
     return render_template('ecomm/products/shopcategory_list.html', shopcategories=shopcategories)
 
 
-@products_bp.route('/shop-category/delete/ajax/<int:_id>', methods=['POST'])
-@shopcategory_ownership_required
-def shopcategory_delete_ajax(_id):
+# @products_bp.route('/shop-category/delete/ajax/<int:_id>', methods=['POST'])
+# @shopcategory_ownership_required
+# def shopcategory_delete_ajax(_id):
+@products_bp.route('/shop-category/delete/ajax', methods=['POST'])
+def shopcategory_delete_ajax():
     """symbol_path and cover_image_path 둘다 삭제해야 한다."""
-    shopcategory = db.session.query(ShopCategory).filter_by(id=_id).one()
-    profile = db.session.query(Profile).filter_by(user_id=shopcategory.user_id).one()
+    _id = request.form.get("_id")
+    target_shopcategory = db.session.query(ShopCategory).filter_by(id=_id).one()
+    owner_profile = db.session.query(Profile).filter_by(user_id=target_shopcategory.user_id).one()
+    print("owner_profile", owner_profile)
     if request.method == 'POST':
-        if shopcategory:
+        if target_shopcategory and ((current_user.id == owner_profile.user_id) or current_user.is_admin):
             try:
-                symbol_image_origin_path = os.path.join(BASE_DIR, shopcategory.symbol_path)
-                if os.path.isfile(symbol_image_origin_path):
-                    shutil.rmtree(os.path.dirname(symbol_image_origin_path))
-                existing_cover_img = db.session.query(ShopCategoryCoverImage).filter_by(shopcategory_id=shopcategory.id).first()
+                if target_shopcategory.symbol_path:
+                    existing_img_and_dir_delete_without_update(target_shopcategory.symbol_path)
+                existing_cover_img = db.session.query(ShopCategoryCoverImage).filter_by(shopcategory_id=target_shopcategory.id).first()
                 if existing_cover_img:
-                    old_image_1_path = os.path.join(BASE_DIR, existing_cover_img.image_1_path)
-                    if os.path.isfile(old_image_1_path):
-                        shutil.rmtree(os.path.dirname(old_image_1_path))
-                    old_image_2_path = os.path.join(BASE_DIR, existing_cover_img.image_2_path)
-                    if os.path.isfile(old_image_2_path):
-                        shutil.rmtree(os.path.dirname(old_image_2_path))
-                    old_image_3_path = os.path.join(BASE_DIR, existing_cover_img.image_3_path)
-                    if os.path.isfile(old_image_3_path):
-                        shutil.rmtree(os.path.dirname(old_image_3_path))
+                    if existing_cover_img.image_1_path:
+                        existing_img_and_dir_delete_without_update(existing_cover_img.image_1_path)
+                    if existing_cover_img.image_2_path:
+                        existing_img_and_dir_delete_without_update(existing_cover_img.image_2_path)
+                    if existing_cover_img.image_3_path:
+                        existing_img_and_dir_delete_without_update(existing_cover_img.image_3_path)
                 db.session.delete(existing_cover_img)
             except Exception as e:
                 print(e)
-            db.session.delete(shopcategory)
+            db.session.delete(target_shopcategory)
             db.session.commit()
-            shop_data_response = {
-                "profile_vendor_detail_url": url_for('profiles.vendor_detail', _id=profile.id)
-            }
-            return make_response(jsonify(shop_data_response))
+            if current_user.id == owner_profile.user_id:
+                shop_data_response = {
+                    "redirect_url": url_for('profiles.vendor_detail', _id=owner_profile.id)
+                }
+                return make_response(jsonify(shop_data_response))
+            if current_user.is_admin:
+                shop_data_response = {
+                    "redirect_url": url_for('admin_products.shop_list')
+                }
+                return make_response(jsonify(shop_data_response))
         abort(401)
 
 
@@ -406,6 +396,10 @@ def shopcategory_subscribe_cancel_ajax(_id):
 @vendor_required
 def product_create():
     form = ProductForm()
+    sid = int(request.full_path.split("?")[1].split("&")[0].split("=")[1])
+    shopcategory = ShopCategory.query.filter_by(id=sid).first()
+    target_profile = Profile.query.filter_by(user_id=shopcategory.user_id).first()
+    print(sid)
     if request.method == 'POST':  # and form.validate_on_submit():
         title = form.title.data
         content = request.form.get('content')
@@ -435,7 +429,10 @@ def product_create():
         random_string = str(uuid.uuid4())
         username = g.user.email.split('@')[0]
         orm_id = user_id + ":" + username + ":" + new_id + ":" + random_string
-    return render_template('ecomm/products/product/create.html', form=form, orm_id=orm_id)
+    return render_template('ecomm/products/product/create.html',
+                           shopcategory=shopcategory,
+                           target_profile=target_profile,
+                           form=form, orm_id=orm_id)
 
 
 @products_bp.route('/product_units_images/save/ajax', methods=['POST'])

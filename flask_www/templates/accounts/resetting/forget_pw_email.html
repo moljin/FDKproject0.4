@@ -14,7 +14,14 @@
             <form method="POST">
                 {{ form.csrf_token }}
                 <fieldset class="uk-fieldset">
-                    <legend class="uk-legend">비밀번호 재설정을 위한 이메일 인증</legend>
+                    {% if user_obj.is_verified %}
+                        <legend class="uk-legend">비밀번호 재설정을 위한 이메일 인증</legend>
+                    {% else %}
+                        <legend class="uk-legend">비밀번호 재설정후 이메일 가입인증</legend>
+
+                        <br>
+                        <p>가입인증이 완료되지 않은 경우, 비밀번호 재설정후 가입인증을 완료할 수 있습니다.</p>
+                    {% endif %}
 
                     <br>
                     <p>등록된 이메일을 입력하고 비밀번호 재설정 신청을 클릭하면, 인증을 위한 이메일이 발송됩니다.</p>

@@ -8,11 +8,18 @@
     <style>
         .lt {width: 50%; padding-right: 1rem}
         .rt {width: 50%; padding-right: 1rem}
+        a:hover {color: brown}
     </style>
 {% endblock %}
 
+{% block above_main %}
+    <section class="above-main">
+        {% include "includes/messages.html" %}
+    </section>
+
+{% endblock %}
+
 {% block content %}
-    {% include 'includes/messages.html' %}
     <div contenteditable="true" style="border: solid 1px grey">
 
         </div>
@@ -28,8 +35,11 @@
                 <a href="{{ url_for("products.shopcategory_create") }}">상점 만들기</a><br>
             {% endif %}
             <a href="{{ url_for("products.shopcategory_list") }}">상점 리스트</a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for("admin_accounts.auth_permit_request", email=current_user.email) }}" target="_blank">테스트 관리자 인증</a><br>
+            {% endif %}
+            <hr>
+            <a href="https://developer.mozilla.org/ko/docs/Web/API/Element/insertAdjacentHTML" target="_blank">Element.insertAdjacentHTML()</a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
@@ -50,9 +60,9 @@
             계정관리로 들어가서 좌측의 보안 클릭후 <span style="color: red">Google에 로그인</span><br>
             <span style="color: red">2단계인증</span> 설정후 <br>
             그아래 <span style="color: red">앱 비밀번호</span> 설정 <br>
-            비밀번호 생성을 한 후 ...그것을 <span style="color: red">MAIL_PASSWORD</span>에 적용한다. "<br><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
+            비밀번호 생성을 한 후 ...그것을 <span style="color: red">MAIL_PASSWORD</span>에 적용한다. "<br><hr>
+            <a href="https://fourward.co.kr/blog/meta-tags-for-seo" target="_blank">메타태그(meta tag), SEO 에 도움되는 메타 설정 방법</a><br>
+            <a href="https://www.daleseo.com/html-meta-tags-for-seo/" target="_blank">메타 태그를 통한 검색엔진 최적화 (SEO)</a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>

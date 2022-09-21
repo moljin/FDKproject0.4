@@ -7,6 +7,7 @@
 {% block head_css %}
     <link href="{{ url_for('static', filename='statics/font-awesome-5.15.1/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='statics/unit_editor/css/unitsEditor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='statics/css/product.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block head_js %}
@@ -28,7 +29,7 @@
     상품 생성
     <form method="POST" enctype="multipart/form-data">
         {{ form.csrf_token }}
-        {{ form.title }}
+        <div class="form-input mb-5">{{ form.title(class="uk-input") }}</div>
 
         {% block wysiwyg %}
             <section class="wysiwyg-wrapper">

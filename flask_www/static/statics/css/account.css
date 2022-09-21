@@ -1,5 +1,7 @@
 .sign-section {padding: 15px}
 .sign-section .form-container {max-width: 500px; border: solid 1px #ced6e0; border-radius: 5px; padding: 2rem; margin: 2rem auto}
+.sign-section .form-container form .check-btn-div {padding-left: 10px; margin-top: 0.33rem}
+.sign-section .form-container form .check-btn {height: 38px}
 .sign-section .uk-margin input {border-radius: 5px}
 .sign-section .uk-margin textarea {border-radius: 5px; height: 5rem; resize: none}
 
@@ -80,4 +82,5 @@ body > main > section > div:nth-child(2) > div > div.flashes.uk-alert {margin-to
 
 .section-container .section-item .profile-container > div .uk-text-right.mt-5 > a {font-size: 14px; color: gray}
 body > main > section:nth-child(1) > div:nth-child(3) > div > ul > li > div > div > div > div:nth-child(2) > div:nth-child(1) {flex: 1}
-.modoal-submit-cancel-btn {float: right}
+
+#profile-delete-modal > div > div {margin-top: 40px}

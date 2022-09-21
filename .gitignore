@@ -176,6 +176,8 @@ git_memo.txt
 flask_docker.txt
 _unused_file/
 others_memo.txt
+flask_www/static/statics/images/sample/
 flask_www/static/statics/unit_editor/css/unused/
 flask_www/static/statics/unit_editor/js/unused/
 flask_www/templates/tests/
+flask_www/static/statics/unused/

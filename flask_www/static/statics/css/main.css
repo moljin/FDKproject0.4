@@ -33,24 +33,55 @@ footer, header, hgroup, menu, nav, section {
 }
 
 hr {background-color: grey; height: 1px}
+.above-main .flashes {border-radius: 0}
 #flashes-close-btn, #flashes-close-btn2 {padding-top: 5px}
 button.check-btn {padding: 3px 7px; border: solid 1px #dcdde1;font-size: 14px; color: red; max-width: 100px; cursor: pointer; border-radius: 3px}
 button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
-.grid-section {padding: 10px}
+.grid-section {padding: 7px}
+.pt-5 {padding-top: 5px}
+.pt-7 {padding-top: 7px}
+.pt-10 {padding-top: 10px}
+.pt-15 {padding-top: 15px}
+.pt-20 {padding-top: 20px}
+
+.pb-5 {padding-bottom: 5px}
+.pb-7 {padding-bottom: 7px}
+.pb-10 {padding-bottom: 10px}
+.pb-15 {padding-bottom: 15px}
+.pb-20 {padding-bottom: 20px}
+
+.pl-5 {padding-left: 5px}
+.pl-7 {padding-left: 7px}
+.pl-10 {padding-left: 10px}
+.pl-15 {padding-left: 15px}
+.pl-20 {padding-left: 20px}
+
+.pr-5 {padding-right: 5px}
+.pr-7 {padding-right: 7px}
+.pr-10 {padding-right: 10px}
+.pr-15 {padding-right: 15px}
+.pr-20 {padding-right: 20px}
 
 .mt-5 {margin-top: 5px}
+.mt-7 {margin-top: 7px}
 .mt-10 {margin-top: 10px}
 .mt-15 {margin-top: 15px}
 .mt-20 {margin-top: 20px}
+
 .mb-5 {margin-bottom: 5px}
+.mb-7 {margin-bottom: 7px}
 .mb-10 {margin-bottom: 10px}
 .mb-15 {margin-bottom: 15px}
 .mb-20 {margin-bottom: 20px}
+
 .mr-5 {margin-right: 5px}
+.mr-7 {margin-right: 7px}
 .mr-10 {margin-right: 10px}
 .mr-15 {margin-right: 15px}
 .mr-20 {margin-right: 20px}
+
 .ml-5 {margin-left: 5px}
+.ml-7 {margin-left: 7px}
 .ml-10 {margin-left: 10px}
 .ml-15 {margin-left: 15px}
 .ml-20 {margin-left: 20px}

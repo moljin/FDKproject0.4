@@ -19,8 +19,11 @@ class ShopCategory(BaseModel):
     slug = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     meta_description = db.Column(db.Text, nullable=True)
+
     symbol_path = db.Column(db.String(200), nullable=True)
     view_count = db.Column(db.Integer, default=0)
+
+    available_display = db.Column('Display', db.Boolean(), nullable=False, default=True)
 
     subscribers = db.relationship('User', secondary=shopcategory_subscriber, backref=db.backref('shopcategory_subscriber_set'))
 
@@ -82,8 +85,6 @@ class Product(BaseModel):
     available_display = db.Column('Display', db.Boolean(), nullable=False, default=True)
     available_order = db.Column('Order', db.Boolean(), nullable=False, default=True)
 
-    is_deleted = db.Column(db.Boolean(), nullable=False, default=False)
-
     voters = db.relationship('User', secondary=product_voter, backref=db.backref('product_voter_set'))
 
     def __init__(self, user_id, title):
@@ -122,7 +123,6 @@ class ProductOption(BaseModel):
                               primaryjoin='foreign(ProductOption.product_id) == remote(Product.id)')
 
     title = db.Column(db.String(100), nullable=False)
-    slug = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Integer, default="")
     stock = db.Column(db.Integer)
 

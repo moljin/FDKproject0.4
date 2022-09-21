@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if current_user.is_authenticated and current_user.id == shopcategory.user_id %}
+    {% if current_user.is_authenticated and current_user.id == target_shop.user_id %}
         상점 상세/수정
     {% else %}
         상점 상세
@@ -16,29 +16,29 @@
     <script>
         CSRF_TOKEN = "{{ csrf_token() }}"
     </script>
-    {% if current_user.is_authenticated and current_user.id==shopcategory.user_id %}
+    {% if current_user.is_authenticated and current_user.id==target_shop.user_id %}
         <script>
-            shopCategoryCoverImageSaveAjax = "{{ url_for("products.shopcategory_cover_img_save_ajax", _id=shopcategory.id) }}"
-            shopCategoryCoverImageDeleteAjax = "{{ url_for("products.shopcategory_cover_img_delete_ajax", _id=shopcategory.id) }}"
-            symbolImageSaveAjax = "{{ url_for("products.shopcategory_symbol_img_save_ajax", _id=shopcategory.id) }}"
-            symbolImageDeleteAjax = "{{ url_for("products.shopcategory_symbol_img_delete_ajax", _id=shopcategory.id) }}"
-            existingShopcategoryCheckAjax = "{{ url_for("products.existing_shopcategory_check_ajax", _id=shopcategory.id) }}"
-            shopCategoryUpdateAjax = "{{ url_for("products.shopcategory_update_ajax", _id=shopcategory.id) }}"
-            shopCategoryDeleteAjax = "{{ url_for("products.shopcategory_delete_ajax", _id=shopcategory.id) }}"
+            shopCategoryCoverImageSaveAjax = "{{ url_for("products.shopcategory_cover_img_save_ajax", _id=target_shop.id) }}"
+            shopCategoryCoverImageDeleteAjax = "{{ url_for("products.shopcategory_cover_img_delete_ajax", _id=target_shop.id) }}"
+            symbolImageSaveAjax = "{{ url_for("products.shopcategory_symbol_img_save_ajax", _id=target_shop.id) }}"
+            symbolImageDeleteAjax = "{{ url_for("products.shopcategory_symbol_img_delete_ajax", _id=target_shop.id) }}"
+            existingShopcategoryCheckAjax = "{{ url_for("products.existing_shopcategory_check_ajax") }}"
+            shopCategoryUpdateAjax = "{{ url_for("products.shopcategory_update_ajax", _id=target_shop.id) }}"
+            shopCategoryDeleteAjax = "{{ url_for("products.shopcategory_delete_ajax") }}"
             {#vendorUpdateAjax = "{{ url_for("profiles.vendor_update_ajax", _id=target_profile.id) }}"#}
             {#{% if target_profile.level != "일반이용자" %}#}
             {#    vendorDeleteAjax = "{{ url_for("profiles.vendor_delete_ajax", _id=target_profile.id) }}"#}
             {#{% endif %}#}
 
         </script>
-{#    {% elif current_user.is_authenticated and not current_user in shopcategory.subscribers %}#}
+{#    {% elif current_user.is_authenticated and not current_user in target_shop.subscribers %}#}
     {% elif current_user.is_authenticated %}
         <script>
-            shopCategorySubscribeAjax = "{{ url_for('products.shopcategory_subscribe_ajax', _id=shopcategory.id) }}";
+            shopCategorySubscribeAjax = "{{ url_for('products.shopcategory_subscribe_ajax', _id=target_shop.id) }}";
 {#        </script>#}
-{#    {% elif current_user.is_authenticated and current_user in shopcategory.subscribers %}#}
+{#    {% elif current_user.is_authenticated and current_user in target_shop.subscribers %}#}
 {#        <script>#}
-            shopCategorySubscribeCancelAjax = "{{ url_for('products.shopcategory_subscribe_cancel_ajax', _id=shopcategory.id) }}";
+            shopCategorySubscribeCancelAjax = "{{ url_for('products.shopcategory_subscribe_cancel_ajax', _id=target_shop.id) }}";
         </script>
     {% endif %}
 {% endblock %}
@@ -49,37 +49,36 @@
             <!--cover image display-->
             <div class="img-container shopcategory_cover-img">
                 <div class="img-item uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="min-height: 400; max-height: 400; autoplay: true; autoplay-interval: 3000">
-                    {% if cover_img %}
-                        <ul class="uk-slideshow-items">
-                            <li>
+                    <ul class="uk-slideshow-items">
+                        <li>
+                            {% if cover_img.image_1_path %}
                                 <img class="shopcategory-cover-img" id="image_1_path" src="/{{ cover_img.image_1_path }}" uk-cover>
-                            </li>
-                            <li>
-                                <img class="shopcategory-cover-img" id="image_2_path" src="/{{ cover_img.image_2_path }}" uk-cover>
-                            </li>
-                            <li>
-                                <img class=shopcategory-cover-img" id="image_3_path" src="/{{ cover_img.image_3_path }}" uk-cover>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <ul class="uk-slideshow-items">
-                            <li>
+                            {% else %}
                                 <img class="shopcategory-cover-img" id="image_1_path" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
-                            </li>
-                            <li>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if cover_img.image_2_path %}
+                                <img class="shopcategory-cover-img" id="image_2_path" src="/{{ cover_img.image_2_path }}" uk-cover>
+                            {% else %}
                                 <img class="shopcategory-cover-img" id="image_2_path" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
-                            </li>
-                            <li>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if cover_img.image_3_path %}
+                                <img class=shopcategory-cover-img" id="image_3_path" src="/{{ cover_img.image_3_path }}" uk-cover>
+                            {% else %}
                                 <img class="shopcategory-cover-img" id="image_3_path" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
-                            </li>
-                        </ul>
-                    {% endif %}
+                            {% endif %}
+                        </li>
+                    </ul>
+
                     <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
                     <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
                 </div>
             </div>
         </div>
-        {% if current_user.is_authenticated and current_user.id==shopcategory.user_id %}
+        {% if current_user.is_authenticated and current_user.id==target_shop.user_id %}
             {% if cover_img %}
                 <button type="button" class="shopcategory_cover-img-modal-delete-btn" uk-toggle="target: #shopcategory_cover_img_delete_modal-container"><span uk-icon="icon: trash"></span></button>
             {% else %}
@@ -103,7 +102,7 @@
                     <div class="uk-child-width-expand@m" uk-grid>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_1_path %}
                                     <img class="shopcategory-cover-img" id="cover-img1-preview" src="/{{ cover_img.image_1_path }}">
                                 {% else %}
                                     <img class="shopcategory-cover-img" id="cover-img1-preview" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}">
@@ -120,7 +119,7 @@
                         </div>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_2_path %}
                                     <img class="shopcategory-cover-img" id="cover-img2-preview" src="/{{ cover_img.image_2_path }}">
                                 {% else %}
                                     <img class="shopcategory-cover-img" id="cover-img2-preview" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}">
@@ -137,7 +136,7 @@
                         </div>
                         <div>
                             <div class="img-item">
-                                {% if cover_img %}
+                                {% if cover_img.image_3_path %}
                                     <img class="shopcategory-cover-img" id="cover-img3-preview" src="/{{ cover_img.image_3_path }}">
                                 {% else %}
                                     <img class="shopcategory-cover-img" id="cover-img3-preview" src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}">
@@ -155,9 +154,9 @@
 
                     </div>
                     <div class="modoal-submit-cancel-btn">
-                        <div class="uk-inline cover-img-save-btn mt-15">
-                            <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
-                        </div>
+{#                        <div class="uk-inline cover-img-save-btn mt-15">#}
+{#                            <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>#}
+{#                        </div>#}
                         <div class="uk-inline cover-img-save-btn mt-15">
                             <button id="cover-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">저장</button>
                         </div>
@@ -190,17 +189,17 @@
         <div class="section-item">
             <div class="img-container shop-symbol" style="position: relative">
                 <div class="img-item">
-                    {% if shopcategory.symbol_path %}
-                        <img id="shop-symbol-image-src" src="/{{ shopcategory.symbol_path }}">
+                    {% if target_shop.symbol_path %}
+                        <img id="shop-symbol-image-src" src="/{{ target_shop.symbol_path }}">
                     {% else %}
                         <img id="shop-symbol-image-src" src="{{ url_for('static', filename='statics/images/sample_logo.png') }}">
                     {% endif %}
                 </div>
             </div>
 
-            {% if current_user.is_authenticated and current_user.id==shopcategory.user_id %}
+            {% if current_user.is_authenticated and current_user.id==target_shop.user_id %}
                 <button type="button" class="symbol-img-modal-upload-btn" uk-toggle="target: #symbol_img_upload_modal-container"><span uk-icon="icon: cloud-upload"></span></button>
-                {% if shopcategory.symbol_path %}
+                {% if target_shop.symbol_path %}
                     <button type="button" class="symbol-img-modal-delete-btn" uk-toggle="target: #symbol_img_delete_modal-container"><span uk-icon="icon: trash"></span></button>
                 {% else %}
                     <button type="button" class="symbol-img-modal-delete-btn inactive" uk-toggle><span uk-icon="icon: trash"></span></button>
@@ -215,9 +214,9 @@
 
                     <button class="uk-modal-close-default" type="button" uk-close></button>
 
-                    {% if shopcategory.symbol_path %}
+                    {% if target_shop.symbol_path %}
                         <div class="symbol-img">
-                            <img class="symbol-preview mt-15" id="symbol-preview" src="/{{ shopcategory.symbol_path }}" style="margin: 0 auto;">
+                            <img class="symbol-preview mt-15" id="symbol-preview" src="/{{ target_shop.symbol_path }}" style="margin: 0 auto;">
                         </div>
 
                         <div class="uk-margin">
@@ -273,9 +272,9 @@
             <div class="shopcategory-container">
                 <div class="shopcategory-item">
                     <div class="shop-item">
-                        <div class="uk-inline" id="shop-title">{{ shopcategory.title }}</div>
+                        <div class="uk-inline" id="shop-title">{{ target_shop.title }}</div>
 
-                        {% if current_user.is_authenticated and current_user.id == shopcategory.user_id %}
+                        {% if current_user.is_authenticated and current_user.id == target_shop.user_id %}
                             <div class="uk-inline link-div"><a class="uk-link-reset" href="#shop-create-update-modal" uk-toggle><span uk-icon="icon: cog; ratio: 1.1"></span></a></div>
                             <div class="uk-inline link-div"><a class="uk-link-reset" href="#shop-delete-modal" uk-toggle><span uk-icon="icon: trash; ratio: 1.1"></span></a></div>
                         {% endif %}
@@ -283,10 +282,10 @@
 
                     <div class="subscribe-alert"></div>
 
-                    {% set view_count = shopcategory.view_count + 7528 %}
-                    {% set subscriber_count = shopcategory.subscribers|length + 2653 %}
+                    {% set view_count = target_shop.view_count + 7528 %}
+                    {% set subscriber_count = target_shop.subscribers|length + 2653 %}
                     <div class="shop-item viewcount-subscribe-container">
-                        {% if current_user.is_authenticated and current_user.id==shopcategory.user_id %}
+                        {% if current_user.is_authenticated and current_user.id==target_shop.user_id %}
                             <div class="viewcount-subscribe-container">
                                 <div><span>조회: {{ view_count|intcomma }}회</span></div>
                                 <div class="ml-15"><span>구독: {{ subscriber_count|intcomma }}명</span></div>
@@ -297,13 +296,13 @@
                                 <div class="ml-15"><span>구독: {{ subscriber_count|intcomma }}명</span></div>
                                 <div class="s-btn">
                                     {% if current_user.is_authenticated %}
-{#                                        {% if current_user in shopcategory.subscribers %}#}
+{#                                        {% if current_user in target_shop.subscribers %}#}
                                             <button class="subscribed ml-15" id="subscribing-btn" uk-toggle="target: #shop-subscribe-cancel-modal" type="button">구독중</button>
 {#                                        {% else %}#}
                                             <button class="ml-15" id="shop-subscribe-submit" type="button">구독</button>
 {#                                        {% endif %}#}
                                         <script>
-                                            {% if current_user in shopcategory.subscribers %}
+                                            {% if current_user in target_shop.subscribers %}
                                                 document.querySelector("#shop-subscribe-submit").style.display = "none";
                                             {% else %}
                                                 document.querySelector("#subscribing-btn").style.display = "none";
@@ -318,7 +317,7 @@
                     </div>
 
                     <div class="subscribe-cancel-modal-container">
-{#                        {% if current_user in shopcategory.subscribers %}#}
+{#                        {% if current_user in target_shop.subscribers %}#}
                             <div id="shop-subscribe-cancel-modal" class="uk-flex-top" uk-modal>
                                 <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
                                     <button class="uk-modal-close-default" type="button" uk-close></button>
@@ -334,7 +333,7 @@
                                 </div>
                             </div>
 {#                        {% endif %}#}
-                        {% if not (current_user.is_authenticated or (current_user in shopcategory.subscribers)) %}
+                        {% if not (current_user.is_authenticated or (current_user in target_shop.subscribers)) %}
                             <script>
                                 document.querySelector("#shop-subscribe-cancel-modal").style.display = "none";
                             </script>
@@ -342,15 +341,15 @@
                     </div>
 
                     <div class="shop-item">
-                        <div class="shop-content mt-10" id="shop-content">{{ shopcategory.content }}</div>
-                        <div class="shop-meta-description mt-5" id="shop-meta-description">메타설명: {{ shopcategory.meta_description }}</div>
+                        <div class="shop-content mt-10" id="shop-content">{{ target_shop.content }}</div>
+                        <div class="shop-meta-description mt-5" id="shop-meta-description">메타설명: {{ target_shop.meta_description }}</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {% if current_user.is_authenticated and current_user.id == shopcategory.user_id %}
+    {% if current_user.is_authenticated and current_user.id == target_shop.user_id %}
         <!--shop-create-update-modal-->
         <div id="shop-create-update-modal" class="uk-flex-top" uk-modal>
             <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
@@ -362,22 +361,22 @@
                 <div class="uk-margin">
                     <label>상점 타이틀</label>
                     <button type="button" class="check-btn" id="shoptitle-check-btn">중복 체크</button>
-                    <input class="uk-input mt-5" id="shopcategory-title" maxlength="100" minlength="2" name="title" type="text" value="{{ shopcategory.title }}">
+                    <input class="uk-input mt-5" id="shopcategory-title" maxlength="100" minlength="1" name="title" type="text" value="{{ target_shop.title }}" required>
                 </div>
 
                 <div class="uk-margin">
                     <label>간단한 소개글</label>
-                    <textarea class="uk-textarea mt-5" id="shopcategory-content" name="content">{{ shopcategory.content }}</textarea>
+                    <textarea class="uk-textarea mt-5" id="shopcategory-content" maxlength="100" minlength="2" name="content" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)" required>{{ target_shop.content }}</textarea>
                 </div>
 
                 <div class="uk-margin">
                     <label>메타 설명</label>
-                    <textarea  class="uk-textarea mt-5" id="meta_description" maxlength="100" minlength="2" name="meta_description" style="overscroll-behavior: contain;">{{ shopcategory.meta_description }}</textarea>
+                    <textarea  class="uk-textarea mt-5" id="meta_description" maxlength="100" minlength="2" name="meta_description" style="overscroll-behavior: contain;" onkeydown="textAreaHeightAuto(this)" onkeyup="textAreaHeightAuto(this)" required>{{ target_shop.meta_description }}</textarea>
                 </div>
-
+                <input type="hidden" id="shopcategory_id" name="_id" value="{{ target_shop.id }}">
                 <p class="uk-text-right">
                     <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
-                    <button id="shop-update-submit" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">저장</button>
+                    <button id="shop-update-submit" class="uk-button uk-button-default custom-button-default" type="button">저장</button>
                 </p>
             </div>
         </div>
@@ -402,8 +401,8 @@
     <section class="grid-section">
         <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
             {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
-                {% if current_user.id == current_profile.user_id == shopcategory.user_id %}
-                    <a href="{{ url_for("products.product_create") }}?shopcategory_id={{ shopcategory.id }}&shopcategory_title={{ shopcategory.title }}&&ss={{ shopcategory.slug }}">
+                {% if current_user.id == current_profile.user_id == target_shop.user_id %}
+                    <a href="{{ url_for("products.product_create") }}?shopcategory_id={{ target_shop.id }}&shopcategory_title={{ target_shop.title }}&&ss={{ target_shop.slug }}">
                         <div>
                             <div class="uk-card uk-card-default">
                                 <div class="uk-card-media-top">
@@ -546,20 +545,22 @@
         {% endfor %}
     </section>
 
-    {% if current_user.is_authenticated and current_user.id == shopcategory.user_id %}
+    {% if current_user.is_authenticated and current_user.id == target_shop.user_id %}
         <script src="{{ url_for('static', filename='statics/js/commons/imagePreview.js') }}"></script>
         <script src="{{ url_for('static', filename='statics/js/products/shopCategoryCoverImageSubmit.js') }}"></script>
         <script src="{{ url_for('static', filename='statics/js/products/shopCategoryUpdateSubmit.js') }}"></script>
+        <!--
         <script>
             image1Path = document.getElementById("image_1_path").getAttribute("src");
             image2Path = document.getElementById("image_2_path").getAttribute("src");
             image3Path = document.getElementById("image_3_path").getAttribute("src");
             symbolImagePath = document.getElementById("shop-symbol-image-src").getAttribute("src");
         </script>
-{#    {% elif current_user.is_authenticated and not current_user in shopcategory.subscribers %}#}
+        -->
+{#    {% elif current_user.is_authenticated and not current_user in target_shop.subscribers %}#}
     {% elif current_user.is_authenticated %}
         <script src="{{ url_for('static', filename='statics/js/products/shopCategorySubscribeSubmit.js') }}"></script>
-{#    {% elif current_user.is_authenticated and current_user in shopcategory.subscribers %}#}
+{#    {% elif current_user.is_authenticated and current_user in target_shop.subscribers %}#}
         <script src="{{ url_for('static', filename='statics/js/products/shopCategorySubscribeCancel.js') }}"></script>
     {% endif %}
 {% endblock %}

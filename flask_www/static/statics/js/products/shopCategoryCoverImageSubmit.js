@@ -1,5 +1,5 @@
 "use strict"
-
+/*jshint esversion: 6 */
 const coverImageSubmitBtn = document.querySelector("#cover-img-submit");
 coverImageSubmitBtn.addEventListener('click', function (e) {
     e.preventDefault();
@@ -30,12 +30,21 @@ coverImageSubmitBtn.addEventListener('click', function (e) {
                         const image1PathTag = document.querySelector("#image_1_path");
                         const image2PathTag = document.querySelector("#image_2_path");
                         const image3PathTag = document.querySelector("#image_3_path");
-                        let image_1_path = response.image_1_path;
-                        let image_2_path = response.image_2_path;
-                        let image_3_path = response.image_3_path;
-                        image1PathTag.setAttribute("src", "/" + image_1_path);
-                        image2PathTag.setAttribute("src", "/" + image_2_path);
-                        image3PathTag.setAttribute("src", "/" + image_3_path);
+                        if (response.image_1_path) {
+                            let image_1_path = response.image_1_path;
+                            image1PathTag.setAttribute("src", "/" + image_1_path);
+                        }
+
+                        if (response.image_2_path) {
+                            let image_2_path = response.image_2_path;
+                            image2PathTag.setAttribute("src", "/" + image_2_path);
+                        }
+
+                        if (response.image_3_path) {
+                            let image_3_path = response.image_3_path;
+                            image3PathTag.setAttribute("src", "/" + image_3_path);
+                        }
+
                         deleteModalBtn.classList.remove('inactive');
                         deleteModalBtn.style.display = "block";
                         deleteModalBtn.setAttribute("href", "#shopcategory_cover_img_delete_modal-container");

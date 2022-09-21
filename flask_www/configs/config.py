@@ -10,7 +10,7 @@ TEMPLATE_ROOT = os.path.join(BASE_DIR, 'templates')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 NOW = datetime.datetime.now()
-
+SUPER_ADMIN_EMAIL = "moljin@naver.com"
 
 dotenv_path = join(dirname(__file__), '.env')  # Path to .env file
 load_dotenv(dotenv_path)

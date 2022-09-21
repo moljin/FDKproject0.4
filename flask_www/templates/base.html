@@ -1,67 +1,31 @@
-<!DOCTYPE html>
-<html lang="kr">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1"/>
-    <title>{% block title %}{% endblock %} | β-03</title>
+{% extends "layout.html" %}
+
+{% block main_css %}
     <link href="{{ url_for('static', filename='statics/uikit/uikit.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='statics/uikit/custom_uikit.css') }}" rel="stylesheet">
 
     <link href="{{ url_for('static', filename='statics/css/main.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='statics/css/nav.css') }}" rel="stylesheet">
+{% endblock %}
 
-    {% block head_dashboard %}
-    {% endblock %}
-
-    {% block head_account %}
-    {% endblock %}
-
-    {% block head_css %}
-    {% endblock %}
-
+{% block main_js %}
     <script src="{{ url_for('static', filename='statics/js/libs/jquery-3.6.0.min.js') }}"></script>
-{#    <script src="{{ url_for('static', filename='statics/js/libs/popper.min.js') }}"></script>#}
+    {#    <script src="{{ url_for('static', filename='statics/js/libs/popper.min.js') }}"></script>#}
 
     <script src="{{ url_for('static', filename='statics/uikit/uikit.min.js') }}"></script>
     <script src="{{ url_for('static', filename='statics/uikit/uikit-icons.min.js') }}"></script>
-
-    {% block head_js %}
-    {% endblock %}
-</head>
-
-<body>
-    <header>
-        {% include 'includes/index/header.html' %}
-    </header>
-
-    <section class="above_main">
-        {% block above_main %}
-        {% endblock %}
-    </section>
-
-    <main>
-        {% block main %}
-        {% endblock %}
-
-        {% block body %}
-            {% block wysiwyg %}
-            {% endblock %}
-        {% endblock %}
+{% endblock %}
 
 
-        {% block content %}
-        {% endblock %}
-    </main>
 
-    <footer>
-        {% include 'includes/index/footer.html' %}
-    </footer>
+{% block header %}
+    {% include 'includes/index/header.html' %}
+{% endblock %}
 
-    {% block script %}
-        {% block units_script %}
-        {% endblock %}
-    {% endblock %}
-</body>
+{% block footer %}
+    {% include 'includes/index/footer.html' %}
+{% endblock %}
 
-</html>
+{% block common_js %}
+    <script src="{{ url_for('static', filename='statics/js/commons/common.js') }}"></script>
+{% endblock %}

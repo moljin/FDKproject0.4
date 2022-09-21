@@ -1,13 +1,19 @@
 "use strict"
-
-const nicknameCheckBtn = document.querySelector("#nickname-check-btn");
-nicknameCheckBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let profile_nickname = document.querySelector("#profile-nickname").value;
-    console.log("profile_nickname", profile_nickname)
-    let formData = new FormData();
-    formData.append("nickname", profile_nickname);
-    let request = $.ajax({
+/*jshint esversion: 6 */
+profileUpdateInit();
+function profileUpdateInit() {
+    try {
+        const nicknameCheckBtn = document.querySelector("#nickname-check-btn");
+        nicknameCheckBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let profile_nickname = document.querySelector("#profile-nickname").value;
+            let _id = document.querySelector("#profile_id").value;
+            console.log("profile_nickname", profile_nickname)
+            console.log("_id", _id)
+            let formData = new FormData();
+            formData.append("nickname", profile_nickname);
+            formData.append("_id", _id);
+            let request = $.ajax({
                 url: existingProfileCheckAjax,
                 type: 'POST',
                 data: formData,
@@ -25,7 +31,7 @@ nicknameCheckBtn.addEventListener('click', function (e) {
                         const flashAlert_div = document.querySelector(".profile-update-alert");
                         if (response.flash_message) {
                             flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.flash_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
                             // window.location.reload();
                         } else {
@@ -40,21 +46,25 @@ nicknameCheckBtn.addEventListener('click', function (e) {
                     alert('내부 오류가 발생하였습니다.\n' + err);
                 }
             });
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
-const profileUpdateSubmitBtn = document.querySelector("#profile-update-submit");
-profileUpdateSubmitBtn.addEventListener('click', function (e) {
-    // nicknameCheckBtn.click();
-    e.preventDefault();
-    let profile_nickname = document.querySelector("#profile-nickname").value;
-    let profile_message = document.querySelector("#profile-message").value;
-    // let profile_image = document.querySelector("#profile_image").files[0];
-    let formData = new FormData();
-    formData.append("nickname", profile_nickname);
-    formData.append("message", profile_message);
-    // formData.append("profile_image", profile_image);
+    try {
+        const profileUpdateSubmitBtn = document.querySelector("#profile-update-submit");
+        profileUpdateSubmitBtn.addEventListener('click', function (e) {
+            // nicknameCheckBtn.click();
+            e.preventDefault();
+            let profile_nickname = document.querySelector("#profile-nickname").value;
+            let profile_message = document.querySelector("#profile-message").value;
+            // let profile_image = document.querySelector("#profile_image").files[0];
+            let formData = new FormData();
+            formData.append("nickname", profile_nickname);
+            formData.append("message", profile_message);
+            // formData.append("profile_image", profile_image);
 
-    let request = $.ajax({
+            let request = $.ajax({
                 url: profileUpdateAjax,
                 type: 'POST',
                 data: formData,
@@ -72,15 +82,14 @@ profileUpdateSubmitBtn.addEventListener('click', function (e) {
                         const flashAlert_div = document.querySelector(".profile-update-alert");
                         if (response.flash_message) {
                             flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.flash_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
                         } else {
                             if (response.checked_message) {
                                 flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="subscribe-alert">
-                                                        <div class="alert alert-danger" role="alert">`+response.checked_message+`</div>
+                                                        <div class="alert alert-danger" role="alert">` + response.checked_message + `</div>
                                                         <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
-                            }
-                            else {
+                            } else {
                                 const profileNicknameTag = document.querySelector("#nickname");
                                 const profileMessageTag = document.querySelector("#message");
                                 // const profileImagePathTag = document.querySelector("#image_path");
@@ -103,16 +112,25 @@ profileUpdateSubmitBtn.addEventListener('click', function (e) {
             });
 
 
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
+    try {
+        const profileDeleteBtn = document.querySelector("#profile-delete-btn");
+        profileDeleteBtn.addEventListener('click', function (e) {
+            e.preventDefault();
 
-const profileDeleteBtn = document.querySelector("#profile-delete-btn");
-profileDeleteBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let request = $.ajax({
+            let _id = document.querySelector("#profile_id").value;
+            console.log("_id", _id)
+            let formData = new FormData();
+            formData.append("_id", _id);
+
+            let request = $.ajax({
                 url: profileDeleteAjax,
                 type: 'POST',
-                data: {},
+                data: formData,
                 headers: {"X-CSRFToken": CSRF_TOKEN,},
                 dataType: 'json',
                 async: false,
@@ -130,7 +148,7 @@ profileDeleteBtn.addEventListener('click', function (e) {
 
                         // similar behavior as clicking on a link
                         // window.location.href = "http://stackoverflow.com";
-                        window.location.href = response.account_dashboard_url;
+                        window.location.href = response.redirect_url;
                     }
                 },
                 error: function (err) {
@@ -139,17 +157,20 @@ profileDeleteBtn.addEventListener('click', function (e) {
             });
 
 
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
-
-const profileImgSubmitBtn = document.querySelector("#profile-img-submit-btn");
-profileImgSubmitBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let profile_image = document.querySelector("#profile_image").files[0];
-    let deleteModalBtn = document.querySelector(".profile-img-modal-delete-btn");
-    let formData = new FormData();
-    formData.append("profile_image", profile_image);
-    let request = $.ajax({
+    try {
+        const profileImgSubmitBtn = document.querySelector("#profile-img-submit-btn");
+        profileImgSubmitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let profile_image = document.querySelector("#profile_image").files[0];
+            let deleteModalBtn = document.querySelector(".profile-img-modal-delete-btn");
+            let formData = new FormData();
+            formData.append("profile_image", profile_image);
+            let request = $.ajax({
                 url: profileImageSaveAjax,
                 type: 'POST',
                 data: formData,
@@ -178,14 +199,17 @@ profileImgSubmitBtn.addEventListener('click', function (e) {
                     alert('내부 오류가 발생하였습니다.\n' + err);
                 }
             });
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
-
-const profileImgDeleteBtn = document.querySelector("#profile-img-delete-btn");
-profileImgDeleteBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-    let deleteModalBtn = document.querySelector(".profile-img-modal-delete-btn");
-    let request = $.ajax({
+    try {
+        const profileImgDeleteBtn = document.querySelector("#profile-img-delete-btn");
+        profileImgDeleteBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let deleteModalBtn = document.querySelector(".profile-img-modal-delete-btn");
+            let request = $.ajax({
                 url: profileImageDeleteAjax,
                 type: 'POST',
                 data: {},
@@ -215,4 +239,13 @@ profileImgDeleteBtn.addEventListener('click', function (e) {
                 }
             });
 
-}, false);
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
+
+
+
+
+
+}

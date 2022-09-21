@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import unicodedata
 import uuid
 
@@ -36,32 +37,49 @@ def filename_format(now, filename):
     )
 
 
-def base_file_path(filename):
+def base_file_path(filename, request_path, user):
+    # admin에서 저장하는 이미지들을 동일한 디렉토리에 저장하기 위해 request_path 를 임의로 동일하게 정해서 따로 받기로 했다.
     base_relative_path = "static/media/user_images/{request_path}/{year}/{month}/{day}/{user_id}/{username}/{random_word}/{filename}".format(
-        request_path=request.path.split('/')[2],
+        request_path=request_path,#request.path.split('/')[2],
         year=NOW.year,
         month=NOW.month,
         day=NOW.day,
-        user_id=str(g.user.id),
-        username=g.user.email.split('@')[0],
+        user_id=user.id,
+        username=user.email.split('@')[0],
         random_word=random_word(20),
         filename=filename_format(NOW, filename),
     )
     return base_relative_path
 
 
-def save_file(now, file):
+def save_file(now, file, request_path, user):
     if file.filename == '':
         abort(400)
     if file and allowed_file(file.filename):
         filename = filename_format(now, file.filename)
-        relative_path = base_file_path(filename)
+        relative_path = base_file_path(filename, request_path, user)
         upload_path = os.path.join(BASE_DIR, relative_path)
         os.makedirs(os.path.dirname(upload_path), exist_ok=True)
         file.save(upload_path)
         return relative_path, upload_path   # 템플릿단에서는 relative_path가 사용된다. static 폴더가 있어야 찾아간다.
     else:
         abort(400)
+
+
+def existing_img_and_dir_delete_without_update(existing_img_path):
+    old_image_path = os.path.join(BASE_DIR, existing_img_path)
+    if os.path.isfile(old_image_path):
+        shutil.rmtree(os.path.dirname(old_image_path))
+
+
+def existing_img_and_dir_delete_for_update(existing_img_path, req_img, request_path, user):
+    if req_img:
+        relative_path, upload_path = save_file(NOW, req_img, request_path, user)
+        old_image_abs_path = os.path.join(BASE_DIR, existing_img_path)
+        if old_image_abs_path != upload_path:
+            if os.path.isfile(old_image_abs_path):
+                shutil.rmtree(os.path.dirname(old_image_abs_path))
+        return relative_path
 
 
 def c_slugify(value, allow_unicode=False):
@@ -127,3 +145,37 @@ def ajax_post_key():
     else:
         session["ajax_post_key"] = str(uuid.uuid4())
     return session['ajax_post_key']
+
+
+def new_three_image_save(user, new_obj, image1, image2, image3, path):
+    if image1:
+        relative_path1, _ = save_file(NOW, image1, path, user)
+        new_obj.image_1_path = relative_path1
+    if image2:
+        relative_path2, _ = save_file(NOW, image2, path, user)
+        new_obj.image_2_path = relative_path2
+    if image3:
+        relative_path3, _ = save_file(NOW, image3, path, user)
+        new_obj.image_3_path = relative_path3
+
+
+def existing_cover_image_save(existing_img_obj, image1, image2, image3, path, user):
+    if image1:
+        if existing_img_obj.image_1_path is not None:
+            existing_img_obj.image_1_path = existing_img_and_dir_delete_for_update(existing_img_obj.image_1_path, image1, path, user)
+        else:
+            relative_path1, _ = save_file(NOW, image1, path, user)
+            existing_img_obj.image_1_path = relative_path1
+    if image2:
+        if existing_img_obj.image_2_path is not None:
+            existing_img_obj.image_2_path = existing_img_and_dir_delete_for_update(existing_img_obj.image_2_path, image2, path, user)
+        else:
+            relative_path2, _ = save_file(NOW, image2, path, user)
+            existing_img_obj.image_2_path = relative_path2
+    if image3:
+        if existing_img_obj.image_3_path is not None:
+            existing_img_obj.image_3_path = existing_img_and_dir_delete_for_update(existing_img_obj.image_3_path, image3, path, user)
+        else:
+            relative_path3, _ = save_file(NOW, image3, path, user)
+            existing_img_obj.image_3_path = relative_path3
+

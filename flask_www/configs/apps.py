@@ -17,6 +17,11 @@ def related_app(app):
     def page_401(error):
         return render_template('errors/401.html'), 401
 
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        # note that we set the 500 status explicitly
+        return render_template('errors/500.html'), 500
+
     """ === Request-related function === """
     @app.before_request
     def before_request():
