@@ -7,6 +7,12 @@
     <link href="{{ url_for('static', filename='statics/css/admin/main.css') }}" rel="stylesheet">
 {% endblock %}
 
+{% block head_js %}
+    <script>
+        shopCategoryDeleteAjax = "{{ url_for("products.shopcategory_delete_ajax") }}"
+    </script>
+{% endblock %}
+
 {% block breadcrumb %}
     <div class="uk-width-expand uk-flex uk-flex-right">
         <ul class="uk-breadcrumb">
@@ -42,7 +48,7 @@
                 <tbody>
                 {% for shop in shops %}
                     <tr>
-                    <td data-label="체크"><input class="uk-checkbox" id="checkbox-{{ loop.index }}" type="checkbox" name="is_checked"></td>
+                    <td data-label="체크"><input class="uk-checkbox single" id="{{ shop.id }}" type="checkbox" name="is_checked"></td>
                     <td data-label="ID" class="">{{ shop.id }}</td>
                     <td data-label="상점이름" class="table-link">
                         <a class="uk-link-reset" href="{{ url_for('admin_shops.shop_change', _id=shop.id) }}">{{ shop.title }}</a>
@@ -60,12 +66,13 @@
                         {% endif %}
                     </td>
                     <td data-label="조회수" class="">{{ shop.view_count }}</td>
-                    <td data-label="전시여부" class="">{% if shop.available_display %}{{ form.available_display(checked="checked") }}{% else %}{{ form.available_display }}{% endif %}</td>
+                    <td data-label="전시여부" class="">{% if shop.available_display %}<input class="uk-checkbox" checked="checked" id="available_display" name="available_display" type="checkbox">{% else %}<input class="uk-checkbox" id="available_display" name="available_display" type="checkbox">{% endif %}</td>
                     <td data-label="등록일" class="uk-text-nowrap">{{ shop.created_at|daytime("small") }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
+        <button class="uk-button uk-button-default" id="checked-delete-btn">선택 삭제</button>
         </div>
 {% endblock %}
 

@@ -125,39 +125,41 @@ function shopCategoryUpdateInit() {
             e.preventDefault();
             let _id = document.querySelector("#shopcategory_id").value;
             console.log("_id", _id)
-            let formData = new FormData();
-            formData.append("_id", _id);
-            let request = $.ajax({
-                url: shopCategoryDeleteAjax,
-                type: 'POST',
-                data: formData,
-                headers: {"X-CSRFToken": CSRF_TOKEN,},
-                dataType: 'json',
-                async: false,
-                cache: false,
-                contentType: false,
-                processData: false,
+            shopCategoryDelete(_id);
 
-                success: function (response) {
-                    if (response.error) {
-                        alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
-                    } else {
-                        console.log('ShopCategory delete success');
-                        // similar behavior as an HTTP redirect
-                        // window.location.replace("http://stackoverflow.com");
+        }, false);
+    } catch (e) {
+        // console.log(e);
+    }
 
-                        // similar behavior as clicking on a link
-                        // window.location.href = "http://stackoverflow.com";
-                        window.location.href = response.redirect_url;
-                    }
-                },
-                error: function (err) {
-                    alert('내부 오류가 발생하였습니다.\n' + err);
+    try { //admin shopCategory list check delete
+        const checkAllBox = document.querySelector("#all-check");
+        const checkBoxList = document.querySelectorAll(".single");
+
+        checkAllBox.addEventListener("change", function (e) {
+            e.preventDefault();
+            for (let i = 0; i < checkBoxList.length; i++) {
+                checkBoxList[i].checked = this.checked;
+            }
+        });
+
+        Array.from(checkBoxList).forEach(function (checkBox) {
+            checkBox.addEventListener("change", function (e) {
+                checkAllBox.checked = false;
+            });
+        });
+
+        const checkedDeleteBtn = document.querySelector("#checked-delete-btn");
+        checkedDeleteBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            Array.from(checkBoxList).forEach(function (checkBox) {
+                if (checkBox.checked) {
+                    let _id = Number(checkBox.getAttribute("id"));
+                    shopCategoryDelete(_id);
                 }
             });
 
-
-        }, false);
+        });
     } catch (e) {
         // console.log(e);
     }
@@ -167,4 +169,37 @@ function shopCategoryUpdateInit() {
     }
 
 
+}
+
+function shopCategoryDelete(_id) {
+    let formData = new FormData();
+    formData.append("_id", _id);
+    let request = $.ajax({
+        url: shopCategoryDeleteAjax,
+        type: 'POST',
+        data: formData,
+        headers: {"X-CSRFToken": CSRF_TOKEN,},
+        dataType: 'json',
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+
+        success: function (response) {
+            if (response.error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
+            } else {
+                console.log('ShopCategory delete success');
+                // similar behavior as an HTTP redirect
+                // window.location.replace("http://stackoverflow.com");
+
+                // similar behavior as clicking on a link
+                // window.location.href = "http://stackoverflow.com";
+                window.location.href = response.redirect_url;
+            }
+        },
+        error: function (err) {
+            alert('내부 오류가 발생하였습니다.\n' + err);
+        }
+    });
 }

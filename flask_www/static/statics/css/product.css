@@ -43,9 +43,9 @@ body > main > section > div:nth-child(3) > div > div > div:nth-child(1) {text-al
 
 #shopcategory-content, #meta_description {overscroll-behavior: contain; resize: none; border-radius: 5px}
 
-.section-cover-img-container > a > .shop-target-profile {position:absolute; top: 462px; left: calc(50% + 80px)}
-.section-cover-img-container > a > .shop-target-profile > .img-div > img {width: 35px; height: 35px; border-radius: 50%; object-fit: cover}
-.section-cover-img-container > a > .shop-target-profile > .nickname {font-weight: 600; color: #666666}
+.section-cover-img-container .shop-target-profile {position:absolute; top: 462px; left: calc(50% + 80px)}
+.section-cover-img-container .shop-target-profile > .img-div > img {width: 35px; height: 35px; border-radius: 50%; object-fit: cover}
+.section-cover-img-container .shop-target-profile > .nickname {font-weight: 600; color: #666666}
 
 #shop-delete-modal > div > div {margin-top: 20px}
 

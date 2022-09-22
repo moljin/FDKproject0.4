@@ -43,21 +43,22 @@
                 <tbody>
                 {% for user in users %}
                     <tr>
-                    <td data-label="체크"><input class="uk-checkbox" id="checkbox-{{ loop.index }}" type="checkbox" name="is_checked"></td>
+                    <td data-label="체크"><input class="uk-checkbox single" id="{{ user.id }}" type="checkbox" name="is_checked"></td>
                     <td data-label="ID" class="">{{ user.id }}</td>
                     <td data-label="E-mail">
                         <a class="uk-link-reset" href="{{ url_for('admin_accounts.change', _id=user.id) }}">{{ user.email }}</a>
                     </td>
                     <td data-label="인증토큰" class="">{{ user.auth_token|truncate(15) }}</td>
                     <td data-label="비밀번호토큰" class="">{% if not user.password_token %}없슴{% else %}{{ user.password_token|truncate(15) }}{% endif %}</td>
-                    <td data-label="인증" class="uk-text-nowrap">{% if user.is_verified %}{{ form.is_verified(checked="checked") }}{% else %}{{ form.is_verified }}{% endif %}</td>
-                    <td data-label="스태프" class="uk-text-nowrap">{% if user.is_staff %}{{ form.is_staff(checked="checked") }}{% else %}{{ form.is_staff }}{% endif %}</td>
-                    <td data-label="관리자" class="uk-text-nowrap">{% if user.is_admin %}{{ form.is_admin(checked="checked") }}{% else %}{{ form.is_admin }}{% endif %}</td>
+                    <td data-label="인증" class="uk-text-nowrap">{% if user.is_verified %}<input class="uk-checkbox" checked="checked" id="is_verified" name="is_verified" type="checkbox">{% else %}<input class="uk-checkbox" id="is_verified" name="is_verified" type="checkbox">{% endif %}</td>
+                    <td data-label="스태프" class="uk-text-nowrap">{% if user.is_staff %}<input class="uk-checkbox" checked="checked" id="is_staff" name="is_staff" type="checkbox">{% else %}<input class="uk-checkbox" id="is_staff" name="is_staff" type="checkbox">{% endif %}</td>
+                    <td data-label="관리자" class="uk-text-nowrap">{% if user.is_admin %}<input class="uk-checkbox" checked="checked" id="is_admin" name="is_admin" type="checkbox">{% else %}<input class="uk-checkbox" id="is_admin" name="is_admin" type="checkbox">{% endif %}</td>
                     <td data-label="등록일" class="uk-text-nowrap">{{ user.created_at|daytime("small") }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
+        <button class="uk-button uk-button-default" id="checked-delete-btn">선택 삭제</button>
         </div>
     {% include "includes/pagination.html" %}
 {% endblock %}

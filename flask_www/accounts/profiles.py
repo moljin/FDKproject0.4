@@ -12,7 +12,8 @@ from flask_www.commons.ownership_required import profile_ownership_required
 from flask_www.commons.utils import save_file, ajax_post_key, flash_form_errors, existing_img_and_dir_delete_for_update, existing_img_and_dir_delete_without_update, existing_cover_image_save
 from flask_www.configs import db
 from flask_www.configs.config import NOW, BASE_DIR
-from flask_www.ecomm.products.models import ShopCategory
+from flask_www.ecomm.products.models import ShopCategory, Product
+from flask_www.ecomm.products.utils import shop_disable_save, product_disable_save
 
 NAME = 'profiles'
 profiles_bp = Blueprint(NAME, __name__, url_prefix='/accounts')
@@ -486,12 +487,22 @@ def delete_ajax():
         if target_profile and ((current_user.id == target_profile.user_id) or current_user.is_admin):
             target_user = db.session.query(User).filter_by(id=target_profile.user_id).one()
             profile_delete(target_profile)
+
+            shopcategory_objs = db.session.query(ShopCategory).filter_by(user_id=target_profile.user_id).all()
+            if shopcategory_objs:
+                shop_disable_save(shopcategory_objs)
+
+            product_objs = db.session.query(Product).filter_by(user_id=target_profile.user_id).all()
+            if product_objs:
+                product_disable_save(product_objs)
+
             db.session.commit()
             if current_user.id == target_profile.user_id:
-                url_data_response = {
-                    "redirect_url": url_for('accounts.dashboard', _id=target_user.id)
-                }
-                return make_response(jsonify(url_data_response))
+                if "admin" not in request.referrer:
+                    url_data_response = {
+                        "redirect_url": url_for('accounts.dashboard', _id=target_user.id)
+                    }
+                    return make_response(jsonify(url_data_response))
             if current_user.is_admin:
                 url_data_response = {
                     "redirect_url": url_for('admin_profiles._list')

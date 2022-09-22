@@ -15,7 +15,7 @@ from flask_www.configs import db
 from flask_www.configs.config import NOW, BASE_DIR
 from flask_www.ecomm.products.forms import ShopCategoryForm, ProductForm
 from flask_www.ecomm.products.models import ShopCategory, ShopCategoryCoverImage, UnitsProductImage, Product
-from flask_www.ecomm.products.utils import new_shop_cover_image_save
+from flask_www.ecomm.products.utils import new_shop_cover_image_save, try_shopcategory_delete_ajax
 
 NAME = 'products'
 products_bp = Blueprint(NAME, __name__, url_prefix='/products')
@@ -292,32 +292,34 @@ def shopcategory_list():
 def shopcategory_delete_ajax():
     """symbol_path and cover_image_path 둘다 삭제해야 한다."""
     _id = request.form.get("_id")
-    target_shopcategory = db.session.query(ShopCategory).filter_by(id=_id).one()
-    owner_profile = db.session.query(Profile).filter_by(user_id=target_shopcategory.user_id).one()
+    target_shopcategory = db.session.query(ShopCategory).filter_by(id=_id).first()
+    owner_profile = db.session.query(Profile).filter_by(user_id=target_shopcategory.user_id).first()
     print("owner_profile", owner_profile)
     if request.method == 'POST':
-        if target_shopcategory and ((current_user.id == owner_profile.user_id) or current_user.is_admin):
-            try:
-                if target_shopcategory.symbol_path:
-                    existing_img_and_dir_delete_without_update(target_shopcategory.symbol_path)
-                existing_cover_img = db.session.query(ShopCategoryCoverImage).filter_by(shopcategory_id=target_shopcategory.id).first()
-                if existing_cover_img:
-                    if existing_cover_img.image_1_path:
-                        existing_img_and_dir_delete_without_update(existing_cover_img.image_1_path)
-                    if existing_cover_img.image_2_path:
-                        existing_img_and_dir_delete_without_update(existing_cover_img.image_2_path)
-                    if existing_cover_img.image_3_path:
-                        existing_img_and_dir_delete_without_update(existing_cover_img.image_3_path)
-                db.session.delete(existing_cover_img)
-            except Exception as e:
-                print(e)
+        if target_shopcategory:# and ((current_user.id == owner_profile.user_id) or current_user.is_admin):
+            """바로 owner_profile.user_id 로 진입하면 에러 발생"""
+            """admin 에서 주인 프로필이 삭제된 샵카테고리들 때문에...."""
+            if owner_profile:
+                if current_user.id == owner_profile.user_id:
+                    try:
+                        try_shopcategory_delete_ajax(target_shopcategory)
+                    except Exception as e:
+                        print(e)
+            if current_user.is_admin:
+                try:
+                    try_shopcategory_delete_ajax(target_shopcategory)
+                except Exception as e:
+                    print(e)
             db.session.delete(target_shopcategory)
             db.session.commit()
-            if current_user.id == owner_profile.user_id:
-                shop_data_response = {
-                    "redirect_url": url_for('profiles.vendor_detail', _id=owner_profile.id)
-                }
-                return make_response(jsonify(shop_data_response))
+
+            if owner_profile:
+                if current_user.id == owner_profile.user_id:
+                    if "admin" not in request.referrer:
+                        shop_data_response = {
+                            "redirect_url": url_for('profiles.vendor_detail', _id=owner_profile.id)
+                        }
+                        return make_response(jsonify(shop_data_response))
             if current_user.is_admin:
                 shop_data_response = {
                     "redirect_url": url_for('admin_shops.shop_list')

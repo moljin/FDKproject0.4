@@ -1,6 +1,9 @@
 .adm-index-above-main .flashes {border-radius: 0}
 table .table-link {color: maroon}
 table .table-link:hover {cursor: pointer; color: #1e3799}
+.site-view {text-align: right}
+.site-view button {border: solid 1px #dcdde1; color: #0652DD}
+.site-view button:hover {background: #ecf0f1; color: maroon}
 
 @media screen and (max-width: 1170px) {
   table thead {

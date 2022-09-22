@@ -86,12 +86,19 @@
             {% endif %}
                 <button type="button" class="shopcategory_cover-img-modal-upload-btn" uk-toggle="target: #shopcategory_cover_img_upload_modal-container"><span uk-icon="icon: cloud-upload"></span></button>
         {% else %}
+            {% if target_profile %}
             <a href="{{url_for('profiles.detail', _id=target_profile.id)}}">
                 <div class="shop-target-profile">
                     <div class="uk-inline img-div"><img src="/{{ target_profile.image_path }}" alt="mdo"></div>
                     <div class="uk-inline nickname">{{ target_profile.nickname }}</div>
                 </div>
             </a>
+            {% else %}
+                <div class="shop-target-profile">
+                    <div class="uk-inline img-div"><img src="{{ url_for('static', filename='statics/images/user_none.png') }}" alt="mdo"></div>
+                    <div class="uk-inline nickname">프로필 없슴</div>
+                </div>
+            {% endif %}
         {% endif %}
         <!--shopcategory cover image upload modal-->
         <div id="shopcategory_cover_img_upload_modal-container" class="shopcategory_cover-img uk-modal-container uk-flex-top" uk-modal uk-height-match="target: form > div > div > div > div > .cover-img">
@@ -395,21 +402,23 @@
 
     <section class="grid-section">
         <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
-            {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
-                {% if current_user.id == current_profile.user_id == target_shop.user_id %}
-                    <a href="{{ url_for("products.product_create") }}?shopcategory_id={{ target_shop.id }}&shopcategory_title={{ target_shop.title }}&&ss={{ target_shop.slug }}">
-                        <div>
-                            <div class="uk-card uk-card-default">
-                                <div class="uk-card-media-top">
-                                    <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" width="1800" height="1200" alt="">
-                                </div>
-                                <div class="uk-card-body">
-                                    <h3 class="uk-card-title">상품 등록</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+            {% if current_profile %}
+                {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
+                    {% if current_user.id == current_profile.user_id == target_shop.user_id %}
+                        <a href="{{ url_for("products.product_create") }}?shopcategory_id={{ target_shop.id }}&shopcategory_title={{ target_shop.title }}&&ss={{ target_shop.slug }}">
+                            <div>
+                                <div class="uk-card uk-card-default">
+                                    <div class="uk-card-media-top">
+                                        <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" width="1800" height="1200" alt="">
+                                    </div>
+                                    <div class="uk-card-body">
+                                        <h3 class="uk-card-title">상품 등록</h3>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
             <div>

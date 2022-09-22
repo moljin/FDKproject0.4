@@ -7,6 +7,12 @@
     <link href="{{ url_for('static', filename='statics/css/admin/main.css') }}" rel="stylesheet">
 {% endblock %}
 
+{% block head_js %}
+    <script>
+        profileDeleteAjax = "{{ url_for("profiles.delete_ajax") }}"
+    </script>
+{% endblock %}
+
 {% block breadcrumb %}
     <div class="uk-width-expand uk-flex uk-flex-right">
         <ul class="uk-breadcrumb">
@@ -41,7 +47,7 @@
                 <tbody>
                 {% for profile in profiles %}
                     <tr>
-                    <td data-label="체크"><input class="uk-checkbox" id="checkbox-{{ loop.index }}" type="checkbox" name="is_checked"></td>
+                    <td data-label="체크"><input class="uk-checkbox single" id="{{ profile.id }}" type="checkbox" name="is_checked"></td>
                     <td data-label="ID" class="">{{ profile.id }}</td>
                     <td data-label="닉네임" class="table-link">
                         <a class="uk-link-reset" href="{{ url_for('admin_profiles.change', _id=profile.id) }}">{{ profile.nickname }}</a>
@@ -60,6 +66,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+        <button class="uk-button uk-button-default" id="checked-delete-btn">선택 삭제</button>
         </div>
 {% endblock %}
 

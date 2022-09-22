@@ -727,6 +727,7 @@
         </div>
     </section>
 
+
     {% if current_user.is_authenticated and current_user.id==target_profile.user_id %}
         <script src="{{ url_for('static', filename='statics/js/commons/imagePreview.js') }}"></script>
         <script src="{{ url_for('static', filename='statics/js/accounts/profileCoverImageSubmit.js') }}"></script>

@@ -36,6 +36,11 @@
     <section class="admin-section">
         <div class="products-container">
             <div class="form-container">
+                <div class="site-view mb-20">
+                    <a href="{{ url_for("products.shopcategory_detail", _id=target_shop.id, slug=target_shop.slug) }}" target="_blank">
+                        <button class="uk-button">사이트 보기</button>
+                    </a>
+                </div>
                 <form class="shops" method="POST" action="{{ url_for("admin_shops.save") }}" enctype="multipart/form-data">
                     {{ form.csrf_token }}
                     <fieldset class="uk-fieldset">
@@ -176,7 +181,11 @@
             </div>
         </div>
     </section>
-    <script src="{{ url_for('static', filename='statics/js/products/shopCategoryUpdateSubmit.js') }}"></script>
+
+    {% if current_user.is_authenticated and not current_user.is_admin %}
+        <!--지워도 된다.-->
+        <script src="{{ url_for('static', filename='statics/js/products/shopCategoryUpdateSubmit.js') }}"></script>
+    {% endif %}
     <script>
         {#adminProfileImagePath = document.getElementById("admin-img-preview").getAttribute("src");#}
         {#adminCorpImagePath = document.getElementById("admin-corp-img-preview").getAttribute("src");#}

@@ -29,6 +29,15 @@
     <section class="admin-section">
         <div class="accounts-container">
             <div class="form-container">
+                <div class="site-view mb-20">
+                    {% if target_profile.level == "일반이용자" %}
+                        <a href="{{ url_for("profiles.detail", _id=target_profile.id) }}" target="_blank">
+                    {% else %}
+                        <a href="{{ url_for("profiles.vendor_detail", _id=target_profile.id) }}" target="_blank">
+                    {% endif %}
+                        <button class="uk-button">사이트 보기</button>
+                    </a>
+                </div>
                 <form class="profiles" method="POST" action="{{ url_for("admin_profiles.save") }}" enctype="multipart/form-data">
                     {{ form.csrf_token }}
                     <fieldset class="uk-fieldset">
@@ -252,7 +261,10 @@
             </div>
         </div>
     </section>
-    <script src="{{ url_for('static', filename='statics/js/accounts/profileUpdateSubmit.js') }}"></script>
+    {% if current_user.is_authenticated and not current_user.is_admin %}
+        <!--지워도 된다.-->
+        <script src="{{ url_for('static', filename='statics/js/accounts/profileUpdateSubmit.js') }}"></script>
+    {% endif %}
     <script src="{{ url_for('static', filename='statics/js/accounts/vendorUpdateSubmit.js') }}"></script>
     <script>
         adminProfileImagePath = document.getElementById("admin-img-preview").getAttribute("src");

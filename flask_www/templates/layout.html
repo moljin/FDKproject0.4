@@ -63,7 +63,20 @@
         {% endblock %}
     {% endblock %}
     {% if current_user.is_authenticated or current_user.is_admin %}
-    <script src="{{ url_for('static', filename='statics/js/accounts/accountDeleteSubmit.js') }}"></script>
+        {% if "accounts" in request.path %}
+            <script src="{{ url_for('static', filename='statics/js/accounts/accountDeleteSubmit.js') }}"></script>
+        {% endif %}
+    {% endif %}
+
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        {% if "profiles" in request.path %}
+            <script src="{{ url_for('static', filename='statics/js/accounts/profileUpdateSubmit.js') }}"></script>
+        {% endif %}
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        {% if "shops" in request.path %}
+            <script src="{{ url_for('static', filename='statics/js/products/shopCategoryUpdateSubmit.js') }}"></script>
+        {% endif %}
     {% endif %}
 </body>
 
