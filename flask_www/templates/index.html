@@ -33,19 +33,53 @@
             <hr>
             {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
                 <a href="{{ url_for("products.shopcategory_create") }}">상점 만들기</a><br>
+                <a href="{{ url_for('coupons.create') }}">쿠폰 등록</a><br>
             {% endif %}
             <a href="{{ url_for("products.shopcategory_list") }}">상점 리스트</a><br>
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for("admin_accounts.auth_permit_request", email=current_user.email) }}" target="_blank">테스트 관리자 인증</a><br>
+
+            {% if (current_cart != None) and (current_cart.cart_total_price != 0) %}
+                <a href="{{ url_for("carts.cart_view") }}">cart 에 상품이 담겼을때 카트보기: {{ current_cart }}</a><br>
             {% endif %}
+             {% if current_cart != None %}
+                 cart_items_total_count: {{ cart_items_total_count }} <br>
+                 cart 정보 보기:current_cart.cart_total_price = {{ current_cart.cart_total_price }} <br>
+                 cart 정보 보기:current_cart.is_active = {{ current_cart.is_active }} <br>
+            {% endif %}
+
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for("admin_accounts.auth_permit_request", email=current_user.email) }}" target="_blank">테스트 관리자 인증</a><br>
+            {% endif %}
+
+            <textarea name="" id="" style="width: 100%;" rows="20">기간이 지난 카트에
+            cart_total_price >0 이면
+            product_detail페이지 열때 에러 발생
+
+             cart_active_check(cart): beyond_days 1
+             cart_active_check(cart): beyond_days -1
+            cart_active_check(cart) None
+            '>' not supported between instances of 'NoneType' and 'int'
+
+
+            index page
+            cart_active(기간적용): true
+            cart.cart_total_price > 0: True
+            current_cart: <Cart(ID: '74', cart_id: 비구매 1개월 초과 카트)>
+
+
+            카트가 아예 없을때 index페이지를 열면
+            비구매 1개월 초과 카트 체크 Exception 오류 'NoneType' object has no attribute 'updated_at'
+            </textarea>
+
+
             <hr>
             <a href="https://developer.mozilla.org/ko/docs/Web/API/Element/insertAdjacentHTML" target="_blank">Element.insertAdjacentHTML()</a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
-            <a href="" target="_blank"></a><br>
+            <a href="https://wikidocs.net/137924" target="_blank">원하는 시간마다 파이썬 자동 실행</a><br>
+            <a href="https://ourcstory.tistory.com/99" target="_blank">Programming/Python [Python] datetime 날짜, 시간, 분 더하기, 빼기 (현재, 이전, 이후 시간...</a><br>
+            <a href="https://coupangstore.tistory.com/91" target="_blank">파이썬 현재시간 특정시간에 특정기능 실행하기</a><br>
+            <a href="https://ffoorreeuunn.tistory.com/462" target="_blank">[ Python ] 파이썬 비동기 처리 | asyncio | 비동기란 무엇인가 | 비동기 예제</a><br>
+            <a href="https://www.google.com/search?q=%EB%B9%84%EB%8F%99%EA%B8%B0+%ED%8C%8C%EC%9D%B4%EC%8D%AC&sxsrf=ALiCzsal-YxakNPKDPO3hGqcEfBwkSDWvQ%3A1664542405910&ei=xeY2Y6uSN-HGmAXDyKOIAQ&ved=0ahUKEwjriMXWx7z6AhVhI6YKHUPkCBEQ4dUDCA4&uact=5&oq=%EB%B9%84%EB%8F%99%EA%B8%B0+%ED%8C%8C%EC%9D%B4%EC%8D%AC&gs_lcp=Cgdnd3Mtd2l6EAMyBAgjECcyBQgAEIAEMgYIABAeEAUyBggAEB4QCDIGCAAQHhAIMgYIABAeEAgyBggAEB4QCDIGCAAQHhAIMgYIABAeEAgyBggAEB4QCDoKCAAQRxDWBBCwA0oECEEYAEoECEYYAFCTZliTZmCxaGgCcAB4AIABYYgBYZIBATGYAQCgAQHIAQrAAQE&sclient=gws-wiz" target="_blank" style="color: red">구글링====비동기 파이썬</a><br>
+            <a href="https://blog.naver.com/PostView.naver?blogId=duqrlwjddns1&logNo=222268635237&parentCategoryNo=&categoryNo=&viewDate=&isShowPopularPosts=false&from=postView" target="_blank">asyncio로 비동기 처리하기</a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
 
@@ -63,7 +97,7 @@
             비밀번호 생성을 한 후 ...그것을 <span style="color: red">MAIL_PASSWORD</span>에 적용한다. "<br><hr>
             <a href="https://fourward.co.kr/blog/meta-tags-for-seo" target="_blank">메타태그(meta tag), SEO 에 도움되는 메타 설정 방법</a><br>
             <a href="https://www.daleseo.com/html-meta-tags-for-seo/" target="_blank">메타 태그를 통한 검색엔진 최적화 (SEO)</a><br>
-            <a href="" target="_blank"></a><br>
+            <a href="https://blog.naver.com/PostView.nhn?isHttpsRedirect=true&blogId=wideeyed&logNo=221797721352" target="_blank">[Python] 지정폴더에 오래된 파일들 삭제하기</a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>
             <a href="" target="_blank"></a><br>

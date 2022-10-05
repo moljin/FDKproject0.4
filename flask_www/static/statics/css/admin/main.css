@@ -42,7 +42,7 @@ table .table-link:hover {cursor: pointer; color: #1e3799}
 }
 
 /*accounts*/
-.accounts-container .form-container {max-width: 800px; border: solid 1px #ced6e0; border-radius: 5px; padding: 2rem; margin: 0 auto 1rem auto}
+.accounts-container .form-container {max-width: 800px; border: solid 1px #ced6e0; border-radius: 5px; padding: 1.5rem 1.5rem 1rem; margin: 0 auto 1rem auto}
 .accounts-container .form-container form > fieldset > button {margin-bottom: 0}
 .form-container form.accounts .uk-fieldset .uk-margin {align-items: center}
 #user-delete-modal > div > div {margin-top: 40px}
@@ -60,7 +60,7 @@ table .table-link:hover {cursor: pointer; color: #1e3799}
 #profile-delete-modal > div > div {margin-top: 40px}
 
 /*shop category*/
-.products-container .form-container {max-width: 800px; border: solid 1px #ced6e0; border-radius: 5px; padding: 2rem; margin: 0 auto 1rem auto}
+.products-container .form-container {max-width: 800px; border: solid 1px #ced6e0; border-radius: 5px; padding: 1.5rem 1.5rem 1rem; margin: 0 auto 1rem auto}
 .form-container form.shops .check-btn-div {padding-left: 10px; margin-top: 0.21875rem}
 .form-container form.shops .check-btn {height: 38px}
 .form-container form.shops .uk-fieldset .uk-margin {align-items: center}

@@ -4,6 +4,8 @@ from flask import render_template, g
 from flask_login import current_user
 from pytz import timezone
 
+from flask_www.configs.config import NOW
+
 
 def related_app(app):
     from flask_www.configs import db
@@ -77,6 +79,53 @@ def related_app(app):
     def inject_now():
         now_time = datetime.now(timezone('Asia/Seoul')).today()
         return dict(now=now_time)
+
+    # @app.context_processor
+    # def inject_real_active_current_cart():
+    #     from flask_www.ecomm.carts.models import Cart
+    #     try:
+    #         if current_user.is_authenticated:
+    #             if current_user.cart_user_set:
+    #                 cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
+    #                 diff_time = NOW - cart.updated_at
+    #                 beyond_days = diff_time.days
+    #                 if cart and (beyond_days < 1):
+    #                 # if cart and (beyond_days < 1) and (cart.cart_total_price > 0):
+    #                     return dict(current_cart=cart)
+    #                 else:
+    #                     return dict(current_cart=None)  # 카트가 없거나. 카트생성후 1개월이 지났거나, 카트에 상품이 없는 경우
+    #             else:
+    #                 return dict(current_cart=None)
+    #         else:
+    #             return dict(current_cart=None)
+    #     except Exception as e:
+    #         print(e)
+
+    @app.context_processor
+    def cart_items_total_count():
+        from flask_www.ecomm.carts.models import Cart
+        from flask_www.ecomm.carts.models import CartProduct
+        try:
+            if current_user.is_authenticated:
+                if current_user.cart_user_set:
+                    cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
+                    if cart:
+                        diff_time = NOW - cart.updated_at
+                        beyond_days = diff_time.days
+                        if beyond_days < 1:
+                            cart_products = CartProduct.query.filter_by(cart_id=cart.id).all()
+                            return dict(cart_items_total_count=len(cart_products), current_cart=cart)
+                        else:  # 카트가 있어도, 1개월이 지나면...
+                            return dict(current_cart=None)
+                    else:  # 카트가 없는 경우
+                        return dict(current_cart=None)
+                else:
+                    return dict(current_cart=None)
+            else:
+                return dict(current_cart=None)
+        except Exception as e:
+            print(e)
+        pass
 
     @app.template_filter('class_name')
     def model_class_name(value):

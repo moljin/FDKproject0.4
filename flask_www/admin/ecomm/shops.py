@@ -15,7 +15,7 @@ NAME = 'admin_shops'
 admin_shops_bp = Blueprint(NAME, __name__, url_prefix='/admin/shops')
 
 
-@admin_shops_bp.route('/category/list', methods=['GET', 'POST'])
+@admin_shops_bp.route('/category/list', methods=['GET'])
 @admin_required
 def shop_list():
     form = ShopCategoryForm()
@@ -23,7 +23,7 @@ def shop_list():
     return render_template('admin/products/shop_list.html', form=form, shops=shop_objs)
 
 
-@admin_shops_bp.route('/category/<int:_id>/change', methods=['GET', 'POST'])
+@admin_shops_bp.route('/category/<int:_id>/change', methods=['GET'])
 @admin_required
 def shop_change(_id):
     form = ShopCategoryForm()
@@ -39,7 +39,7 @@ def shop_change(_id):
                            cover_img=cover_img_obj)
 
 
-@admin_shops_bp.route('/category/create', methods=['GET', 'POST'])
+@admin_shops_bp.route('/category/create', methods=['GET'])
 @admin_required
 def shop_create():
     form = ShopCategoryForm()
@@ -77,7 +77,7 @@ def save():
             target_user = User.query.get_or_404(target_shop.user_id)
             if existing_title_shop:
                 if req_title != target_shop.title:
-                    flash("동일한 닉네임이 존재합니다.")
+                    flash("동일한 상점이름이 존재합니다.")
                     return redirect(request.referrer)
             if req_title and not existing_title_shop:
                 target_shop.title = req_title
@@ -107,7 +107,7 @@ def save():
 
         else:
             if existing_title_shop:
-                flash("동일한 닉네임이 존재합니다.")
+                flash("동일한 상점이름이 존재합니다.")
                 return redirect(request.referrer)
             new_shop = ShopCategory(
                 title=req_title,

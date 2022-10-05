@@ -123,7 +123,6 @@ function profileUpdateInit() {
             e.preventDefault();
 
             let _id = document.querySelector("#profile_id").value;
-            console.log("_id", _id)
             profilesDelete(_id);
 
         }, false);

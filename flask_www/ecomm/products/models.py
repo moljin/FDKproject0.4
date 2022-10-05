@@ -69,10 +69,11 @@ class Product(BaseModel):
     title = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
+
     meta_description = db.Column(db.Text, nullable=True)
-    thumbnail_path_1 = db.Column(db.String(200), nullable=True)
-    thumbnail_path_2 = db.Column(db.String(200), nullable=True)
-    thumbnail_path_3 = db.Column(db.String(200), nullable=True)
+    image_1_path = db.Column(db.String(200), nullable=True)
+    image_2_path = db.Column(db.String(200), nullable=True)
+    image_3_path = db.Column(db.String(200), nullable=True)
     view_count = db.Column(db.Integer, default=0)
 
     orm_id = db.Column(db.String(250), nullable=True)
@@ -103,7 +104,7 @@ class Product(BaseModel):
 class UnitsProductImage(BaseModel):
     __tablename__ = 'units_product_images'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    user = db.relationship('User', backref=db.backref('user_unitsproductimage_set'))
+    user = db.relationship('User', backref=db.backref('unitsproductimage_user_set'))
 
     image_path = db.Column(db.String(350), nullable=False)  # 임시로 한번 저장하고 넘어가야 하기 때문에 nullable=True.
     original_filename = db.Column(db.String(350), nullable=False)
@@ -131,7 +132,8 @@ class ProductOption(BaseModel):
 
     is_deleted = db.Column(db.Boolean(), nullable=False, default=False)
 
-    def __init__(self, title):
+    def __init__(self, user_id, title):
+        self.user_id = user_id
         self.title = title
         self.slug = c_slugify(self.title, allow_unicode=True)
 

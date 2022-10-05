@@ -1,3 +1,6 @@
+import time
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -15,6 +18,10 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
+
+
+def hello_job():
+    print('Hello Job! scheduler 실행')
 
 
 def create_app(config_name=None):
@@ -35,10 +42,18 @@ def create_app(config_name=None):
         migrate.init_app(application, db)
     from flask_www.accounts import models
     from flask_www.ecomm.products import models
+    from flask_www.ecomm.carts import models
+    from flask_www.ecomm.promotions import models
 
     login_manager.init_app(application)
     login_manager.login_view = 'login'
     mail.init_app(application)
+
+    """
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(hello_job, trigger='interval', seconds=3)
+    scheduler.start()
+    """
 
     @login_manager.user_loader
     def load_user(_id):
@@ -54,3 +69,5 @@ def create_app(config_name=None):
 
 app = create_app()
 safe_time_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+

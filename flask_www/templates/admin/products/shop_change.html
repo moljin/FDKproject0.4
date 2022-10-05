@@ -63,6 +63,20 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="uk-margin" uk-grid>
+                            <div>
+                                닉네임:
+                            </div>
+                            <div class="uk-width-expand pl-10">
+                                {% if target_user.profile_user_set %}
+                                    {% for profile in target_user.profile_user_set %}
+                                        <input type="text" class="uk-input mt-5" value="{{ profile.nickname }}" disabled>
+                                    {% endfor %}
+                                {% else %}
+                                    <input type="text" class="uk-input mt-5" value="프로필 없슴" disabled>
+                                {% endif %}
+                            </div>
+                        </div>
                         <div class="shop-update-alert"></div>
                         <div class="uk-margin" uk-grid>
                             <div>

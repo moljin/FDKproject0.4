@@ -179,3 +179,21 @@ def existing_cover_image_save(existing_img_obj, image1, image2, image3, path, us
             relative_path3, _ = save_file(NOW, image3, path, user)
             existing_img_obj.image_3_path = relative_path3
 
+
+def elapsed_day(updated_at):
+    from datetime import datetime
+    from pytz import timezone
+    # print("datetime.now(timezone('Asia/Seoul')).today()", datetime.now(timezone('Asia/Seoul')).today())
+    # print("NOW", NOW)
+    # print("updated_at", updated_at)
+    diff_time = NOW - updated_at
+    # print("diff_time", diff_time)
+    # diff_time_seconds = diff_time/86400
+    # print("diff_time.days", diff_time.days)
+    # print("diff_time 몇 시간 지난 건지", diff_time.seconds / 60 / 60)
+    # print(f'{diff_time.days}일 {int(diff_time.seconds / 60 / 60)}시간 {int(diff_time.seconds / 60 - (int(diff_time.seconds / 60 / 60)) * 60)}분 지났어요')
+    # print("diff_time_seconds = diff_time/86400(24시간) 머지", diff_time/86400)
+    timestamp_now = datetime.now().timestamp()  # 타임스탬프(단위:초)
+    # print("datetime.now()", datetime.now())
+    # print("timestamp_now", timestamp_now)
+    return diff_time.days

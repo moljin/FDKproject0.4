@@ -4,7 +4,9 @@ from flask_login import current_user
 from flask import flash, abort
 
 from flask_www.accounts.models import User, Profile
+from flask_www.ecomm.carts.models import Cart
 from flask_www.ecomm.products.models import ShopCategory, Product
+from flask_www.ecomm.promotions.models import Coupon
 
 
 def account_ownership_required(function):
@@ -60,6 +62,22 @@ def product_ownership_required(function):
     return decorated_function
 
 
+def cart_ownership_required(function):
+    @wraps(function)
+    def decorated_function(_id, *args, **kwargs):
+        coupon = Cart.query.get_or_404(_id)
+        created_obj_ownership(coupon)
+        return function(_id, *args, **kwargs)
+    return decorated_function
+
+
+def coupon_ownership_required(function):
+    @wraps(function)
+    def decorated_function(_id, *args, **kwargs):
+        coupon = Coupon.query.get_or_404(_id)
+        created_obj_ownership(coupon)
+        return function(_id, *args, **kwargs)
+    return decorated_function
 """
 def category_ownership_required(function):
     @wraps(function)

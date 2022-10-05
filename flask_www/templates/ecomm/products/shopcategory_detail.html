@@ -160,7 +160,7 @@
                         </div>
 
                     </div>
-                    <div class="modoal-submit-cancel-btn">
+                    <div class="modal-submit-cancel-btn">
                         <div class="uk-inline cover-img-save-btn mt-15">
                             <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                             <button id="cover-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close ml-15" type="button">저장</button>
@@ -176,7 +176,7 @@
             <form method="POST" class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
                 <button class="uk-modal-close-default" type="button" uk-close></button>
                 정말로 커버이미지를 삭제하시겠어요?
-                <div class="modoal-submit-cancel-btn">
+                <div class="modal-submit-cancel-btn">
                     <div class="cover-img-delete-btn uk-inline">
                         <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                     </div>
@@ -241,7 +241,7 @@
 
 
 
-                    <div class="modoal-submit-cancel-btn mt-5">
+                    <div class="modal-submit-cancel-btn mt-5">
                         <div class="symbol-img-delete-btn uk-inline">
                             <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                         </div>
@@ -258,7 +258,7 @@
 
                     <button class="uk-modal-close-default" type="button" uk-close></button>
                     정말로 심볼마크를 삭제하시겠어요?
-                    <div class="modoal-submit-cancel-btn">
+                    <div class="modal-submit-cancel-btn">
                         <div class="symbol-img-delete-btn uk-inline">
                             <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                         </div>
@@ -283,7 +283,7 @@
                     </div>
 
                     <div class="subscribe-alert"></div>
-
+                <!--오너는 구독/구독중 안보이고, 비로그인시도 구독/구독중 안보임. 로그인한 다른 유저는 구독/구독중이 보인다. -->
                     {% set view_count = target_shop.view_count + 7528 %}
                     {% set subscriber_count = target_shop.subscribers|length + 2653 %}
                     <div class="shop-item viewcount-subscribe-container">
@@ -298,11 +298,8 @@
                                 <div class="ml-15"><span>구독: {{ subscriber_count|intcomma }}명</span></div>
                                 <div class="s-btn">
                                     {% if current_user.is_authenticated %}
-{#                                        {% if current_user in target_shop.subscribers %}#}
                                             <button class="subscribed ml-15" id="subscribing-btn" uk-toggle="target: #shop-subscribe-cancel-modal" type="button">구독중</button>
-{#                                        {% else %}#}
                                             <button class="ml-15" id="shop-subscribe-submit" type="button">구독</button>
-{#                                        {% endif %}#}
                                         <script>
                                             {% if current_user in target_shop.subscribers %}
                                                 document.querySelector("#shop-subscribe-submit").style.display = "none";
@@ -319,12 +316,11 @@
                     </div>
 
                     <div class="subscribe-cancel-modal-container">
-{#                        {% if current_user in target_shop.subscribers %}#}
                             <div id="shop-subscribe-cancel-modal" class="uk-flex-top" uk-modal>
                                 <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
                                     <button class="uk-modal-close-default" type="button" uk-close></button>
                                     정말로 구독을 취소하시겠어요?
-                                    <div class="modoal-submit-cancel-btn">
+                                    <div class="modal-submit-cancel-btn">
                                         <div class="subscribe-cancel-btn mt-15 uk-inline">
                                             <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                                         </div>
@@ -334,7 +330,6 @@
                                     </div>
                                 </div>
                             </div>
-{#                        {% endif %}#}
                         {% if not (current_user.is_authenticated or (current_user in target_shop.subscribers)) %}
                             <script>
                                 document.querySelector("#shop-subscribe-cancel-modal").style.display = "none";
@@ -401,7 +396,7 @@
     {% endif %}
 
     <section class="grid-section">
-        <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
+        <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid="masonry: true">
             {% if current_profile %}
                 {% if current_user.is_authenticated and current_profile.level == "판매사업자" %}
                     {% if current_user.id == current_profile.user_id == target_shop.user_id %}
@@ -421,17 +416,21 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
-            <div>
-                <div class="uk-card uk-card-default">
-                    <div class="uk-card-media-top">
-                        <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" width="1800" height="1200" alt="">
+            {% for product in product_objs %}
+                <a href="{{ url_for("products.product_detail", _id=product.id, slug=product.slug) }}">
+                    <div>
+                        <div class="uk-card uk-card-default">
+                            <div class="uk-card-media-top">
+                                <img src="/{{ product.image_1_path }}" width="1800" height="1200" alt="">
+                            </div>
+                            <div class="uk-card-body">
+                                <h3 class="uk-card-title">Media Top</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="uk-card-body">
-                        <h3 class="uk-card-title">Media Top</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
-                    </div>
-                </div>
-            </div>
+                </a>
+            {% endfor %}
             <div>
                 <div class="uk-card uk-card-default">
                     <div class="uk-card-media-top">
@@ -561,10 +560,8 @@
             symbolImagePath = document.getElementById("shop-symbol-image-src").getAttribute("src");
         </script>
         -->
-{#    {% elif current_user.is_authenticated and not current_user in target_shop.subscribers %}#}
+
     {% elif current_user.is_authenticated %}
-        <script src="{{ url_for('static', filename='statics/js/products/shopCategorySubscribeSubmit.js') }}"></script>
-{#    {% elif current_user.is_authenticated and current_user in target_shop.subscribers %}#}
-        <script src="{{ url_for('static', filename='statics/js/products/shopCategorySubscribeCancel.js') }}"></script>
+        <script src="{{ url_for('static', filename='statics/js/products/shopCategorySubscribe.js') }}"></script>
     {% endif %}
 {% endblock %}

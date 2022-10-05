@@ -27,6 +27,8 @@ a.uk-link-reset:hover {color: #b33939 !important}
 
 .uk-breadcrumb>:nth-child(n+2):not(.uk-first-column)::before {margin: 0 5px 0 calc(5px - 4px)}
 
-
+.uk-width-100 {width: 100px}
+.uk-width-200 {width: 200px}
+.uk-width-300 {width: 300px}
 
 

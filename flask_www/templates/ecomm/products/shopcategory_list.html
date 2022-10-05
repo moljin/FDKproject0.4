@@ -22,13 +22,25 @@
                             {% for cover_img in shopcategory.shopcategory_shopcategory_cover_image_set %}
                                 <ul class="uk-slideshow-items">
                                     <li>
-                                        <img src="/{{ cover_img.image_1_path }}" uk-cover>
+                                        {% if cover_img.image_1_path %}
+                                            <img src="/{{ cover_img.image_1_path }}" uk-cover>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
+                                        {% endif %}
                                     </li>
                                     <li>
-                                        <img src="/{{ cover_img.image_2_path }}" uk-cover>
+                                        {% if cover_img.image_2_path %}
+                                            <img src="/{{ cover_img.image_2_path }}" uk-cover>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
+                                        {% endif %}
                                     </li>
                                     <li>
-                                        <img src="/{{ cover_img.image_3_path }}" uk-cover>
+                                        {% if cover_img.image_3_path %}
+                                            <img src="/{{ cover_img.image_3_path }}" uk-cover>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='statics/images/shop-cover.jpg') }}" uk-cover>
+                                        {% endif %}
                                     </li>
                                 </ul>
                             {% endfor %}
@@ -48,7 +60,11 @@
 
                         <div style="position: relative">
                             <div style="position: absolute; top: -32.5px; right: 10px">
-                                <img src="/{{ shopcategory.symbol_path }}" style="width: 70px; height: 70px; border-radius: 50%; border: solid white 5px">
+                                {% if shopcategory.symbol_path %}
+                                    <img src="/{{ shopcategory.symbol_path }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: solid white 5px">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='statics/images/sample_logo.png') }}" style="width: 70px; height: 70px; object-fit: cover;border-radius: 50%; border: solid white 5px">
+                                {% endif %}
                             </div>
                         </div>
 

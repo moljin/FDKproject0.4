@@ -17,5 +17,12 @@ def routes_init(app):
     from flask_www.ecomm.products import products
     app.register_blueprint(products.products_bp)
 
+    from flask_www.ecomm.carts import carts
+    app.register_blueprint(carts.carts_bp)
+
+    from flask_www.ecomm.promotions import coupons, points
+    app.register_blueprint(coupons.coupons_bp)
+    app.register_blueprint(points.points_bp)
+
 
 

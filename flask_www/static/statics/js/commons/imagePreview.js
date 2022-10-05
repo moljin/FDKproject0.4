@@ -70,6 +70,29 @@ function imgPreviewInit() {
         // console.log(e);
     }
 
+    try { //product thumbnail
+        let _width = `100%`;
+        let _height = `auto`;
+
+        const thumbInput1 = document.querySelector("#image1");
+        let thumbPreviewTag1 = document.querySelector('#thumbnail-preview1');
+        const existingImage1Path = document.getElementById("thumbnail-preview1").getAttribute("src");
+        eachImagePreview(_width, _height, thumbInput1, thumbPreviewTag1, existingImage1Path);
+
+        const thumbInput2 = document.querySelector("#image2");
+        let thumbPreviewTag2 = document.querySelector('#thumbnail-preview2');
+        const existingImage2Path = document.getElementById("thumbnail-preview2").getAttribute("src");
+        eachImagePreview(_width, _height, thumbInput2, thumbPreviewTag2, existingImage2Path);
+
+        const thumbInput3 = document.querySelector("#image3");
+        let thumbPreviewTag3 = document.querySelector('#thumbnail-preview3');
+        const existingImage3Path = document.getElementById("thumbnail-preview3").getAttribute("src");
+        eachImagePreview(_width, _height, thumbInput3, thumbPreviewTag3, existingImage3Path);
+
+    } catch (e) {
+        // console.log(e);
+    }
+
     /*##################################### ADMIN #####################################*/
     // admin profile-image/corp-image
     try {

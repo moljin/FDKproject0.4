@@ -22,9 +22,10 @@ HOVER 색   .units-btn button:hover /
 #slider_value {margin-left:10px; margin-right: 5px}
 
 .units-submit-div {display: flex; justify-content: flex-end; padding: 0 7px}
-#form-submit {cursor: pointer; width: 5.8rem; height: 38px; background: #0652DD; border-radius: 5px; font-size: .875rem; color: white} /*#1a73e8*/
+#form-submit {z-index: 20; position: fixed; left: 0; bottom: 0; width: 100%; cursor: pointer; height: 45px; background: #0652DD; opacity: 0.8; border-radius: 0; font-size: 16px; color: white} /*#1a73e8*/
 #form-submit:hover {background: #1a73e8 }
-.units-btn-group.cancel-group {margin-right: 7px}
+.units-btn-group.cancel-group,
+.units-btn-group.help-group {margin-right: 7px}
 
 
 /* Original style tools */
@@ -261,6 +262,8 @@ HOVER 색   .units-btn button:hover /
 @media (max-width: 350px) {
     .cancel-group {display: none}
     .units-btn-group.cancel-group {position: absolute; margin: 0; padding: 7px 7px; top: 58px; border-radius: 0 0 5px 5px}
+    .help-group {display: none}
+    .units-btn-group.help-group {position: absolute; margin: 0; padding: 7px 7px; top: 58px; border-radius: 0 0 5px 5px}
 }
 @media (max-width:279px){
     .units-toolbar {flex-wrap: nowrap;}

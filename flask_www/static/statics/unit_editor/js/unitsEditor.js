@@ -551,7 +551,7 @@ function unitsEditorInit(el, opt) {
             }
             let oldIframeTag = document.querySelector('[src="' + `${url}` + '"]')
             if (oldIframeTag) {
-                alert('같은 동영상이 있어요!')
+                alert('같은 동영상이 있어요!');
             } else {
                 const insertIframeHtml = `<iframe src="${url}" frameborder="0" allowfullscreen="true"></iframe>`;
                 document.execCommand('insertHTML', false, `${insertIframeHtml}`);
@@ -927,6 +927,9 @@ function newUnitsEditor(selector, opt = {}) {
     if (opt.cancel !== false) {
         units_toolbar = units_toolbar + unitsCancelGroup
     }
+    if (opt.help !== false) {
+        units_toolbar = units_toolbar + unitsHelpGroup
+    }
     if (opt.more_home !== false) {
         units_toolbar = units_toolbar + unitsMoreHome
     }
@@ -1221,6 +1224,26 @@ const unitsCancelGroup = `
     <span class="units-btn">
     <button class="units-clear" title="전체 지우기"><i class="fas fa-eraser"></i></button>
     </span>
+</div>`
+
+const unitsHelpGroup = `
+<div class="units-btn-group help-group">
+    <span class="units-btn">
+    <button class="units-help" uk-toggle="target: #units-help" title="도움말"><i class="fas fa-question"></i></i></button>
+    </span>
+</div>
+<div id="units-help" class="uk-flex-top" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h5 class="uk-modal-title">작성 팁</h5>
+        <div class="mt-15">
+        1. 상세페이지 이미지의 너비는 100%가 최적이고,<br>
+        2. 5MB를 초과하지 말아야 합니다. <br>
+        3. 이미지는 1개에 모든 정보를 넣는게 가장 효율적입니다. <br>
+        4. 여러개의 이미지를 사용할 경우 적절한 순서와 배치를 해주세요. <br>
+        5. 옵션상품이 있는 경우, 해당 옵션상품 이미지도 첩부하세요.
+        </div>
+    </div>
 </div>`
 
 // More Group/Btn

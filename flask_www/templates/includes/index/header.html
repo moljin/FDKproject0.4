@@ -54,7 +54,9 @@
                     {% if current_user.is_authenticated %}
                         <a href="{{ url_for('accounts.dashboard') }}"><div class="drop-item">DashBoard</div></a>
                     {% endif %}
-                    <a href="#"><div class="drop-item">스크립트 자바</div></a>
+                    {% if current_cart != None %}
+                        <a href="{{ url_for('carts.cart_view') }}"><div class="drop-item">카트보기:{{ cart_items_total_count }}</div></a>
+                    {% endif %}
                     <a href="#"><div class="drop-item">스크립트 자바</div></a>
                     <a href="#"><div class="drop-item">스크립트 자바</div></a>
                     <a href="#"><div class="drop-item"><img style="width: 30px; height: 30px; border-radius: 50%"
