@@ -60,7 +60,7 @@ def related_app(app):
         elif _type == "medium":
             _format = '%Y-%m-%d %H:%M %p'
         else:
-            _format = '%Y-%m-%d'
+            _format = '%Y.%m.%d'
         return value.strftime(_format)
 
     @app.context_processor

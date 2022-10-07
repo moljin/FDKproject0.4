@@ -12,9 +12,15 @@
 {% block head_js %}
     <script>
         optionSelectAjax = "{{ url_for("products.option_select_ajax") }}"
+
         cartUpdatAjax = "{{ url_for("carts.cart_update_ajax") }}"
         cartOptionDeleteAjax = "{{ url_for("carts.cart_option_delete_ajax") }}"
         cartProductDeleteAjax = "{{ url_for("carts.cart_product_delete_ajax") }}"
+
+        addCouponAjax = "{{ url_for("coupons.add_coupon_ajax") }}"
+        cancelCouponAjax = "{{ url_for("coupons.cancel_coupon_ajax") }}"
+        applyPointAjax = "{{ url_for("points.apply_point_ajax") }}"
+        cancelPointAjax = "{{ url_for("points.cancel_point_ajax") }}"
 
         CSRF_TOKEN = "{{ csrf_token() }}"
     </script>
@@ -182,6 +188,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
 
                                         <div class="pd-price pr-10">
@@ -191,9 +198,6 @@
                                     </div>
                                     <div class="cart-rt">
                                         <div class="op-content padding10">
-    {#                                        <div>열 너비 또는 내용을 수정하려면열(10,000원) 2개</div>#}
-    {#                                        <div>너비 또는 내용을 수정하려면열 너비 또는 내용을(10,000원) 2개</div>#}
-    {#                                        <div>수정하려면열 너비 또는 내용을 수정하려면(10,000원) 2개</div>#}
                                             {% for cart_option in cart_productoptions %}
                                                 {% if cart_product.product_id == cart_option.product_id %}
                                                     <div>{{ cart_option.title }}({{ cart_option.price|intcomma }}원) {{ cart_option.op_quantity }}개</div>
@@ -227,24 +231,111 @@
                         </div>
                     {% endif %}
                 </div>
-            <div class="test"></div>
-            <div class="test1"></div>
-                <div class="a">
-                    <div class="c main-width pt-10 pb-10">
-                        <div class=" total-info padding10">
-                            <div class="width-first">
-                                <div class="coupon-label mr-10">쿠폰:</div>
-                                <div class="coupon-input">{{ add_coupon_form.code(class="uk-input") }}</div>
-                                <div class="coupon-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default" id="coupon-apply">적용</button></div>
+
+                <div class="pl-10 pr-10">
+                    <div class="mt-20">
+                        <div class="coupon-point-alert main-width"></div>
+                        <div class="usedpoint-container main-width">
+                            <div class="used-container">
+                                <div class="cp-group">
+                                {% if remained_point != 0 %}
+                                    <div class="label">현재 총적립포인트</div>
+                                    <div>{{ remained_point|intcomma }}점</div>
+                                {% endif %}
+                                </div>
+                                <div class="cp-group">
+                                    <div class="label">적립 예정포인트</div>
+                                    <div><span id="prep-point">{{ prep_point|intcomma }}</span>점</div>
+                                </div>
                             </div>
-                            <div class="width-second">
-                                <div class="point-label mr-10">포인트:</div>
-                                <div class="point-input"><input class="uk-input" type="number" name="used_point" min="0" required="" id="id_used_point" placeholder="입력"/></div>
-                                <div class="point-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default">적용</button></div>
+                            <div class="used-container">
+                                <div class="cp-group">
+                                    <div class="label">결제후 예정 총적립포인트</div>
+                                    <div><span id="new-remained-point">{{ new_remained_point|intcomma }}</span>점</div>
+                                </div>
+                                <div class="cp-group applied">
+                                    {% if point_log_obj and used_point > 0 %}
+                                        <div class="point-log">
+                                            <div class="label">할인 적용포인트</div>
+                                            <input type="hidden" name="cart_point_log_id" value="{{ cart.point_log_id }}">
+                                            <div class="cancel" uk-grid>
+                                                <div><span id="used-point">{{ used_point|intcomma }}</span>점</div>
+                                                <div class="button"><button type="button" class="uk-button uk-button-default point-cancel-btn" uk-toggle="target: #usedpoint-cancel-modal-{{ cart.point_log_id }}" data-point-log-id="{{ cart.point_log_id }}">적용취소</button></div>
+                                            </div>
+                                            <div id="usedpoint-cancel-modal-{{ cart.point_log_id }}" class="usedpoint-cancel-modal uk-flex-top" uk-modal>
+                                                <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                                <button class="uk-modal-close-default" type="button" uk-close></button>
+                                                포인트 적용을 취소하시겠어요?
+                                                <div class="btn uk-align-right">
+                                                    <div class="delete-btn uk-inline">
+                                                        <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
+                                                    </div>
+                                                    <div class="delete-btn uk-inline ml-15">
+                                                        <button id="point-cancel-btn-{{ cart.point_log_id }}" class="uk-button uk-button-default uk-modal-close" type="button">삭제</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
+                        </div>
+                        {% if used_coupons %}
+                            <div class="usedcoupon-container main-width">
+                                <div class="label">
+                                    <span class="usedcoupon-span">적용한 쿠폰</span>
+                                </div>
+                                {% for used_coupon in used_coupons %}
+                                    <div class="each" id="each-{{ used_coupon.id }}">
+                                        <div class="code uk-width-expand">{{ used_coupon.code }}
+                                            <span class="period"> &nbsp;({{ used_coupon.coupon.use_from|daytime("small") }}~{{ used_coupon.coupon.use_to|daytime("small") }})</span>
+                                        </div>
+                                        <div class="amount-button">
+                                            <div class="amount">{{ used_coupon.amount|intcomma }}원</div>
+                                            <div class="button">
+                                                <button class="uk-button uk-button-default coupon-cancel-btn" type="button" uk-toggle="target: #usedcoupon-cancel-modal-{{ used_coupon.id }}" data-used-coupon-id="{{ used_coupon.id }}">적용취소</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="usedcoupon-cancel-modal-{{ used_coupon.id }}" class="usedcoupon-cancel-modal uk-flex-top" uk-modal>
+                                        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+                                            <button class="uk-modal-close-default" type="button" uk-close></button>
+                                            쿠폰 적용을 취소하시겠어요?
+                                            <div class="btn uk-align-right">
+                                                <div class="delete-btn uk-inline">
+                                                    <button class="uk-button uk-button-default uk-modal-close" type="button">취소</button>
+                                                </div>
+                                                <div class="delete-btn uk-inline ml-15">
+                                                    <button id="coupon-cancel-btn-{{ used_coupon.id }}" class="uk-button uk-button-default uk-modal-close" type="button">삭제</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="main-width total-info">
+                            <div class="first-second" uk-grid>
+                                <div class="width-first">
+                                    <div class="coupon-label mr-10">쿠폰:</div>
+                                    <div class="coupon-input">{{ add_coupon_form.code(class="uk-input", id="coupon-code") }}</div>
+                                    <div class="coupon-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default" id="coupon-apply">적용</button></div>
+                                </div>
+                                <div class="width-second">
+                                    <div class="point-label mr-10">포인트:</div>
+                                    <div class="point-input"><input class="uk-input" type="number" name="used-point" min="0" id="used-point" placeholder="할인포인트"/></div>
+                                    <div class="point-apply ml-10 mr-10"><button type="button" class="uk-button uk-button-default" id="point-apply">적용</button></div>
+                                </div>
+                            </div>
+
                             <div class="width-last">
-                                <div>총주문금액: <span id="cart_total_price">{{ cart_total_price|intcomma }}</span>원</div>
-                                <div>결제금액(임시): <span id="cart_pay_price">{{ cart_total_price|intcomma }}</span>원</div>
+                                <div>
+                                    <div>총주문금액: <span id="cart_total_price">{{ cart_total_price|intcomma }}</span>원</div>
+                                    <div>결제금액(임시): <span id="cart_pay_price">{{ cart.get_total_price()|intcomma }}</span>원</div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -252,8 +343,7 @@
             </div>
         </article>
     </section>
-    결제금액=총주문금액-쿠폰금액-할인포인트적용
-    <hr>
+
     <script src="{{ url_for('static', filename='statics/js/carts/promotions.js') }}"></script>
     <script src="{{ url_for('static', filename='statics/js/carts/cart.js') }}"></script>
 {% endblock %}

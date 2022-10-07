@@ -25,7 +25,7 @@ class Cart(BaseModel):
         return self.cart_total_price
 
     def coupon_discount_total(self):
-        used_coupons = UsedCoupon.query.filter_by(cart_id=self.id, owner_id=self.user_id).all()
+        used_coupons = UsedCoupon.query.filter_by(cart_id=self.id, consumer_id=self.user_id).all()
         total = 0
         if used_coupons:
             for used_coupon in used_coupons:

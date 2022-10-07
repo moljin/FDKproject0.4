@@ -1,0 +1,7 @@
+.board-container form {max-width: 500px; border: solid 1px #ced6e0; border-radius: 5px; padding: 2rem; margin: 2rem auto}
+.board-container form .form-group {display: flex; align-items: center}
+.board-container form .form-group.mt {margin-top: 30px}
+.board-container form .form-group.coupon {justify-content: flex-end;}
+.board-container form .form-group label {width: auto}
+.board-container form .form-group .check-btn-div {padding-left: 10px;}
+.board-container form .form-group .check-btn {height: 38px}

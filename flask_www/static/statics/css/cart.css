@@ -25,13 +25,14 @@
 .pd-op-price {text-align: center;}
 .op-price {padding-right: 10px; border-right: solid 1px lightgrey;}
 
-.total-info {display: flex; justify-content: flex-end}
+.total-info {display: flex; justify-content: flex-end; margin-top: 20px; margin-bottom: 15px}
 .total-info.padding10 {justify-content: space-between}
 /*.total-info justify-content: flex-end, .total-info.padding10 justify-content: space-between
 같은데 두개를 동시에 걸었다. if문으 로 쿠폰이나 포인트 존재여부에 따른 경우 모두 적용되게 하기 위해
 둘다 없을 경우는 적용이 안되는 군.... if 문 적용시 직접 class 에다 넣어야 겠다.*/
+.total-info .first-second {flex: 1}
 .total-info .width-first {flex: 1}
-.total-info .width-second {width: 30%}
+.total-info .width-second {width: 50%;}
 .total-info .width-last {width: 200px; text-align: right}
 .total-info .width-first,.total-info .width-second  {display:flex; justify-content: flex-start; align-items: center}
 
@@ -53,6 +54,34 @@
 .op-cancel.uk-close:hover {background: transparent}
 .order-delete-modal .btn.uk-align-right {margin-top: 30px}
 
+/*coupon, point*/
+.usedpoint-container {margin-top: 10px!important; display: flex}
+.usedpoint-container .used-container {display: flex; width: 50%}
+.usedpoint-container .used-container .cp-group {padding-left: 0; width: 50%; padding-bottom: 10px; margin-bottom: 7px; border-bottom: solid 1px lightgray} /**/
+.usedpoint-container .used-container .cp-group.applied {text-align: right!important;}
+.usedpoint-container .used-container .cp-group .label {margin-bottom: 7px}
+.usedpoint-container .used-container .cp-group .cancel {justify-content: right; align-items: center}
+.usedpoint-container .used-container .cp-group .cancel .button {padding-left: 15px}
+/*.usedpoint-container .used-container .cp-group .cancel .button button {display: flex; align-items: center}!*height:25px; *!*/
+
+.usedcoupon-container {margin-bottom: 8px; border-bottom: solid 1px lightgray} /*padding-bottom: 10px; */
+.usedcoupon-container .label {width: 130px; display: flex; align-items: center;} /* margin-bottom: 10px*/
+.usedcoupon-container .code,
+.usedcoupon-container .amount {display: flex; align-items: center}
+/*.used-coupon-point .code {flex: 1}*/
+.usedcoupon-container .amount-button {display: flex}
+.usedcoupon-container .amount {width: 150px}
+.usedcoupon-container .button {width: 95px; text-align: right}
+.usedcoupon-container .each {display: flex; width: 100%; margin-bottom: 10px}
+/*.usedcoupon-container .each .button button {display: flex; align-items: center}!*height:25px; *!*/
+
+.coupon-point-alert{display: none}
+.coupon-point-alert .flashes {margin-bottom: 0}
+.used-coupon div {display: flex; justify-content: left; align-items: center}
+.used-coupon .uk-button.code {margin-left: 10px}
+.used-coupon .uk-button.code:hover {cursor: none; border: 1px solid #e5e5e5}
+.used-coupon .uk-button.coupon-cancel-btn {margin-left: 20px}
+
 @media screen and (max-width: 560px) {
   .pd-change-btn {justify-content: flex-end; }
   .pd-check {padding-top: 7px}
@@ -68,6 +97,22 @@
   .pd-op-price {display: flex; padding-top: 0!important;}
   .op-price {padding-right: 0!important; border-right: none!important;}
   .p-change {border-top: solid 1px #f1f2f6}
+
+  .total-info .width-first .coupon-label {display: none}
+  .total-info .width-second .point-label {display: none}
+
+  .usedpoint-container .used-container {display: block}
+  .usedpoint-container .used-container .cp-group {width: 100%}
+
+  /*.usedcoupon-container .each {margin-left: 8px}*/
+  .usedcoupon-container .each .code .period {display: none}
+}
+
+@media screen and (max-width: 760px) {
+  /*.usedcoupon-container {display: block}*/
+  .usedcoupon-container .each {display: block}
+  .usedcoupon-container .each .code {height: 38px}
+  .usedcoupon-container .each .amount {flex: 1}
 }
 
 @media screen and (max-width: 960px) {
@@ -76,6 +121,12 @@
   .cart-lt {border-bottom: solid 1px #f1f2f6}
   .pd-op-price {padding-top: 7px}
   .pd-price {border-right: none;}
+  .total-info .first-second {display: block}
+  .total-info .first-second .width-second {width: 100%; margin-top: 20px}
+  .total-info .width-last {margin-top: 50px}
+
+  .usedpoint-container {display: block}
+  .usedpoint-container .used-container {width: 100%}
 }
 
 

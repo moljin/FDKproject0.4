@@ -4,14 +4,15 @@ from flask import Blueprint, request, make_response, jsonify, session, redirect,
 from flask_login import current_user
 
 from flask_www.accounts.utils import login_required
+from flask_www.commons.models import VarRatio
 from flask_www.configs import db
 from flask_www.configs.config import NOW
 from flask_www.ecomm.carts.models import Cart, CartProduct, CartProductOption
 from flask_www.ecomm.carts.utils import new_cartproduct_create, new_cartproductoption_create, cartproduct_update, cart_total_price, _cart_id, cart_active_check  # , cart_active_check
 from flask_www.ecomm.products.models import ProductOption, Product
 from flask_www.ecomm.promotions.forms import AddCouponForm
-from flask_www.ecomm.promotions.models import Coupon, UsedCoupon, Point
-from flask_www.ecomm.promotions.utils import cart_point_log_create
+from flask_www.ecomm.promotions.models import Coupon, UsedCoupon, Point, PointLog
+from flask_www.ecomm.promotions.utils import cart_point_log_create, point_log_update
 
 NAME = 'carts'
 carts_bp = Blueprint(NAME, __name__, url_prefix='/carts')
@@ -40,13 +41,6 @@ def add_to_cart(_id):
             db.session.commit()
         else:  # 여기로 지나갈 수는 없지만...d/t 상품페이지로 진입시 이 과정을 거친다.
             cart_active_check(cart)
-            # beyond_days = elapsed_day(cart.updated_at)
-            # if beyond_days >= 1:
-            #     cart.is_active = False
-            #     cart.cart_id = "비구매 1개월 초과 카트"
-            #     cart = Cart(user_id=current_user.id, cart_id=_cart_id())
-            #     db.session.add(cart)
-            #     db.session.commit()
 
         old_cartproduct = CartProduct.query.filter_by(cart_id=cart.id, product_id=_id).first()
         old_cartproductoptions = CartProductOption.query.filter_by(cart_id=cart.id, product_id=_id).all()
@@ -146,12 +140,9 @@ def cart_view():
         # 여기로 지나갈 수는 없지만...d/t 상품페이지로 진입시 이 과정을 거친다.
         # 혹시라도 로그인하고 카트뷰 페이지로 어떻게든 들어가면...
         if cart:
-            print(cart)
             cart_active_check(cart)
             coupons = Coupon.query.filter_by(is_active=True).filter(Coupon.use_from <= NOW, Coupon.use_to >= NOW).all()
-            print("coupons", coupons)
-            used_coupons = UsedCoupon.query.filter_by(cart_id=cart.id, owner_id=current_user.id).all()
-            print("used_coupons", used_coupons)
+            used_coupons = UsedCoupon.query.filter_by(cart_id=cart.id, consumer_id=current_user.id).all()
 
     except Exception as e:
         print(e, 'cart_view Exception: 카트가 없고, 사용가능한 쿠폰, 사용한 쿠폰도 없다.')
@@ -159,9 +150,7 @@ def cart_view():
         coupons = None
         used_coupons = None
     if current_user.is_authenticated:
-        print("cart", cart)
         if cart and cart.is_active is True:
-            print("if cart")
             add_coupon_form = AddCouponForm()
             cart_products = CartProduct.query.filter_by(cart_id=cart.id).all()
             cart_productoptions = CartProductOption.query.filter_by(cart_id=cart.id).all()
@@ -170,6 +159,8 @@ def cart_view():
 
             point_obj = Point.query.filter_by(user_id=current_user.id).first()
             point_log_obj = cart_point_log_create(cart)
+            # 이때 point_obj 가 없으면, point_obj 와 point_log_obj 를 만들고,
+            # point_obj 가 있으면, point_log_obj 유무를 체크하고 생성하거나 있는 것을 반환한다.
 
             context = {
                 "cart_id": cart.id,
@@ -267,52 +258,64 @@ def cart_update_ajax():
 @carts_bp.route('/cart/option/delete/ajax', methods=['POST'])
 @login_required
 def cart_option_delete_ajax():
-    cart_id = request.form.get("cart_id")
-    product_id = request.form.get("product_id")
-    option_id = request.form.get("option_id")
-    cart = Cart.query.get_or_404(cart_id)
+    if request.method == 'POST':
+        cart_id = request.form.get("cart_id")
+        product_id = request.form.get("product_id")
+        option_id = request.form.get("option_id")
+        cart = Cart.query.get_or_404(cart_id)
 
-    cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
-    cartproductoption = CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id).first()
+        cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
+        cartproductoption = CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id).first()
 
-    cartproduct.op_subtotal_price = cartproduct.op_subtotal_price - cartproductoption.op_line_price
-    cartproduct.line_price = cartproduct.line_price - cartproductoption.op_line_price
-    cart.cart_total_price = cart.cart_total_price - cartproductoption.op_line_price
-    db.session.add(cart)
-    db.session.add(cartproduct)
+        cartproduct.op_subtotal_price = cartproduct.op_subtotal_price - cartproductoption.op_line_price
+        cartproduct.line_price = cartproduct.line_price - cartproductoption.op_line_price
+        cart.cart_total_price = cart.cart_total_price - cartproductoption.op_line_price
+        db.session.add(cart)
+        db.session.add(cartproduct)
 
-    db.session.delete(cartproductoption)
-    db.session.commit()
-    delete_data_response = {
-        "_success": "delete_success",
-        "cart_pd_line_price": cartproduct.line_price,
-    }
-    return make_response(jsonify(delete_data_response))
+        db.session.delete(cartproductoption)
+        db.session.commit()
+        delete_data_response = {
+            "_success": "delete_success",
+            "cart_pd_line_price": cartproduct.line_price,
+        }
+        return make_response(jsonify(delete_data_response))
 
 
 @carts_bp.route('/cart/product/delete/ajax', methods=['POST'])
 @login_required
 def cart_product_delete_ajax():
-    cart_id = request.form.get("cart_id")
-    product_id = request.form.get("product_id")
-    cart = Cart.query.get_or_404(cart_id)
-    cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
-    if cartproduct:
-        cart.cart_total_price = cart.cart_total_price - cartproduct.line_price
-        db.session.add(cart)
-        cartproductoptions = CartProductOption.query.filter_by(cart_id=cart_id, product_id=product_id).all()
-        if cartproductoptions:
-            for cartpdop in cartproductoptions:
-                db.session.delete(cartpdop)
-            db.session.delete(cartproduct)
-        else:
-            db.session.delete(cartproduct)
-    db.session.commit()
-    print(cart.cart_total_price)
+    if request.method == 'POST':
+        cart_id = request.form.get("cart_id")
+        product_id = request.form.get("product_id")
+        cart = Cart.query.get_or_404(cart_id)
+        cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
+        if cartproduct:
+            cart.cart_total_price = cart.cart_total_price - cartproduct.line_price
+            db.session.add(cart)
+            cartproductoptions = CartProductOption.query.filter_by(cart_id=cart_id, product_id=product_id).all()
+            if cartproductoptions:
+                for cartpdop in cartproductoptions:
+                    db.session.delete(cartpdop)
+                db.session.delete(cartproduct)
+            else:
+                db.session.delete(cartproduct)
+        db.session.commit()
+        print(cart.cart_total_price)
 
-    delete_data_response = {
-        "_success": "delete_success",
-        "cart_total_price": cart.cart_total_price,
-        # "cart_pay_price": cart.get_total_price()
-    }
-    return make_response(jsonify(delete_data_response))
+        point_ratio = VarRatio.query.get(2).ratio
+        point_obj = Point.query.filter_by(user_id=current_user.id).first()
+        point_log = PointLog.query.filter_by(cart_id=cart.id).first()
+
+        will_dct_amount = cart.discount_total_amount()
+        new_prep_point = round(float(cart.subtotal_price() - will_dct_amount) * float(point_ratio))
+        point_log_update(cart, point_obj, point_log, point_log.used_point, new_prep_point)
+
+        delete_data_response = {
+            "_success": "delete_success",
+            'prep_point': point_log.prep_point,
+            'new_remained_point': point_log.new_remained_point,
+            "cart_total_price": cart.cart_total_price,
+            "cart_pay_price": cart.get_total_price()
+        }
+        return make_response(jsonify(delete_data_response))

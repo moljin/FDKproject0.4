@@ -1,5 +1,5 @@
 from flask_login import current_user
-from flask import abort
+from flask import abort, request
 
 from flask_www.accounts.utils import login_required
 from flask_www.configs import db
@@ -7,6 +7,20 @@ from flask_www.ecomm.promotions.models import Coupon, PointLog, Point
 
 coupon_obj = ''
 new_point_log_obj = ''
+
+
+@login_required
+def coupon_code_check(req_code):
+    existing_coupon = Coupon.query.filter_by(code=req_code).first()
+    if existing_coupon:
+        code_check_response = {
+            "flash_message": "동일한 쿠폰코드가 존재합니다.",
+        }
+    else:
+        code_check_response = {
+            "flash_message": "사용가능한 쿠폰코드입니다.",
+        }
+    return code_check_response
 
 
 @login_required

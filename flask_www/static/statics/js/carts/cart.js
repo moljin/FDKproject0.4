@@ -238,6 +238,11 @@ function cartProductDelete(cartId, PdId){
                 alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
             } else {
                 console.log("success", response._success)
+                const prepPointSpan = document.querySelector("#prep-point");
+                prepPointSpan.innerHTML = intComma(response.prep_point);
+                const newRemainedPointSpan = document.querySelector("#new-remained-point");
+                newRemainedPointSpan.innerHTML = intComma(response.new_remained_point);
+
                 const cartProductContainer = document.querySelector('[data-cart-product-id="' + `${PdId}` + '"]');
                 cartProductContainer.remove();
                 const cartProduct = document.querySelector(".cart-product.bg-100.padding10");
@@ -253,7 +258,7 @@ function cartProductDelete(cartId, PdId){
                 const cartTotalPriceSpan = document.querySelector("#cart_total_price");
                 const cartPayPriceSpan = document.querySelector("#cart_pay_price");
                 cartTotalPriceSpan.innerHTML = intComma(response.cart_total_price);
-                cartPayPriceSpan.innerHTML = intComma(response.cart_total_price);
+                cartPayPriceSpan.innerHTML = intComma(response.cart_pay_price);
             }
         },
         error: function (err) {
