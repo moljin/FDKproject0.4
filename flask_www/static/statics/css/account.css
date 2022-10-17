@@ -41,7 +41,7 @@ body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn.i
 body > main > section > div:nth-child(1) > button.profile-img-modal-upload-btn {position: absolute; top: 460px; left: calc(50% + 80px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
 body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn {position: absolute; top: 460px; left: calc(50% + 120px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
 #profile_img_upload_modal-container > div > div.uk-margin {position: relative; margin-bottom: 10px}
-#profile_img_upload_modal-container > div > div.uk-margin > label {position: absolute; top: 6px; width: 102px; padding: 0}
+#profile_img_upload_modal-container > div > div.uk-margin > label {position: absolute;}
 
 #cover-img-delete-btn, #account_cover_img_delete_modal-container > form > div > div:nth-child(3) > button, #cover-img-submit,
 #profile-update-submit, #vendor-update-submit,
@@ -52,9 +52,6 @@ body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn {
 #vendor-delete-modal > form > div > div:nth-child(3) > button {border-radius: 5px}
 #vendor-delete-modal > form > div {margin-top: 40px}
 
-#account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div > label,
-#account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div > label,
-#account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div > label,
 #basic-profile-update > div > fieldset > div:nth-child(5) > label,
 #vendor-update-modal > div > div:nth-child(8) > label {border-radius: 5px 0 0 5px}
 
@@ -64,10 +61,11 @@ body > main > section > div:nth-child(1) > button.profile-img-modal-delete-btn {
 
 #account_cover_img_upload_modal-container > form > div > div.cover-img-save-btn.uk-align-right.mt-15 {margin-bottom: 0}
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div.input-file-container {position: relative}
-#account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div > div > label {position: absolute; top: 6px; width: 102px; padding: 0}
+#account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div > div > label {position: absolute; top: -30px;}
 #account_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div > div.uk-margin > div > div {width: 100%}
 /*#account_cover_img_upload_modal-container > form > div > div.cover-img-save-btn {float: right}*/
 #account_cover_img_delete_modal-container > form > div {margin-top: 40px}
+#account_cover_img_upload_modal-container .cover-img-save-btn.uk-align-right {margin-top: 10px; margin-bottom: -10px}
 
 
 #profile-message {border-radius: 5px; height: 5rem; resize: none}
@@ -77,10 +75,13 @@ body > main > section > div:nth-child(2) > div > div.nickname > div.profile-user
 body > main > section > div:nth-child(2) > div > div.flashes.uk-alert {margin-top: 5px; margin-bottom: 0 !important;}
 #basic-profile-update > div > fieldset > div.flashes.uk-alert {display: none; }
 #vendor-update-modal > div > div.flashes.uk-alert {display: none}
-#vendor-update-modal > div > div:nth-child(11) > div.uk-margin > label {position: absolute; top: 6px; width: 102px; padding: 0}
+#vendor-update-modal > div > div:nth-child(11) > div.uk-margin > label {position: absolute}
 #vendor-update-modal > div > div:nth-child(11) > div.corp-img img {display: none}
 #vendor-update-modal > div > div:nth-child(11) > div.corp-img img.active {display: block}
-#corp-modal-image > div > div.uk-margin > label {position: absolute; top: 6px; width: 102px; padding: 0}
+#corp-modal-image > div > div.uk-margin > label {position: absolute;}
+#cover_image1, #cover_image2, #cover_image3 {display: none}
+#profile_image {display: none}
+#corp_image {display: none}
 
 
 .section-container .section-item .profile-container > div .uk-text-right.mt-5 > a {font-size: 14px; color: gray}

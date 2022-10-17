@@ -63,7 +63,7 @@ class Product(BaseModel):
     user = db.relationship('User', backref=db.backref('product_user_set'))
 
     shopcategory_id = db.Column(db.Integer, db.ForeignKey('shopcategories.id', ondelete='CASCADE'), nullable=False)
-    shopcategory = db.relationship('ShopCategory', backref=db.backref('shopcategory_product_set', cascade='all, delete-orphan'),
+    shopcategory = db.relationship('ShopCategory', backref=db.backref('shopcategory_product_set'),  # , cascade='all, delete-orphan'
                                    primaryjoin='foreign(Product.shopcategory_id) == remote(ShopCategory.id)')
 
     title = db.Column(db.String(100), nullable=False)

@@ -31,13 +31,34 @@ footer, header, hgroup, menu, nav, section {
   box-sizing: border-box;
   border: 0;
 }
+/*dev 용*/
+.a {border: solid 1px blue}
+.b {border: solid 1px red}
+.c {border: solid 1px coral}
+.d {border: solid 1px darkgreen}
 
-hr {background-color: grey; height: 1px}
+/*.above_main {padding-top: 55px}*/
+
+main, .main-width {max-width: 1280px; margin: auto;}/*padding-top: 10px; */
+.section-container, .padding10 {padding: 10px}
 .above-main .flashes {border-radius: 0}
 #flashes-close-btn, #flashes-close-btn2 {padding-top: 5px}
+.flashes {display: flex; align-items: center; margin-bottom: 20px; width: 100%; min-height: 45px; border-radius: 5px; background: #c56cf0; color: white}
+.flashes .uk-alert-close {top: 16px}
+
+hr {background-color: grey; height: 1px}
 button.check-btn {padding: 3px 7px; border: solid 1px #dcdde1;font-size: 14px; color: red; max-width: 100px; cursor: pointer; border-radius: 3px}
 button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
 .grid-section {padding: 7px}
+
+.fs-12 {font-size: 12px}
+.fs-13 {font-size: 13px}
+.fs-14 {font-size: 14px}
+.fs-15 {font-size: 15px}
+.fs-16 {font-size: 16px}
+.fs-17 {font-size: 17px}
+.fs-18 {font-size: 18px}
+
 .pt-3 {padding-top: 3px}
 .pt-4 {padding-top: 4px}
 .pt-5 {padding-top: 5px}
@@ -127,13 +148,6 @@ button.check-btn:hover {background: #ecf0f1; color: #eb2f06}
 .ml-20 {margin-left: 20px}
 .ml-30 {margin-left: 30px}
 .ml-40 {margin-left: 40px}
-
-/*.above_main {padding-top: 55px}*/
-
-main, .main-width {max-width: 1280px; margin: auto;}/*padding-top: 10px; */
-.section-container, .padding10 {padding: 10px}
-.flashes {display: flex; align-items: center; margin-bottom: 20px; width: 100%; min-height: 45px; border-radius: 5px; background: #c56cf0; color: white}
-.flashes .uk-alert-close {top: 16px}
 
 footer {
     background-color: rgba(13,37,141,0.84);

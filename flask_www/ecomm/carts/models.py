@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from flask_www.commons.models import BaseModel, VarRatio
+from flask_www.commons.models import BaseModel, VarRatio, BaseAmount
 from flask_www.configs import db
 from flask_www.ecomm.products.models import Product, ProductOption
 from flask_www.ecomm.promotions.models import UsedCoupon, Point, PointLog
@@ -55,23 +55,33 @@ class Cart(BaseModel):
 
     def discount_total_amount(self):
         point_log = PointLog.query.filter_by(id=self.point_log_id).first()
+        base_pay_amount = BaseAmount.query.get_or_404(1).amount
         if point_log:
             if self.coupon_discount_total() > 0:  # 추가
                 discount_total = self.coupon_discount_total() + int(point_log.used_point)
-                if self.subtotal_price() >= discount_total:
+                if self.subtotal_price() >= discount_total + base_pay_amount:
                     return discount_total
             else:
-                if self.subtotal_price() >= int(point_log.used_point):
+                if self.subtotal_price() >= int(point_log.used_point) + base_pay_amount:
                     return int(point_log.used_point)
-        else:
+        else:  # 이런 경우는 없겠네.... add_to_cart_ajax 하고, cart_view 할때 PointLog 를 만든다.
             if self.coupon_discount_total() > 0:
-                if self.subtotal_price() >= self.coupon_discount_total():
+                if self.subtotal_price() >= self.coupon_discount_total() + base_pay_amount:
                     return self.coupon_discount_total()
-
         return Decimal(0)
+
+    def get_total_delivery_pay(self):
+        cart_products = CartProduct.query.filter_by(cart_id=self.id).all()
+        existing_total = 0
+        for cp in cart_products:
+            existing_total += cp.product.delivery_pay
+        return existing_total
 
     def get_total_price(self):
         return self.subtotal_price() - self.discount_total_amount()
+
+    def get_real_pay_price(self):
+        return self.get_total_price() + self.get_total_delivery_pay()
 
     def sell_charge_amount(self):  # 판매 수수료: 결제금액의 7.7%...from common.models import VarRatio
         try:
@@ -86,7 +96,7 @@ class Cart(BaseModel):
 class CartProduct(BaseModel):
     __tablename__ = 'cart_products'
     cart_id = db.Column(db.Integer, db.ForeignKey('carts.id', ondelete='CASCADE'), nullable=False)
-    cart = db.relationship('Cart', backref=db.backref('cart_active_check(cart)'))
+    cart = db.relationship('Cart', backref=db.backref('cartproduct_cart_set'))
 
     product_id = db.Column(db.Integer)
     product = db.relationship('Product', backref=db.backref('cartproduct_product_set'),
@@ -122,12 +132,20 @@ class CartProduct(BaseModel):
 class CartProductOption(BaseModel):
     __tablename__ = 'cart_productoptions'
     cart_id = db.Column(db.Integer, db.ForeignKey('carts.id', ondelete='CASCADE'), nullable=False)
+
     product_id = db.Column(db.Integer)
-    cart_product = db.relationship('CartProduct', backref=db.backref('cartproduct_cartproductoption_set', cascade='all, delete-orphan'),
-                                   primaryjoin='foreign(CartProductOption.product_id) == remote(CartProduct.product_id)')
+    """
+    카트에서 옵션삭제할 때 아래 에러 발생
+    SAWarning: Multiple rows returned with uselist=False for lazily-loaded attribute 'CartProductOption.cart_product'
+    카트에 add_to_cart 할 때 아래 에러 발생
+    sawarning: multiple rows returned with uselist=false for eagerly-loaded attribute 'CartProductOption.cart_product'
+    결국 db.relationship 적용하지 않고, product_id만 저장함
+    """
+    # cart_product = db.relationship('CartProduct', backref=db.backref('cartproduct_cartproductoption_set', cascade='all, delete-orphan'),
+    #                                primaryjoin='foreign(CartProductOption.product_id) == remote(CartProduct.product_id)', lazy="joined")
 
     option_id = db.Column(db.Integer)
-    option = db.relationship('ProductOption', backref=db.backref('productoption_cartproductoption_set', cascade='all, delete-orphan'),
+    option = db.relationship('ProductOption', backref=db.backref('productoption_cartproductoption_set'),
                              primaryjoin='foreign(CartProductOption.option_id) == remote(ProductOption.id)')
 
     title = db.Column(db.String(100), nullable=False)

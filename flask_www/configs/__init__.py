@@ -1,6 +1,3 @@
-import time
-
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -8,6 +5,9 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import URLSafeTimedSerializer
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from flask_www.configs.apps import related_app
 from flask_www.configs.config import TEMPLATE_ROOT, STATIC_ROOT, DevelopmentConfig, ProductionConfig
@@ -44,6 +44,7 @@ def create_app(config_name=None):
     from flask_www.ecomm.products import models
     from flask_www.ecomm.carts import models
     from flask_www.ecomm.promotions import models
+    from flask_www.ecomm.orders import models
 
     login_manager.init_app(application)
     login_manager.login_view = 'login'
@@ -69,5 +70,11 @@ def create_app(config_name=None):
 
 app = create_app()
 safe_time_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+"""cursor 를 열고 닫는거를 "" MySQL InterfaceError (0, '') "" 이 에러를 잡기 위해 쓴다는데...."""
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], echo=True, pool_size=20, max_overflow=0)
+# db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+connection = engine.raw_connection()
+cursor = connection.cursor()
 
 

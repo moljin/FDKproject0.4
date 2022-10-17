@@ -7,7 +7,7 @@ from flask_login import current_user
 from sqlalchemy import desc
 
 from flask_www.accounts.models import Profile, User
-from flask_www.accounts.utils import login_required, vendor_required
+from flask_www.accounts.utils import login_required, vendor_required, admin_required
 from flask_www.commons.ownership_required import shopcategory_ownership_required, product_ownership_required
 from flask_www.commons.utils import flash_form_errors, save_file, ajax_post_key, base64_to_file, existing_img_and_dir_delete_for_update, existing_img_and_dir_delete_without_update, \
     existing_cover_image_save, new_three_image_save, elapsed_day
@@ -18,7 +18,7 @@ from flask_www.ecomm.carts.models import Cart
 from flask_www.ecomm.carts.utils import cart_active_check
 from flask_www.ecomm.products.forms import ShopCategoryForm, ProductForm
 from flask_www.ecomm.products.models import ShopCategory, ShopCategoryCoverImage, UnitsProductImage, Product, ProductOption
-from flask_www.ecomm.products.utils import new_shop_cover_image_save, try_shopcategory_delete_ajax
+from flask_www.ecomm.products.utils import new_shop_cover_image_save, try_shopcategory_delete_ajax, product_partial_save, p_option_partial_save
 
 NAME = 'products'
 products_bp = Blueprint(NAME, __name__, url_prefix='/products')
@@ -442,13 +442,11 @@ def product_save():
         op_available_order = request.form.getlist('op_available_order')
 
         if target_product:
-            print(request.form)
-            if (g.user != target_product.user) or not g.user.is_admin:
+            if g.user != target_product.user:# or not g.user.is_admin:
                 flash('수정권한이 없습니다')
                 return redirect(url_for('products.product_detail', _id=target_product.id, slug=target_product.slug))
             target_product.title = title
-            target_product.content = content
-            target_product.meta_description = meta_description
+            product_partial_save(target_product, content, meta_description, price, stock, base_dc_amount, delivery_pay, available_display, available_order)
 
             request_path = "product_thumbnail_images"
             existing_image_1_path = target_product.image_1_path
@@ -475,71 +473,23 @@ def product_save():
                 else:
                     img3_relative_path, _ = save_file(NOW, thumbnail_image3, request_path, current_user)
                     target_product.image_3_path = img3_relative_path
-
-            target_product.price = price
-            target_product.stock = stock
-            target_product.base_dc_amount = base_dc_amount
-            target_product.delivery_pay = delivery_pay
-
-            if available_display is not None:
-                target_product.available_display = True
-            else:
-                target_product.available_display = False
-
-            if available_order is not None:
-                target_product.available_order = True
-            else:
-                target_product.available_order = False
-
-            db.session.add(target_product)
             db.session.commit()
 
             used_options = []
-
             # for idx, _ in enumerate(op_title):
             for idx in range(len(op_title)):
-                print("idx", idx)
                 if op_id[idx] == "none":
-                    print('if none idx', idx)
-                    print('op_id == "none"')
-                    print('== "none"  op_id[idx]', op_id[idx])
                     new_option = ProductOption(
                         user_id=g.user.id,
                         title=op_title[idx]
                     )
                     new_option.product_id = target_product.id
-                    new_option.price = op_price[idx]
-                    new_option.stock = op_stock[idx]
-
-                    if str(idx) in op_available_display:
-                        new_option.available_display = True
-                    else:
-                        new_option.available_display = False
-
-                    if str(idx) in op_available_order:
-                        new_option.available_order = True
-                    else:
-                        new_option.available_order = False
-
-                    db.session.bulk_save_objects([new_option])
+                    p_option_partial_save(new_option, idx, op_price, op_stock, op_available_display, op_available_order)
 
                 else:
                     option_obj = ProductOption.query.get_or_404(op_id[idx])
                     option_obj.title = op_title[idx]
-                    option_obj.price = op_price[idx]
-                    option_obj.stock = op_stock[idx]
-
-                    if str(idx) in op_available_display:
-                        option_obj.available_display = True
-                    else:
-                        option_obj.available_display = False
-
-                    if str(idx) in op_available_order:
-                        option_obj.available_order = True
-                    else:
-                        option_obj.available_order = False
-
-                    db.session.bulk_save_objects([option_obj])
+                    p_option_partial_save(option_obj, idx, op_price, op_stock, op_available_display, op_available_order)
                     used_options.append(option_obj)
                 db.session.commit()
             try:
@@ -592,29 +542,11 @@ def product_save():
                 title=title
             )
             new_product.shopcategory_id = shopcategory_id
-            new_product.content = content
-            new_product.meta_description = meta_description
+            new_product.orm_id = orm_id
+            product_partial_save(new_product, content, meta_description, price, stock, base_dc_amount, delivery_pay, available_display, available_order)
 
             request_path = "product_thumbnail_images"
             new_three_image_save(current_user, new_product, thumbnail_image1, thumbnail_image2, thumbnail_image3, request_path)
-
-            new_product.orm_id = orm_id
-            new_product.price = price
-            new_product.stock = stock
-            new_product.base_dc_amount = base_dc_amount
-            new_product.delivery_pay = delivery_pay
-
-            if available_display is not None:
-                new_product.available_display = True
-            else:
-                new_product.available_display = False
-
-            if available_order is not None:
-                new_product.available_order = True
-            else:
-                new_product.available_order = False
-
-            db.session.add(new_product)
             db.session.commit()
 
             for idx in range(len(op_title)):
@@ -623,20 +555,7 @@ def product_save():
                     title=op_title[idx]
                 )
                 new_option.product_id = new_product.id
-                new_option.price = op_price[idx]
-                new_option.stock = op_stock[idx]
-
-                if str(idx) in op_available_display:
-                    new_option.available_display = True
-                else:
-                    new_option.available_display = False
-
-                if str(idx) in op_available_order:
-                    new_option.available_order = True
-                else:
-                    new_option.available_order = False
-
-                db.session.bulk_save_objects([new_option])
+                p_option_partial_save(new_option, idx, op_price, op_stock, op_available_display, op_available_order)
                 db.session.commit()
 
             if current_profile and (current_profile.level == "판매사업자"):
@@ -697,6 +616,7 @@ def units_images_save_ajax():
 
 
 @products_bp.route('/product/detail/<int:_id>/<slug>', methods=['GET'])
+@login_required
 def product_detail(_id, slug):
     product_obj = Product.query.filter_by(id=_id, slug=slug).first()
     product_obj_owner = User.query.get_or_404(product_obj.user_id)
@@ -709,18 +629,8 @@ def product_detail(_id, slug):
 
     try:
         cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
-        # 여기에 상품을 열면 카트가 없는 경우 카트 생성 코드가 필요(cart_active_check 에 넣든지...)
-        # 카트가 없으면 그냥 패스...테스트해보자
         if cart:
             cart_active_check(cart)
-            print("cart_active_check(cart)", cart_active_check(cart))
-        # beyond_days = elapsed_day(cart.updated_at)
-        # if beyond_days >= 1:
-        #     cart.is_active = False
-        #     cart.cart_id = "비구매 1개월 초과 카트"
-        #     cart = Cart(user_id=current_user.id, cart_id=_cart_id())
-        #     db.session.add(cart)
-        #     db.session.commit()
     except Exception as e:
         print(e)
 
@@ -729,6 +639,12 @@ def product_detail(_id, slug):
                            target_options=target_options,
                            target_shopcategory=target_shopcategory,
                            target_profile=target_profile)
+
+
+@products_bp.route('/product/list', methods=['GET'])
+def product_list():
+    products = Product.query.order_by(desc(Product.created_at))
+    return render_template('ecomm/products/product/list.html', products=products)
 
 
 @products_bp.route('/product/option/ajax', methods=['POST'])

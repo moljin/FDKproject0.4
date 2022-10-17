@@ -155,7 +155,6 @@ def login():
         return redirect(url_for("commons.index"))
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        profile = Profile.query.filter_by(user_id=user.id).first()
         if not user:
             flash('등록된 이메일이 없어요!')
             return redirect(url_for('accounts.register'))
@@ -163,15 +162,17 @@ def login():
             flash('이메일 인증이 되지 않았습니다. 메일을 확인하세요.')
             return redirect(url_for('accounts.login'))
         elif user and user.is_verified:
+            profile = Profile.query.filter_by(user_id=user.id).first()
             if security.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                session['email'] = user.email  # 추가
-                path_redirect = request.args.get("next")  # .split('?next=/')  # get the original page
+                session['email'] = user.email
+                path_redirect = request.args.get("next")  # @login_required 의 url_for('accounts.login', next=request.path) 여기서 받아온거다.
+                print(path_redirect)
                 if path_redirect:
-                    return redirect(url_for('/' + path_redirect))
+                    if profile:
+                        return redirect(path_redirect)
                 elif profile:
                     return redirect('/')
-                    # return redirect(url_for('accounts.dashboard'))  # redirect('/')
                 elif not profile:
                     return redirect(url_for('profiles.create'))
             else:

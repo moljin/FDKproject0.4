@@ -25,19 +25,11 @@
             existingShopcategoryCheckAjax = "{{ url_for("products.existing_shopcategory_check_ajax") }}"
             shopCategoryUpdateAjax = "{{ url_for("products.shopcategory_update_ajax", _id=target_shop.id) }}"
             shopCategoryDeleteAjax = "{{ url_for("products.shopcategory_delete_ajax") }}"
-            {#vendorUpdateAjax = "{{ url_for("profiles.vendor_update_ajax", _id=target_profile.id) }}"#}
-            {#{% if target_profile.level != "일반이용자" %}#}
-            {#    vendorDeleteAjax = "{{ url_for("profiles.vendor_delete_ajax", _id=target_profile.id) }}"#}
-            {#{% endif %}#}
 
         </script>
-{#    {% elif current_user.is_authenticated and not current_user in target_shop.subscribers %}#}
     {% elif current_user.is_authenticated %}
         <script>
             shopCategorySubscribeAjax = "{{ url_for('products.shopcategory_subscribe_ajax', _id=target_shop.id) }}";
-{#        </script>#}
-{#    {% elif current_user.is_authenticated and current_user in target_shop.subscribers %}#}
-{#        <script>#}
             shopCategorySubscribeCancelAjax = "{{ url_for('products.shopcategory_subscribe_cancel_ajax', _id=target_shop.id) }}";
         </script>
     {% endif %}
@@ -104,7 +96,7 @@
         <div id="shopcategory_cover_img_upload_modal-container" class="shopcategory_cover-img uk-modal-container uk-flex-top" uk-modal uk-height-match="target: form > div > div > div > div > .cover-img">
             <form method="POST" class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical" enctype="multipart/form-data">
                 <div>
-                    <button class="uk-modal-close-outside" type="button" uk-close></button>
+                    <button class="uk-modal-close-default" type="button" uk-close></button>
 
                     <div class="uk-child-width-expand@m" uk-grid>
                         <div>
@@ -118,7 +110,7 @@
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image1">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image1">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image1" name="cover_image1" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -135,7 +127,7 @@
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image2">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image2">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image2" name="cover_image2" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -152,7 +144,7 @@
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image3">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image3">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image3" name="cover_image3" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -160,7 +152,7 @@
                         </div>
 
                     </div>
-                    <div class="modal-submit-cancel-btn">
+                    <div class="modal-submit-cancel-btn uk-align-right">
                         <div class="uk-inline cover-img-save-btn mt-15">
                             <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                             <button id="cover-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close ml-15" type="button">저장</button>
@@ -234,18 +226,15 @@
                         </div>
 
                         <div class="uk-margin">
-                            <label class="symbol-img uk-button uk-button-default custom-button-default" type="button" for="symbol_image">상점 심볼</label>
+                            <label class="symbol-img uk-button uk-button-default custom-button-default" type="button" for="symbol_image">상점 심볼 선택</label>
                             <input accept="image/*" class="uk-input mt-5" id="symbol_image" name="symbol_image" required="" type="file">
                         </div>
                     {% endif %}
 
 
 
-                    <div class="modal-submit-cancel-btn mt-5">
+                    <div class="modal-submit-cancel-btn uk-align-right">
                         <div class="symbol-img-delete-btn uk-inline">
-                            <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
-                        </div>
-                        <div class="symbol-img-delete-btn uk-inline ml-15">
                             <button id="symbol-img-submit-btn" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">저장</button>
                         </div>
                     </div>

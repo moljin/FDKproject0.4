@@ -24,5 +24,8 @@ def routes_init(app):
     app.register_blueprint(coupons.coupons_bp)
     app.register_blueprint(points.points_bp)
 
+    from flask_www.ecomm.orders import orders
+    app.register_blueprint(orders.orders_bp)
+
 
 

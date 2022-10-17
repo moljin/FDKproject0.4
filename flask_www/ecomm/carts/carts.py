@@ -1,18 +1,17 @@
-import uuid
-
-from flask import Blueprint, request, make_response, jsonify, session, redirect, render_template, url_for, abort
+from flask import Blueprint, request, make_response, jsonify, redirect, render_template, url_for, abort
 from flask_login import current_user
 
 from flask_www.accounts.utils import login_required
-from flask_www.commons.models import VarRatio
+from flask_www.commons.models import VarRatio, BaseAmount
 from flask_www.configs import db
 from flask_www.configs.config import NOW
 from flask_www.ecomm.carts.models import Cart, CartProduct, CartProductOption
-from flask_www.ecomm.carts.utils import new_cartproduct_create, new_cartproductoption_create, cartproduct_update, cart_total_price, _cart_id, cart_active_check  # , cart_active_check
+from flask_www.ecomm.carts.utils import new_cartproduct_create, new_cartproductoption_create, cartproduct_update, cart_total_price, _cart_id, cart_active_check, \
+    cartproduct_update_remnant, over_discount_cart_apply, temp_op_list_for_cart_update
 from flask_www.ecomm.products.models import ProductOption, Product
 from flask_www.ecomm.promotions.forms import AddCouponForm
 from flask_www.ecomm.promotions.models import Coupon, UsedCoupon, Point, PointLog
-from flask_www.ecomm.promotions.utils import cart_point_log_create, point_log_update
+from flask_www.ecomm.promotions.utils import cart_point_log_create, cart_point_log_update
 
 NAME = 'carts'
 carts_bp = Blueprint(NAME, __name__, url_prefix='/carts')
@@ -46,7 +45,7 @@ def add_to_cart(_id):
         old_cartproductoptions = CartProductOption.query.filter_by(cart_id=cart.id, product_id=_id).all()
 
         if option_objs and not old_cartproduct and not old_cartproductoptions:
-            new_cartproduct= CartProduct(cart_id=cart.id, product_id=_id)
+            new_cartproduct = CartProduct(cart_id=cart.id, product_id=_id)
             new_cartproduct_create(new_cartproduct, product_obj, pd_single_applied_price, pd_count, pd_total_price)
             db.session.add(new_cartproduct)
 
@@ -57,9 +56,7 @@ def add_to_cart(_id):
                     new_cartproductoption_create(new_cartproductoption, option_obj, idx, op_id, op_count, op_total_price)
                     db.session.bulk_save_objects([new_cartproductoption])
 
-                    new_cartproduct.op_subtotal_price += int(op_total_price[idx])
-                    new_cartproduct.line_price = new_cartproduct.product_subtotal_price + new_cartproduct.op_subtotal_price
-                    db.session.add(new_cartproduct)
+                    cartproduct_update_remnant(new_cartproduct, idx, op_total_price)
             else:
                 new_cartproduct.line_price = new_cartproduct.product_subtotal_price
                 db.session.add(new_cartproduct)
@@ -75,9 +72,7 @@ def add_to_cart(_id):
                 new_cartproductoption_create(new_cartproductoption, option_obj, idx, op_id, op_count, op_total_price)
                 db.session.bulk_save_objects([new_cartproductoption])
 
-                old_cartproduct.op_subtotal_price += int(op_total_price[idx])
-                old_cartproduct.line_price = old_cartproduct.product_subtotal_price + old_cartproduct.op_subtotal_price
-                db.session.add(old_cartproduct)
+                cartproduct_update_remnant(old_cartproduct, idx, op_total_price)
             db.session.commit()
 
         elif option_objs and old_cartproduct and old_cartproductoptions:
@@ -91,18 +86,14 @@ def add_to_cart(_id):
                         old_cartproductoption.op_line_price += int(op_total_price[idx])
                         db.session.bulk_save_objects([old_cartproductoption])
 
-                        old_cartproduct.op_subtotal_price += int(op_total_price[idx])
-                        old_cartproduct.line_price = old_cartproduct.product_subtotal_price + old_cartproduct.op_subtotal_price
-                        db.session.add(old_cartproduct)
+                        cartproduct_update_remnant(old_cartproduct, idx, op_total_price)
                     else:
                         option_obj = ProductOption.query.get_or_404(op_id[idx])
                         new_cartproductoption = CartProductOption(cart_id=cart.id, product_id=_id)
                         new_cartproductoption_create(new_cartproductoption, option_obj, idx, op_id, op_count, op_total_price)
                         db.session.bulk_save_objects([new_cartproductoption])
 
-                        old_cartproduct.op_subtotal_price += int(op_total_price[idx])
-                        old_cartproduct.line_price = old_cartproduct.product_subtotal_price + old_cartproduct.op_subtotal_price
-                        db.session.add(old_cartproduct)
+                        cartproduct_update_remnant(old_cartproduct, idx, op_total_price)
             else:
                 old_cartproduct.line_price = old_cartproduct.product_subtotal_price + old_cartproduct.op_subtotal_price
                 db.session.add(old_cartproduct)
@@ -128,6 +119,7 @@ def add_to_cart(_id):
 
 coupons = ""
 used_coupons = ""
+cartproductoption = ""
 
 
 @carts_bp.route('/view', methods=['GET'])
@@ -136,9 +128,6 @@ def cart_view():
     global coupons, used_coupons
     try:
         cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
-        # 여기에도 1개월 지난 카트를 체크해야 하나???
-        # 여기로 지나갈 수는 없지만...d/t 상품페이지로 진입시 이 과정을 거친다.
-        # 혹시라도 로그인하고 카트뷰 페이지로 어떻게든 들어가면...
         if cart:
             cart_active_check(cart)
             coupons = Coupon.query.filter_by(is_active=True).filter(Coupon.use_from <= NOW, Coupon.use_to >= NOW).all()
@@ -158,9 +147,22 @@ def cart_view():
             cart_total_price(cart, cart_products)
 
             point_obj = Point.query.filter_by(user_id=current_user.id).first()
-            point_log_obj = cart_point_log_create(cart)
-            # 이때 point_obj 가 없으면, point_obj 와 point_log_obj 를 만들고,
-            # point_obj 가 있으면, point_log_obj 유무를 체크하고 생성하거나 있는 것을 반환한다.
+            point_log_obj = PointLog.query.filter_by(cart_id=cart.id).first()
+            if not point_log_obj:
+                point_log_obj = cart_point_log_create(cart, point_obj)
+            else:
+                point_log_obj = cart_point_log_update(cart, point_obj)
+
+            # _used_coupons = UsedCoupon.query.filter_by(cart_id=cart.id, consumer_id=current_user.id).all()
+            print("used coupons======================", used_coupons)
+            if used_coupons:
+                print("000000000000000000000000")
+            else:
+                print('=========================================')
+            used_coupons_amount = cart.coupon_discount_total()
+            base_pay_amount = BaseAmount.query.get(1).amount
+            """혹시 cart_update 시 저장을 하지않고 넘어가면, cart_view 를 이용자가 새로고침하면 적용하기 위해"""
+            over_discount_cart_apply(used_coupons, point_log_obj.used_point, used_coupons_amount, cart, base_pay_amount, point_log_obj)
 
             context = {
                 "cart_id": cart.id,
@@ -169,6 +171,7 @@ def cart_view():
                 'cart_productoptions': cart_productoptions,
                 'items_total_count': len(cart_products),
                 'cart_total_price': cart.cart_total_price,
+                "get_total_delivery_pay": cart.get_total_delivery_pay(),
 
                 'coupons': coupons,
                 'used_coupons': used_coupons,
@@ -188,15 +191,13 @@ def cart_view():
         abort(401)
 
 
-cartproductoption = ""
-
-
 @carts_bp.route('/cart/update/ajax', methods=['POST'])
 @login_required
 def cart_update_ajax():
-    global cartproductoption
+    global cartproductoption, used_coupons
     if request.method == 'POST':
         cart_id = request.form.get("cart_id")
+        cart = Cart.query.get_or_404(cart_id)
         product_id = request.form.get("product_id")
         product_count = request.form.get("product_count")
         product_total_price = request.form.get("product_total_price")
@@ -204,20 +205,21 @@ def cart_update_ajax():
         option_id = request.form.getlist("option_id[]")
         option_count = request.form.getlist("option_count[]")
         option_line_price = request.form.getlist("option_total_price[]")
-        print(option_id)
-        print(option_count)
 
         cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
-
         cartproduct.product_subtotal_quantity = 0
         cartproduct.product_subtotal_price = 0
         cartproduct.op_subtotal_price = 0
-        cartproduct_update(cartproduct, product_count, product_total_price)
+
+        cartproduct.product_subtotal_quantity += int(product_count)
+        cartproduct.product_subtotal_price += int(product_total_price)
+        cartproduct.line_price = cartproduct.product_subtotal_price
         db.session.add(cartproduct)
 
-        op_count_dict = dict()
-        op_id = list()# []
-        op_count = list()#[]
+        op_id = list()
+        op_count = list()
+        op_title = list()
+        op_price = list()
         if option_id:
             for idx in range(len(option_id)):
                 cartproductoption = CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id[idx]).first()
@@ -228,29 +230,59 @@ def cart_update_ajax():
                     cartproductoption.op_quantity += int(option_count[idx])
                     cartproductoption.op_line_price += int(option_line_price[idx])
                     db.session.bulk_save_objects([cartproductoption])
+                    db.session.commit()
+
+                    temp_op_list_for_cart_update(op_id, op_count, op_title, op_price, idx, option_id, option_count, cartproductoption)
                 else:
                     option_obj = ProductOption.query.get_or_404(option_id[idx])
                     new_cartproductoption = CartProductOption(cart_id=cart_id, product_id=product_id)
                     new_cartproductoption_create(new_cartproductoption, option_obj, idx, option_id, option_count, option_line_price)
-                    db.session.bulk_save_objects([new_cartproductoption])
 
-                op_id.append(option_id[idx])
-                op_count.append(option_count[idx])
+                    db.session.bulk_save_objects([new_cartproductoption])
+                    db.session.commit()
+
+                    temp_op_list_for_cart_update(op_id, op_count, op_title, op_price, idx, option_id, option_count, new_cartproductoption)
 
                 cartproduct.op_subtotal_price += int(option_line_price[idx])
                 cartproduct.line_price = cartproduct.product_subtotal_price + cartproduct.op_subtotal_price
                 db.session.add(cartproduct)
-        db.session.commit()
+                db.session.commit()
+
+        base_pay_amount = BaseAmount.query.get(1).amount
+        used_coupons = UsedCoupon.query.filter_by(cart_id=cart.id, consumer_id=current_user.id).all()
+        used_coupons_amount = cart.coupon_discount_total()
+
+        point_log = PointLog.query.filter_by(cart_id=cart.id).first()
+        used_point = point_log.used_point
+
+        over_discount_cart_apply(used_coupons, used_point, used_coupons_amount, cart, base_pay_amount, point_log)
+
+        cart_products = CartProduct.query.filter_by(cart_id=cart.id).all()
+        cart_total_price(cart, cart_products)
+        point_obj = Point.query.filter_by(user_id=current_user.id).first()
+        point_log_obj = cart_point_log_update(cart, point_obj)
 
         update_data_response = {
             "product_id": product_id,
-            "product_count": product_count,
-            "product_total_price": product_total_price,
+            "pd_subtotal_qty": cartproduct.product_subtotal_quantity,
+            "product_subtotal_price": cartproduct.product_subtotal_price,
 
             "op_id": op_id,
             "op_count": op_count,
+            "op_title": op_title,
+            "op_price": op_price,
             "cartproduct_op_subtotal_price": cartproduct.op_subtotal_price,
             "cartproduct_line_price": cartproduct.line_price,
+
+            "cart_total_price": cart.cart_total_price,
+            "get_total_price": cart.get_total_price(),
+            "get_total_delivery_pay": cart.get_total_delivery_pay(),
+
+            'coupon_total': cart.coupon_discount_total(),
+            'point_log_id': point_log_obj.id,
+            'used_point': point_log_obj.used_point,
+            'prep_point': point_log_obj.prep_point,
+            'new_remained_point': point_log_obj.new_remained_point,
         }
         return make_response(jsonify(update_data_response))
 
@@ -265,21 +297,31 @@ def cart_option_delete_ajax():
         cart = Cart.query.get_or_404(cart_id)
 
         cartproduct = CartProduct.query.filter_by(cart_id=cart_id, product_id=product_id).first()
-        cartproductoption = CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id).first()
+        cart_productoption = CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id).first()
+        if cart_productoption:
+            cartproduct.op_subtotal_price = cartproduct.op_subtotal_price - cart_productoption.op_line_price
+            cartproduct.line_price = cartproduct.line_price - cart_productoption.op_line_price
+            db.session.add(cartproduct)
 
-        cartproduct.op_subtotal_price = cartproduct.op_subtotal_price - cartproductoption.op_line_price
-        cartproduct.line_price = cartproduct.line_price - cartproductoption.op_line_price
-        cart.cart_total_price = cart.cart_total_price - cartproductoption.op_line_price
-        db.session.add(cart)
-        db.session.add(cartproduct)
+            cart.cart_total_price = cart.cart_total_price - cart_productoption.op_line_price
+            db.session.add(cart)
 
-        db.session.delete(cartproductoption)
-        db.session.commit()
-        delete_data_response = {
-            "_success": "delete_success",
-            "cart_pd_line_price": cartproduct.line_price,
-        }
-        return make_response(jsonify(delete_data_response))
+            db.session.delete(cart_productoption)
+            db.session.commit()
+            print("===================================== option", CartProductOption.query.filter_by(cart_id=cart_id, option_id=option_id).first())
+            """SAWarning: Multiple rows returned with uselist=False for lazily-loaded attribute 'CartProductOption.cart_product'"""
+            """, lazy='joined' 을 넣었다. 그러니까 오류가 없어진듯..."""
+
+            delete_data_response = {
+                "_success": "delete_success",
+                "cart_pd_line_price": cartproduct.line_price,
+            }
+            return make_response(jsonify(delete_data_response))
+        else:
+            delete_data_response = {
+                'unnecessary_ajax': "",
+            }
+            return make_response(jsonify(delete_data_response))
 
 
 @carts_bp.route('/cart/product/delete/ajax', methods=['POST'])
@@ -294,28 +336,37 @@ def cart_product_delete_ajax():
             cart.cart_total_price = cart.cart_total_price - cartproduct.line_price
             db.session.add(cart)
             cartproductoptions = CartProductOption.query.filter_by(cart_id=cart_id, product_id=product_id).all()
+
+            # models 에서 cascade='all, delete-orphan' 을 적용해서 cartproduct 를 삭제하면 그에 따른 cartproductoptions 은 같이 지워진다.
+            # SAWarning: Multiple rows returned with uselist=False for lazily-loaded attribute 'CartProductOption.cart_product'
+            # 아래처럼 적용하면 위 경고 문구가 출몰한다. cascade='all, delete-orphan' 을 적용을 없애면 아래처럼 직접 삭제해줘야 한다.
             if cartproductoptions:
                 for cartpdop in cartproductoptions:
                     db.session.delete(cartpdop)
-                db.session.delete(cartproduct)
-            else:
-                db.session.delete(cartproduct)
-        db.session.commit()
-        print(cart.cart_total_price)
 
-        point_ratio = VarRatio.query.get(2).ratio
+            db.session.delete(cartproduct)
+            db.session.commit()
+
         point_obj = Point.query.filter_by(user_id=current_user.id).first()
         point_log = PointLog.query.filter_by(cart_id=cart.id).first()
+        _used_coupons = UsedCoupon.query.filter_by(cart_id=cart.id, consumer_id=current_user.id).all()
+        used_coupons_amount = cart.coupon_discount_total()
 
-        will_dct_amount = cart.discount_total_amount()
-        new_prep_point = round(float(cart.subtotal_price() - will_dct_amount) * float(point_ratio))
-        point_log_update(cart, point_obj, point_log, point_log.used_point, new_prep_point)
+        used_point = point_log.used_point
+        base_pay_amount = BaseAmount.query.get(1).amount
+        point_log_obj = cart_point_log_update(cart, point_obj)
 
+        over_discount_cart_apply(_used_coupons, used_point, used_coupons_amount, cart, base_pay_amount, point_log)
         delete_data_response = {
             "_success": "delete_success",
-            'prep_point': point_log.prep_point,
-            'new_remained_point': point_log.new_remained_point,
+            'coupon_total': cart.coupon_discount_total(),
+
+            'used_point': point_log_obj.used_point,
+            'prep_point': point_log_obj.prep_point,
+            'new_remained_point': point_log_obj.new_remained_point,
+
             "cart_total_price": cart.cart_total_price,
-            "cart_pay_price": cart.get_total_price()
+            "get_total_price": cart.get_total_price(),
+            "get_total_delivery_pay": cart.get_total_delivery_pay()
         }
         return make_response(jsonify(delete_data_response))

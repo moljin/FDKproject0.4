@@ -230,7 +230,6 @@ def save():
                     return redirect(url_for("admin_accounts.auth_permit_request", email=current_user.email, is_admin="관리자 자신"))
                     # 관리자 자신은 is_admin 이외의 것은 수정할 수 있지만,
                     # is_admin 해제는 최고 관리자에게 메일 요청으로 할 수 있도록 한다.
-                    pass
             if target_user.email != req_email:
                 if existing_email_check(req_email) == "Existing":
                     flash("가입된 이메일이 존재합니다.")

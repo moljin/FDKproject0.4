@@ -15,7 +15,7 @@ body > main > section > div:nth-child(1) > button.symbol-img-modal-delete-btn.in
 body > main > section > div:nth-child(1) > button.symbol-img-modal-upload-btn {position: absolute; top: 460px; left: calc(50% + 80px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
 body > main > section > div:nth-child(1) > button.symbol-img-modal-delete-btn {position: absolute; top: 460px; left: calc(50% + 120px); cursor: pointer; border: none; width: 35px; height: 35px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
 #symbol_img_upload_modal-container > div > div.uk-margin {position: relative; margin-bottom: 10px}
-#symbol_img_upload_modal-container > div > div.uk-margin > label {position: absolute; top: 6px; width: 102px; padding: 0}
+#symbol_img_upload_modal-container > div > div.uk-margin > label {position: absolute;}
 
 body > section > section > button.shopcategory_cover-img-modal-delete-btn.inactive {display: none}
 body > section > section > button.shopcategory_cover-img-modal-delete-btn {position: absolute; top: 400px; left: 10px; cursor: pointer; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; background: #7959bf !important; opacity: 0.7}
@@ -28,12 +28,12 @@ body > main > section > div:nth-child(3) > div > div > div:nth-child(1) {text-al
 
 #shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div > label,
 #shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div > label,
-#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div > label {position: absolute; top: 6px; width: 101px; padding: 0; border-radius: 5px 0 0 5px}
+#shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div > label {position: absolute; margin-top: -30px}
 
 #shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div.uk-first-column > div.uk-margin > div > div,
 #shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(2) > div.uk-margin > div > div,
 #shopcategory_cover_img_upload_modal-container > form > div > div.uk-child-width-expand\@m.uk-grid > div:nth-child(3) > div.uk-margin > div > div {width: 100%}
-.modal-submit-cancel-btn {float: right}
+#shopcategory_cover_img_upload_modal-container .modal-submit-cancel-btn.uk-align-right {margin-top: -5px; margin-bottom: -10px}
 
 #shopcategory_cover_img_delete_modal-container > form > div {margin-top: 40px}
 
@@ -56,6 +56,8 @@ body > main > section > div:nth-child(3) > div > div > div:nth-child(1) {text-al
 .shop-item.viewcount-subscribe-container > div button.ml-15:hover {background: #0f7ae5}
 .shop-item.viewcount-subscribe-container > div button.ml-15.subscribed {background: #7f8c8d; color: white}
 .shop-item.viewcount-subscribe-container > div button.ml-15.subscribed:hover {background: #666666}
+#cover_image1, #cover_image2, #cover_image3 {display: none}
+#symbol_image {display: none}
 
 /*product create*/
 .product-summary {margin-left: 0;}
@@ -124,3 +126,10 @@ body > main > section > article > div > div.product-summary.uk-child-width-1-2\@
 .pd-updel-btn a {padding-left: 0}
 .pd-updel-btn button {padding: 0 20px}
 #product_delete_modal > div > div {margin-top: 40px}
+
+/*list*/
+.grid-section .each-product .content.uk-card-body {padding: 20px 0 0!important;}
+.grid-section .each-product .view, .grid-section .each-product .vote {position: relative}
+.grid-section .each-product .view .count {position: absolute; top: 0; left: 0}
+.grid-section .each-product .vote .count {position: absolute; top: 0; left: 120px}
+.grid-section .each-product .view .count span, .grid-section .each-product .vote .count span {font-size: 15px; color: #57606f}

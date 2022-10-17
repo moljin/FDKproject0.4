@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+order detail <br>
+{{ order }} <br>
+order.used_point:: {{ order.used_point }}<br>
+{{ order_productitems }} <br>
+{{ order_optionitems }} <br>
+order_coupon_total:: {{ order.order_coupon_total() }} <br>
+order_coupons: {{ order_coupons }}<br>
+{% for order_coupon in order_coupons %}
+    used_coupon code ({{ loop.index }}):: {{ order_coupon.coupon.code }}=={{ order_coupon.coupon.amount }}
+{% endfor %}
+</body>
+</html>

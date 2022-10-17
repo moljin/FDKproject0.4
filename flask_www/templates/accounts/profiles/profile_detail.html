@@ -15,10 +15,8 @@
             profileImageSaveAjax = "{{ url_for("profiles.profile_img_save_ajax", _id=target_profile.id) }}"
             profileImageDeleteAjax = "{{ url_for("profiles.profile_img_delete_ajax", _id=target_profile.id) }}"
 
-            {#existingProfileCheckAjax = "{{ url_for("profiles.existing_profile_check_ajax", _id=target_profile.id) }}"#}
             existingProfileCheckAjax = "{{ url_for("profiles.existing_profile_check_ajax") }}"
             profileUpdateAjax = "{{ url_for("profiles.update_ajax", _id=target_profile.id) }}"
-            {#profileDeleteAjax = "{{ url_for("profiles.delete_ajax", _id=target_profile.id) }}"#}
             profileDeleteAjax = "{{ url_for("profiles.delete_ajax") }}"
             vendorUpdateAjax = "{{ url_for("profiles.vendor_update_ajax", _id=target_profile.id) }}"
             vendorCorpImageSaveAjax = "{{ url_for("profiles.vendor_corp_image_save_ajax", _id=target_profile.id) }}"
@@ -43,21 +41,21 @@
                             {% if cover_img.image_1_path %}
                                 <img class="profile-cover-img" id="image_1_path" src="/{{ cover_img.image_1_path }}" uk-cover>
                             {% else %}
-                                <img class="profile-cover-img" id="image_1_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
+                                <img class="profile-cover-img" id="image_1_path" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}" uk-cover>
                             {% endif %}
                         </li>
                         <li>
                             {% if cover_img.image_2_path %}
                                 <img class="profile-cover-img" id="image_2_path" src="/{{ cover_img.image_2_path }}" uk-cover>
                             {% else %}
-                                <img class="profile-cover-img" id="image_2_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
+                                <img class="profile-cover-img" id="image_2_path" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}" uk-cover>
                             {% endif %}
                         </li>
                         <li>
                             {% if cover_img.image_3_path %}
                                 <img class="profile-cover-img" id="image_3_path" src="/{{ cover_img.image_3_path }}" uk-cover>
                             {% else %}
-                                <img class="profile-cover-img" id="image_3_path" src="{{ url_for('static', filename='statics/images/none-image.png') }}" uk-cover>
+                                <img class="profile-cover-img" id="image_3_path" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}" uk-cover>
                             {% endif %}
                         </li>
                     </ul>
@@ -79,7 +77,7 @@
         <div id="account_cover_img_upload_modal-container" class="account_cover-img uk-modal-container uk-flex-top" uk-modal uk-height-match="target: form > div > div > div > div > .cover-img">
             <form method="POST" class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical" enctype="multipart/form-data">
                 <div>
-                    <button class="uk-modal-close-outside" type="button" uk-close></button>
+                    <button class="uk-modal-close-default" type="button" uk-close></button>
 
                     <div class="uk-grid-medium uk-child-width-expand@m" uk-grid>
                         <div>
@@ -87,14 +85,14 @@
                                 {% if cover_img.image_1_path %}
                                     <img class="profile-cover-img" id="cover-img1-preview" src="/{{ cover_img.image_1_path }}">
                                 {% else %}
-                                    <img class="profile-cover-img" id="cover-img1-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
+                                    <img class="profile-cover-img" id="cover-img1-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}">
                                 {% endif %}
 
                             </div>
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image1">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image1">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image1" name="cover_image1" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -105,13 +103,13 @@
                                 {% if cover_img.image_2_path %}
                                     <img class="profile-cover-img" id="cover-img2-preview" src="/{{ cover_img.image_2_path }}">
                                 {% else %}
-                                    <img class="profile-cover-img" id="cover-img2-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
+                                    <img class="profile-cover-img" id="cover-img2-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}">
                                 {% endif %}
                             </div>
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image2">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image2">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image2" name="cover_image2" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -122,13 +120,13 @@
                                 {% if cover_img.image_3_path %}
                                     <img class="profile-cover-img" id="cover-img3-preview" src="/{{ cover_img.image_3_path }}">
                                 {% else %}
-                                    <img class="profile-cover-img" id="cover-img3-preview" src="{{ url_for('static', filename='statics/images/none-image.png') }}">
+                                    <img class="profile-cover-img" id="cover-img3-preview" src="{{ url_for('static', filename='statics/images/cover-img.jpg') }}">
                                 {% endif %}
                             </div>
                             <div class="uk-margin">
                                 <div class="input-file-container">
                                     <div class="uk-inline">
-                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image3">이미지</label>
+                                        <label class="cover-image uk-button uk-button-default custom-button-default" type="button" for="cover_image3">이미지 선택</label>
                                         <input class="uk-input mt-5" id="cover_image3" name="cover_image3" type="file" accept="image/*" value=""/>
                                     </div>
                                 </div>
@@ -137,7 +135,7 @@
 
                     </div>
 
-                    <div class="cover-img-save-btn uk-align-right mt-15">
+                    <div class="cover-img-save-btn uk-align-right">
                         <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
                         <button id="cover-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close ml-15" type="button">저장</button>
                     </div>
@@ -205,7 +203,6 @@
                             <input class="uk-input mt-5" id="profile_image" name="profile_image" type="file" accept="image/*" value=""/>
                         </div>
                     {% else %}
-{#                        <div class="profile-img get-image">#}
                         <div class="profile-img">
                             <img class="img-preview" id="img-preview" src="{{ url_for('static', filename='statics/images/user_none.png') }}" style="margin: 0 auto;">
                         </div>
@@ -216,11 +213,8 @@
                         </div>
                     {% endif %}
 
-                    <div class="modal-submit-cancel-btn uk-align-right mt-5">
+                    <div class="modal-submit-cancel-btn uk-align-right">
                         <div class="profile-img-delete-btn uk-inline">
-                            <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
-                        </div>
-                        <div class="profile-img-delete-btn uk-inline ml-15">
                             <button id="profile-img-submit-btn" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">저장</button>
                         </div>
                     </div>
@@ -375,7 +369,7 @@
                                         </div>
 
                                         <div class="uk-margin" style="position: relative">
-                                            <label class="corp-img uk-button uk-button-default custom-button-green" type="button" for="corp_image">등록증</label>
+                                            <label class="corp-img uk-button uk-button-default custom-button-green" type="button" for="corp_image">사업자등록증 선택</label>
                                             <input class="uk-input mt-5" id="corp_image" name="corp_image" type="file" accept="image/*" value=""/>
                                         </div>
                                     {% endif %}
@@ -383,8 +377,7 @@
 
                                 <input type="hidden" id="profile_level" name="level" value="{{ target_profile.level }}">
                                 <p class="uk-text-right">
-                                    <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
-                                    <button id="vendor-update-submit" class="uk-button uk-button-default custom-button-default ml-15" type="button">저장</button>
+                                    <button id="vendor-update-submit" class="uk-button uk-button-default custom-button-default" type="button">저장</button>
                                 </p>
                             </div>
                         </div>
@@ -504,13 +497,12 @@
                                                 </div>
 
                                                 <div class="uk-margin" style="position: relative">
-                                                    <label class="corp-img uk-button uk-button-default custom-button-green" type="button" for="corp_image">등록증</label>
+                                                    <label class="corp-img uk-button uk-button-default custom-button-green" type="button" for="corp_image">사업자등록증 선택</label>
                                                     <input class="uk-input mt-5" id="corp_image" name="corp_image" type="file" accept="image/*" value=""/>
                                                 </div>
                                             {% endif %}
                                             <p class="uk-text-right">
-                                                <button class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">취소</button>
-                                                <button id="corp-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close ml-15" type="button">저장</button>
+                                                <button id="corp-img-submit" class="uk-button uk-button-default custom-button-default uk-modal-close" type="button">저장</button>
                                             </p>
                                         </div>
                                     </div>

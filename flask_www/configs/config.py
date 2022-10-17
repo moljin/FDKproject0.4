@@ -12,6 +12,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 NOW = datetime.datetime.now()
 SUPER_ADMIN_EMAIL = "moljin@naver.com"
 
+IAMPORT_KEY = '9977587767482490'
+IAMPORT_SECRET = 'VemzzClTRGQltTW0E0PXqB0iQaNJHd1Drnc0ZxUReLdIFaJjaygBahU1sIK9VMMnaZoaxj1L4fuJpd2A'
+
 dotenv_path = join(dirname(__file__), '.env')  # Path to .env file
 load_dotenv(dotenv_path)
 
@@ -34,6 +37,7 @@ class Config(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_ECHO = True  # lazy='dynamic' lazy='select' lazy='joined' lazy='subquery'
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     # 파일 업로드 용량 제한 단위:바이트 16MB
     # (cf. 20MB: 20 * 1024 * 1024)

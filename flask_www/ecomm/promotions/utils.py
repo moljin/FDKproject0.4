@@ -24,6 +24,22 @@ def coupon_code_check(req_code):
 
 
 @login_required
+def coupon_save(coupon, req_code, use_from, use_to, amount, is_active, available_count):
+    coupon.code = req_code
+    coupon.use_from = use_from
+    coupon.use_to = use_to
+    coupon.amount = amount
+    if is_active is not None:
+        coupon.is_active = True
+    else:
+        coupon.is_active = False
+    coupon.available_count = available_count
+
+    db.session.add(coupon)
+    db.session.commit()
+
+
+@login_required
 def coupon_count_update(used_coupons):
     global coupon_obj
     for used_coupon in used_coupons:
@@ -44,7 +60,7 @@ def new_point_log_create(cart, point_obj):
     new_point_log.new_remained_point = (cart.remained_point() + cart.prep_point())
     db.session.add(new_point_log)
     db.session.commit()
-    print('000000000000000000000000000000', new_point_log)
+
     cart.point_log_id = new_point_log.id
     current_db_sessions = db.session.object_session(cart)
     current_db_sessions.add(cart)
@@ -52,44 +68,60 @@ def new_point_log_create(cart, point_obj):
     return new_point_log
 
 
+newpoint_log = ""
+
+
 @login_required
-def cart_point_log_create(cart):
-    global new_point_log_obj
-    try:
-        point_obj = Point.query.filter_by(user_id=current_user.id).first()
-        point_log_obj = PointLog.query.filter_by(cart_id=cart.id).first()
-    except Exception as e:
-        print(e, '포인트 객체 혹은 유저인증이 않됬거나, 카트 객체가 없다.')
-        point_obj = None
-        point_log_obj = None
+def cart_point_log_create(cart, point_obj):
+    """add_to_cart 하면, cart_view 로 넘어갈때 Point 객체와 PointLog 개체를 만드는 과정 """
+    global newpoint_log
+    point_log_obj = PointLog.query.filter_by(cart_id=cart.id).first()
     if not point_obj and not point_log_obj:
+        print("if not point_obj and not point_log_obj:")
         new_point_obj = Point(user_id=current_user.id)
         db.session.add(new_point_obj)
         db.session.commit()
-        new_point_log_obj = new_point_log_create(cart, new_point_obj)
+
+        newpoint_log = new_point_log_create(cart, new_point_obj)
 
     elif point_obj and not point_log_obj:
-        new_point_log_obj = new_point_log_create(cart, point_obj)
+        print("elif point_obj and not point_log_obj:")
+        newpoint_log = new_point_log_create(cart, point_obj)
+    return newpoint_log
 
-    elif point_obj and point_log_obj:
+
+@login_required
+def cart_point_log_update(cart, point_obj):
+    """add_to_cart 하면, cart_view 로 넘어갈때 PointLog 업데이트하는 과정 또한,
+    이미 담긴 cart product 의 변화가 생기면, cart.prep_point()에 변화가 생기므로, PointLog 업데이트도 해야한다."""
+    point_log_obj = PointLog.query.filter_by(cart_id=cart.id).first()
+    if point_obj and point_log_obj:
+        print("if point_obj and point_log_obj:")
+        print("point_log_obj.used_point", point_log_obj.used_point)
+        print("not point_log_obj.used_point", not point_log_obj.used_point)
+        print("-----------------------------------------------")
         point_log_obj.prep_point = cart.prep_point()
+        point_log_obj.new_remained_point = (point_obj.remained_point + cart.prep_point() - int(point_log_obj.used_point))
+        """ 굳이 분기를 하지 않아도 된다.
         if not point_log_obj.used_point:
+            print("if not point_log_obj.used_point:")
             point_log_obj.new_remained_point = (point_obj.remained_point + cart.prep_point())
         else:
+            print("if not point_log_obj.used_point: ===  else:")
             point_log_obj.new_remained_point = (point_obj.remained_point + cart.prep_point() - int(point_log_obj.used_point))
-
+        """
         current_db_sessions = db.session.object_session(point_log_obj)
         current_db_sessions.add(point_log_obj)
         db.session.commit()
     else:
         abort(404)
-
-    return new_point_log_obj or point_log_obj
+    return point_log_obj
 
 
 @login_required
 def point_log_update(cart, point_obj, point_log, used_point, new_prep_point):
-    """포인트 apply 과정에서, 포인트로그 객체를 수정하는 과정을 담는다."""
+    """포인트 apply 과정에서, PointLog 객체를 수정하는 과정 그러나,
+    이미 담긴 cart product 의 변화가 생기지 않으므로 cart.prep_point()에 변화가 생기지 않는다."""
     point_log.used_point = used_point
     point_log.prep_point = new_prep_point
     point_log.new_remained_point = point_obj.remained_point - int(point_log.used_point) + int(new_prep_point)

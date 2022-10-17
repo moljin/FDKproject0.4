@@ -35,8 +35,7 @@ def related_app(app):
     def teardown_request(exception):
         app.logger.info('TEARDOWN_REQUEST')
         if hasattr(g, 'db'):
-            db.session.close()
-            # g.db.close()  # db_session.close()를 의미한다.
+            g.db.close()
 
     @app.teardown_appcontext
     def teardown_appcontext(exception=None):
@@ -59,8 +58,10 @@ def related_app(app):
             _format = '%Y-%m-%d %H:%M:%S %p'
         elif _type == "medium":
             _format = '%Y-%m-%d %H:%M %p'
+        elif _type == "small":
+            _format = '%Y-%m-%d'
         else:
-            _format = '%Y.%m.%d'
+            _format = '%y.%m.%d'
         return value.strftime(_format)
 
     @app.context_processor
@@ -87,13 +88,14 @@ def related_app(app):
     #         if current_user.is_authenticated:
     #             if current_user.cart_user_set:
     #                 cart = Cart.query.filter_by(user_id=current_user.id, is_active=True).first()
-    #                 diff_time = NOW - cart.updated_at
-    #                 beyond_days = diff_time.days
-    #                 if cart and (beyond_days < 1):
-    #                 # if cart and (beyond_days < 1) and (cart.cart_total_price > 0):
-    #                     return dict(current_cart=cart)
-    #                 else:
-    #                     return dict(current_cart=None)  # 카트가 없거나. 카트생성후 1개월이 지났거나, 카트에 상품이 없는 경우
+    #                 if cart:
+    #                     diff_time = NOW - cart.updated_at
+    #                     beyond_days = diff_time.days
+    #                     if cart and (beyond_days < 1):
+    #                     # if cart and (beyond_days < 1) and (cart.cart_total_price > 0):
+    #                         return dict(current_cart=cart)
+    #                     else:
+    #                         return dict(current_cart=None)  # 카트가 없거나. 카트생성후 1개월이 지났거나, 카트에 상품이 없는 경우
     #             else:
     #                 return dict(current_cart=None)
     #         else:
@@ -112,7 +114,7 @@ def related_app(app):
                     if cart:
                         diff_time = NOW - cart.updated_at
                         beyond_days = diff_time.days
-                        if beyond_days < 1:
+                        if beyond_days < 31:
                             cart_products = CartProduct.query.filter_by(cart_id=cart.id).all()
                             return dict(cart_items_total_count=len(cart_products), current_cart=cart)
                         else:  # 카트가 있어도, 1개월이 지나면...

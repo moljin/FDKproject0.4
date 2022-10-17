@@ -28,10 +28,10 @@ def login_required(function):
     def decorator_function(*args, **kwargs):
         if not current_user.is_authenticated:
             try:
-                session['previous_url'] = request.form.get('next')
+                session['previous_url'] = request.path  # request.referrer 을 이용하면 그 전 path 로 보낸다.
             except:
                 session['previous_url'] = None
-            return redirect(url_for('accounts.login'))
+            return redirect(url_for('accounts.login', next=session['previous_url']))
         return function(*args, **kwargs)
     return decorator_function
 

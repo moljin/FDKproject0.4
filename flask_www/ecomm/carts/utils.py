@@ -7,6 +7,7 @@ from flask_www.accounts.utils import login_required
 from flask_www.commons.utils import elapsed_day
 from flask_www.configs import db
 from flask_www.ecomm.carts.models import Cart
+from flask_www.ecomm.promotions.models import Coupon
 
 
 def _cart_id():
@@ -44,6 +45,12 @@ def cartproduct_update(old_cartproduct, pd_count, pd_total_price):
     old_cartproduct.product_subtotal_price += int(pd_total_price)
 
 
+def cartproduct_update_remnant(cartproduct, idx, op_total_price):
+    cartproduct.op_subtotal_price += int(op_total_price[idx])
+    cartproduct.line_price = cartproduct.product_subtotal_price + cartproduct.op_subtotal_price
+    db.session.add(cartproduct)
+
+
 @login_required
 def cart_total_price(cart, cart_products):
     exist_total_price = 0
@@ -57,11 +64,65 @@ def cart_total_price(cart, cart_products):
 
 def cart_active_check(cart):
     beyond_days = elapsed_day(cart.updated_at)
-    print(" cart_active_check(cart): beyond_days", beyond_days)
-    if beyond_days >= 1:
+    if beyond_days >= 31:
         cart.is_active = False
         cart.cart_id = "비구매 1개월 초과 카트"
         cart = Cart(user_id=current_user.id, cart_id=_cart_id())
         db.session.add(cart)
         db.session.commit()
+
+
+def temp_op_list_for_cart_update(op_id, op_count, op_title, op_price, idx, option_id, option_count, cartproductoption):
+    op_id.append(option_id[idx])
+    op_count.append(option_count[idx])
+    op_title.append(cartproductoption.title)
+    op_price.append(cartproductoption.price)
+
+
+def over_discount_cart_apply(used_coupons, used_point, used_coupons_amount, cart, base_pay_amount, point_log):
+    if used_coupons:
+        print("over_discount_cart_apply")
+        if used_point:
+            if (used_coupons_amount + used_point) > (cart.cart_total_price - base_pay_amount):
+                print("used_coupon and used_point :: 할인금액 초과")
+                for used_coupon in used_coupons:
+                    coupon_id = used_coupon.coupon_id
+
+                    current_db_sessions = db.session.object_session(used_coupon)
+                    current_db_sessions.delete(used_coupon)
+                    db.session.commit()
+
+                    coupon_obj = Coupon.query.filter_by(id=coupon_id).first()
+                    coupon_obj.available_count += 1
+                    current_db_sessions = db.session.object_session(coupon_obj)
+                    current_db_sessions.add(coupon_obj)
+                    db.session.commit()
+
+                point_log.used_point = 0
+                point_log.new_remained_point += int(used_point)
+                db.session.add(point_log)
+                db.session.commit()
+        else:
+            if used_coupons_amount > (cart.cart_total_price - base_pay_amount):
+                print("only used_coupon :: 할인금액 초과")
+                for used_coupon in used_coupons:
+                    coupon_id = used_coupon.coupon_id
+
+                    current_db_sessions = db.session.object_session(used_coupon)
+                    current_db_sessions.delete(used_coupon)
+                    db.session.commit()
+
+                    coupon_obj = Coupon.query.filter_by(id=coupon_id).first()
+                    coupon_obj.available_count += 1
+                    current_db_sessions = db.session.object_session(coupon_obj)
+                    current_db_sessions.add(coupon_obj)
+                    db.session.commit()
+    else:
+        if used_point:
+            if used_point > (cart.cart_total_price - base_pay_amount):  # 할인포인트가 (주문가격-최소결제금액) 초과
+                print("only used_point :: 할인금액 초과")
+                point_log.used_point = 0
+                point_log.new_remained_point += int(used_point)
+                db.session.add(point_log)
+                db.session.commit()
 

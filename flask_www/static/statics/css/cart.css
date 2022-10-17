@@ -5,13 +5,19 @@
 .shop-info {display: flex; align-items: center; border-bottom: solid 1px mediumblue}
 .profile-img, .symbol-img{width: 28px; height: 28px; border-radius: 50%; object-fit: cover}
 .pf-shop {display: flex; align-items: center}
-.shop-info .profile, .shop-info .shop {display: flex; align-items: center}
+
+.shop-info .profile .profile-link, .shop-info .shop .shop-link {display: flex; align-items: center; color: #2f3640} /**/
+.shop-info .profile .profile-link:hover, .shop-info .shop .shop-link:hover {color: brown}
+
 .sub-container {display: flex}
 .cart-lt, .cart-rt {display: flex; width: 50%; align-items: center}
 .bg-100 {background: #f1f2f6}
 .bg-100.padding10 {padding-top: 20px}
 .main-width.mb-20 {border-radius: 10px; background: white; margin-bottom: 20px; padding: 10px}
+.main-width.mb-20.cont-pay {justify-content: right; align-items: center}
+.main-width.mb-20.cont-pay .decision {margin-top: 0}
 .above-shop {display: flex; align-items: center; justify-content: space-between}
+
 
 .pd-thumbnail img.thumbnail {width: 90px; height: 90px; object-fit: cover; border-radius: 5px}
 .pd-content, .op-content {flex: 1}
@@ -33,15 +39,15 @@
 .total-info .first-second {flex: 1}
 .total-info .width-first {flex: 1}
 .total-info .width-second {width: 50%;}
-.total-info .width-last {width: 200px; text-align: right}
 .total-info .width-first,.total-info .width-second  {display:flex; justify-content: flex-start; align-items: center}
 
 .total-info .coupon-input, .total-info .point-input {flex: 1}
 
 /*======== modal ========*/
 .order-change-modal .sub-product {display: flex}
- .order-change-modal .sub-product .thumbnail {margin-right: 10px}
-.order-change-modal .sub-product img {min-width: 90px!important; height: 90px; border-radius: 5px;}
+.order-change-modal .sub-product .thumbnail {margin-right: 10px}
+.order-change-modal .sub-product img {width: 90px; height: 90px; border-radius: 5px; object-fit: cover}
+.option.select-container.grid-align-items {align-items: center}
 .modal.applied-price {align-items: center}
 .modal.applied-price .original-price {text-decoration: line-through; color: #999999}
 .modal.applied-price .uk-width-expand.expand-pl {margin-left: -20px}
@@ -64,7 +70,8 @@
 .usedpoint-container .used-container .cp-group .cancel .button {padding-left: 15px}
 /*.usedpoint-container .used-container .cp-group .cancel .button button {display: flex; align-items: center}!*height:25px; *!*/
 
-.usedcoupon-container {margin-bottom: 8px; border-bottom: solid 1px lightgray} /*padding-bottom: 10px; */
+.usedcoupon-container {margin-bottom: 8px;} /*padding-bottom: 10px; */
+/*.usedcoupon-container .label {display: none!important;}*/
 .usedcoupon-container .label {width: 130px; display: flex; align-items: center;} /* margin-bottom: 10px*/
 .usedcoupon-container .code,
 .usedcoupon-container .amount {display: flex; align-items: center}
@@ -81,6 +88,19 @@
 .used-coupon .uk-button.code {margin-left: 10px}
 .used-coupon .uk-button.code:hover {cursor: none; border: 1px solid #e5e5e5}
 .used-coupon .uk-button.coupon-cancel-btn {margin-left: 20px}
+
+/*order-form*/
+.decision .uk-accordion-title {font-size: 16px; line-height: 2.4}
+.decision .uk-accordion-title:before {content: none}
+#order_form_div.active {display: block}
+#order_form_div {display: none}
+#order_form_div .order-form {max-width: 800px; margin: 0 auto}
+#order_form_div .order-form .form-group {margin-bottom: 10px}
+#order_form_div .order-form .pay-btn {text-align: right}
+#order_form_div .order-form .uk-button {background: white}
+#order_form_div .postcode {display: flex}
+#juso-wrap {display:none;border:1px solid;max-width:800px;height:468px!important;margin:5px 0;position:relative;}
+#btnFoldWrap {cursor:pointer;position:absolute;right:0;top:-1px;z-index:1; width: 15px; height: 15px}
 
 @media screen and (max-width: 560px) {
   .pd-change-btn {justify-content: flex-end; }
@@ -108,11 +128,21 @@
   .usedcoupon-container .each .code .period {display: none}
 }
 
+@media screen and (max-width: 590px) {
+  .main-width.mb-20.cont-pay .cart-pay .pay {margin-top: 5px}
+}
+
 @media screen and (max-width: 760px) {
   /*.usedcoupon-container {display: block}*/
   .usedcoupon-container .each {display: block}
   .usedcoupon-container .each .code {height: 38px}
   .usedcoupon-container .each .amount {flex: 1}
+}
+
+@media screen and (max-width: 860px) {
+  .main-width.mb-20.cont-pay {display: block}
+  .main-width.mb-20.cont-pay .cart-pay {justify-content: right}
+  .main-width.mb-20.cont-pay .decision {justify-content: right; margin-top: 10px}
 }
 
 @media screen and (max-width: 960px) {
@@ -123,14 +153,8 @@
   .pd-price {border-right: none;}
   .total-info .first-second {display: block}
   .total-info .first-second .width-second {width: 100%; margin-top: 20px}
-  .total-info .width-last {margin-top: 50px}
 
   .usedpoint-container {display: block}
   .usedpoint-container .used-container {width: 100%}
 }
 
-
-.a {border: solid 1px blue}
-.b {border: solid 1px red}
-.c {border: solid 1px coral}
-.d {border: solid 1px darkgreen}

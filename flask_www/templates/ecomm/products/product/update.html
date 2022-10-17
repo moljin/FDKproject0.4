@@ -38,21 +38,21 @@
                                         {% if product_obj.image_1_path %}
                                             <img class="thumbnail" id="thumbnail-preview1" src="/{{ product_obj.image_1_path }}" uk-cover>
                                         {% else %}
-                                            <img class="thumbnail" id="thumbnail-preview1" src="{{ url_for('static', filename='statics/images/sample/img_0.jpg') }}" uk-cover>
+                                            <img class="thumbnail" id="thumbnail-preview1" src="{{ url_for('static', filename='statics/images/product_1.jpg') }}" uk-cover>
                                         {% endif %}
                                     </li>
                                     <li>
                                         {% if product_obj.image_2_path %}
                                             <img class="thumbnail" id="thumbnail-preview2" src="/{{ product_obj.image_2_path }}" uk-cover>
                                         {% else %}
-                                            <img class="thumbnail" id="thumbnail-preview2" src="{{ url_for('static', filename='statics/images/sample/img_3.png') }}" uk-cover>
+                                            <img class="thumbnail" id="thumbnail-preview2" src="{{ url_for('static', filename='statics/images/product_2.jpg') }}" uk-cover>
                                         {% endif %}
                                     </li>
                                     <li>
                                         {% if product_obj.image_3_path %}
                                             <img class="thumbnail" id="thumbnail-preview3" src="/{{ product_obj.image_3_path }}" uk-cover>
                                         {% else %}
-                                            <img class="thumbnail" id="thumbnail-preview3" src="{{ url_for('static', filename='statics/images/sample/img_5.png') }}" uk-cover>
+                                            <img class="thumbnail" id="thumbnail-preview3" src="{{ url_for('static', filename='statics/images/sample/product_3.jpg') }}" uk-cover>
                                         {% endif %}
                                     </li>
                                 </ul>

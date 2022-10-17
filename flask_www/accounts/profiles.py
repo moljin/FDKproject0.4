@@ -468,7 +468,7 @@ def account_cover_img_delete_ajax(_id):
         db.session.delete(existing_cover_img)
         db.session.commit()
         img_data_response = {
-            "none_image_path": "/static/statics/images/none-image.png"
+            "none_image_path": "/static/statics/images/cover-img.jpg"
         }
         return make_response(jsonify(img_data_response))
     abort(401)
