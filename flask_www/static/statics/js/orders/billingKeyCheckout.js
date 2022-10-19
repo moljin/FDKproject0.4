@@ -1,30 +1,31 @@
 "use strict"
 /*jshint esversion: 6 */
 
-$(function () {
-    let IMP = window.IMP;
-    IMP.init('imp27746059'); // iamport 가맹점 식별코드
-    $('.order-form').on('submit', function (e) {
-        //parseFloat ---> parseInt
-        let cart_id = $('input[name="ordercart_id"]').val();
-        console.log("cart_id", cart_id)
-        let amount = parseInt($('.order-form input[name="amount"]').val().replace(',', ''));
-        console.log('amount', amount);
-        //let type=$('.order-form input[name="type"]:checked').val();
-        let order_id = OrderCreateAjax(e);
-        console.log('let order_id = OrderCreateAjax(e); order_id', order_id);
+billingKeyCheckoutInit();
+
+function billingKeyCheckoutInit(){
+    const IMP = window.IMP; // 생략 가능
+    IMP.init('imp27746059'); // Example: imp00000000
+    const billingCheckoutBtn = document.querySelector("#billing-checkout-btn");
+    billingCheckoutBtn.addEventListener("click", function (ev){
+        ev.preventDefault();
+        const cartId = document.querySelector("#cart-id").value;
+        let amount = document.querySelector("#real-pay-price").value;
+        let order_id = OrderCreateAjax(ev);
+        console.log("let order_id = OrderCreateAjax(ev);", order_id)
         if (order_id === false) {
             alert('주문 생성 실패\n다시 시도해주세요.');
             return false;
         }
-        //let merchant_id = AjaxStoreTransaction(e, order_id, amount); //, type 있었는데 뺏다....이게 먼지 모르겠다.
-        let merchant_id = OrderCheckoutAjax(e, order_id, amount); //, type 있었는데 뺏다....이게 먼지 모르겠다.
-        console.log('let merchant_id = OrderCheckoutAjax(e, order_id, amount);merchant_id', merchant_id); // merchant_id가 안만들어진다.
-        //console.log('new Date().getTime()', new Date().getTime());
-
+        let merchant_id = OrderCheckoutAjax(ev, order_id, amount);
+        console.log("let merchant_id = OrderCheckoutAjax(ev, order_id, amount);", merchant_id)
+        billingCheckOutAjax(ev, cartId, order_id, merchant_id, amount);
+        /*
         if (merchant_id !== '') {
+            billingCheckOutAjax(ev, cartId, order_id, merchant_id, amount);
+
             IMP.request_pay({
-                pg : "html5_inicis.INIpayTest",
+                pg : "kcp_billing.BA001",
                 merchant_uid: merchant_id,//+ new Date().getTime(),
                 // name:'E-Shop product', // 매 결제마다 상품관련해서 다른이름으로 바꿀 수 있다. 지금은 저거로 고정
                 name: $('input[name="item-1-name"]').val(), // 이렇게...첫 상품 적어준다.
@@ -51,19 +52,48 @@ $(function () {
                     alert("결제가 이루어지지 않았습니다."); // 추가
                 }
             });
+
         }
         return false;
-    });
-});
+        */
+
+
+    }, false);
+}
 
 function OrderCreateAjax(e) {
     e.preventDefault();
+    let orderCartId = document.querySelector("#ordercart_id").value;
+    let name = document.querySelector("#user-name").value;
+    let email = document.querySelector("#user-email").value;
+    let phone = document.querySelector("#user-phone").value;
+    let postcode = document.querySelector("#postcode").value;
+    let address = document.querySelector("#address").value;
+    let detailAddress = document.querySelector("#detailAddress").value;
+    let extraAddress = document.querySelector("#extraAddress").value;
+    let orderMemo = document.querySelector("#order-memo").value;
+    let formData = new FormData();
+    formData.append("ordercart_id", orderCartId);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phonenumber", phone);
+    formData.append("postal_code", postcode);
+    formData.append("address", address);
+    formData.append("detail_address", detailAddress);
+    formData.append("extra_address", extraAddress);
+    formData.append("order_memo", orderMemo);
     let order_id = '';
     let request = $.ajax({
-        method: 'POST',
         url: orderCreateAjax,
+        type: 'POST',
+        data: formData,
+        headers: {"X-CSRFToken": CSRF_TOKEN,},
+        dataType: 'json',
         async: false,
-        data: $('.order-form').serialize()
+        cache: false,
+        contentType: false,
+        processData: false,
+        // data: $('.order-form').serialize()
     });
     request.done(function (data) {
         if (data.order_id) {
@@ -77,13 +107,12 @@ function OrderCreateAjax(e) {
         } else if (jqXHR.status === 403) {
             alert("AjaxCreateOrder 로그인 해주세요.");
         } else {
-            alert("AjaxCreateOrder 문제 발생.\n다시 시도해주세요.");
+            alert("주문 생성 실패\nAjaxCreateOrder 문제 발생.\n다시 시도해주세요.");
         }
     });
     return order_id;
 }
 
-//function AjaxStoreTransaction(e, order_id, amount) { //, type
 function OrderCheckoutAjax(e, order_id, amount) { //, type
     e.preventDefault();
     let merchant_id = '';
@@ -103,7 +132,7 @@ function OrderCheckoutAjax(e, order_id, amount) { //, type
 
     console.log('OrderCheckoutAjax = Success vs Fail ::: order_id, amount', request, order_id, amount)
     request.done(function (data) {
-        console.log('00000000 여기3 OrderCheckoutAjax "Success" data', data);
+        console.log('00000000 여기3 OrderCheckoutAjax "Success or Error" data', data._message);
         // if(data.works) { // 원본::: 아래처럼해도 작동한다. 연습으로 확인
         if (data.merchant_id) {
             merchant_id = data.merchant_id;
@@ -124,6 +153,56 @@ function OrderCheckoutAjax(e, order_id, amount) { //, type
         }
     });
     return merchant_id;
+}
+
+function billingCheckOutAjax(e, cartId, order_id, merchant_id, amount) {
+    let card_num1 = document.querySelector("#card_num1").value;
+    let card_num2 = document.querySelector("#card_num2").value;
+    let card_num3 = document.querySelector("#card_num3").value;
+    let card_num4 = document.querySelector("#card_num4").value;
+    let expiry_num1 = document.querySelector("#expiry_num1").value;
+    let expiry_num2 = document.querySelector("#expiry_num2").value;
+    let birth = document.querySelector("#birth").value;
+    let pwd_2digit = document.querySelector("#pwd_2digit").value;
+    let customer_uid = document.querySelector("#customer_uid").value;
+    let formData = new FormData();
+    formData.append("card_num1", card_num1);
+    formData.append("card_num2", card_num2);
+    formData.append("card_num3", card_num3);
+    formData.append("card_num4", card_num4);
+    formData.append("expiry_num1", expiry_num1);
+    formData.append("expiry_num2", expiry_num2);
+    formData.append("birth", birth);
+    formData.append("pwd_2digit", pwd_2digit);
+    formData.append("customer_uid", customer_uid);
+    formData.append("merchant_uid", merchant_id);
+    formData.append("amount", amount);
+
+    let request = $.ajax({
+        url: billingKeyCheckoutAjax,
+        type: 'POST',
+        data: formData,
+        headers: {"X-CSRFToken": CSRF_TOKEN,},
+        dataType: 'json',
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+
+        success: function (response) {
+            if (response.error) {
+                alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + response.error);
+            } else {
+                console.log("success", response._success)
+                console.log("billing_key_response", response.billing_key_response)
+                OrderImpTransaction(e, cartId, order_id, rsp.merchant_uid, rsp.imp_uid, rsp.paid_amount);
+
+            }
+        },
+        error: function (err) {
+            alert('내부 오류가 발생하였습니다.\n' + err);
+        }
+    });
 }
 
 function OrderImpTransaction(e, cart_id, order_id, merchant_id, imp_id, amount) {
@@ -165,5 +244,3 @@ function OrderImpTransaction(e, cart_id, order_id, merchant_id, imp_id, amount) 
         }
     });
 }
-
-// 마이페이지 만들어서 결제리스트 만들기는 어떻게 하는 건가?

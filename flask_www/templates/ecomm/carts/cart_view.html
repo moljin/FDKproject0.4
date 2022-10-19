@@ -28,6 +28,8 @@
         orderCheckoutAjax = "{{ url_for("orders.order_checkout_ajax") }}"
         orderImpTransaction = "{{ url_for("orders.order_imp_transaction") }}"
         orderCompleteDetailUrl = "{{ url_for("orders.order_complete_detail") }}"
+
+        billingKeyCheckoutAjax = "{{ url_for("orders.billing_key_checkout_ajax") }}"
     </script>
     <script src="{{ url_for('static', filename='statics/js/orders/iamport.payment-1.1.8.js') }}"></script>
     <script src="{{ url_for('static', filename='statics/js/orders/checkout.js') }}"></script>
@@ -56,6 +58,7 @@
     {% set used_point = context['used_point'] %}
     {% set remained_point = context['remained_point'] %}
     {% set new_remained_point = context['new_remained_point'] %}
+    {% set customer_uid = context['customer_uid'] %}
 {#    {% if current_cart and (current_cart != None) %}#}
         <section class="section-main cart-section">
             <article class="article-container pt-10">
@@ -258,9 +261,9 @@
                             <div class="main-width" id="order_form_div">
                                 <form class="order-form" method="POST">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                    <input class="uk-input form-group" type="text" name="name" required placeholder="이름">
-                                    <input class="uk-input form-group" type="email" name="email" required placeholder="이메일">
-                                    <input class="uk-input form-group" type="text" name="phonenumber" required placeholder="휴대전화번호">
+                                    <input class="uk-input form-group" type="text" id="user-name" name="name" required placeholder="이름">
+                                    <input class="uk-input form-group" type="email" id="user-email" name="email" required placeholder="이메일">
+                                    <input class="uk-input form-group" type="text" id="user-phone" name="phonenumber" required placeholder="휴대전화번호">
                                     <div class="postcode form-group">
                                         <input class="uk-input mr-10" type="text" id="postcode" name="postal_code" required placeholder="우편번호">
                                         <input class="uk-button uk-button-default" type="button" onclick="execDaumPostcode_Btn()" value="주소 검색"><br>
@@ -271,27 +274,62 @@
                                     <input class="uk-input form-group" type="text" id="address" name="address" required placeholder="주소">
                                     <input class="uk-input form-group" type="text" id="detailAddress" name="detail_address" required placeholder="상세주소">
                                     <input class="uk-input form-group" type="text" id="extraAddress" name="extra_address" placeholder="주소참고항목">
-                                    <input class="uk-input form-group" type="text" name="order_memo" placeholder="주문메모">
+                                    <input class="uk-input form-group" type="text" id="order-memo" name="order_memo" placeholder="주문메모">
                                     <script src="{{ url_for('static', filename='statics/js/orders/addressSearch.js') }}"></script>
                                     <script src="{{ url_for('static', filename='statics/js/orders/postcode.v2.js') }}"></script>
 
                                     <input type="hidden" name="pre_order_id" value="0">
-                                    <input type="hidden" name="ordercart_id" value="{{ cart.id }}">
+                                    <input type="hidden" id="ordercart_id" name="ordercart_id" value="{{ cart.id }}">
                                     <input type="hidden" id="real-pay-price" name="amount" value="{{ (cart.get_total_price() + cart.get_total_delivery_pay()) }}">
                                     {% if cart_products %}
                                         {% for cart_product in cart_products %}
                                             {% if loop.index == 1 %}
-                                                <input type="hidden" name="item-1-name" value="{{ cart_product.product.title }}등">
+                                                <input type="hidden" id="item-1-name" name="item-1-name" value="{{ cart_product.product.title }}등">
                                             {% endif %}
                                         {% endfor %}
                                     {% endif %}
                                     <div class="pay-btn">
                                         <input class="uk-button uk-button-default" type="submit" value="결제하기">
                                     </div>
-
-
                                 </form>
+
+                                <!--<form class="billing-form" action="{빌링키 발급 요청을 받을 서비스 URL}" method="post">-->
+{#                                #}
+{#                                <form class="billing-form" action="" method="POST">#}
+{#                                    <!--예: https://www.myservice.com/subscription/issue-billing-->#}
+{#                                    <div class="card-number">#}
+{#                                        <label for="card_number">카드 번호 XXXX-XXXX-XXXX-XXXX</label>#}
+{#                                        <div class="card-grid" uk-grid>#}
+{#                                            <input type="text" class="uk-input card-num num1" id="card_num1" maxlength="4">#}
+{#                                            <input type="text" class="uk-input card-num num2" id="card_num2" maxlength="4">#}
+{#                                            <input type="password" class="uk-input card-num num3" id="card_num3" maxlength="4">#}
+{#                                            <input type="text" class="uk-input card-num num4" id="card_num4" maxlength="4">#}
+{#                                        </div>#}
+{#                                        <!--<input class="uk-input form-group" id="card_number" type="text" name="card_number">-->#}
+{#                                    </div>#}
+{#                                    <div class="card-period">#}
+{#                                        <label for="expiry">카드 유효기간 YYYY-MM(년/월 예.22/07)</label>#}
+{#                                        <div class="card-grid" uk-grid>#}
+{#                                            <input type="text" class="uk-input card-period num1" id="expiry_num1" maxlength="2">#}
+{#                                            <input type="text" class="uk-input card-period num2" id="expiry_num2" maxlength="2" min="1" max="12">#}
+{#                                        </div>#}
+{#                                        <!--<input class="uk-input form-group" id="expiry" type="text" name="expiry">-->#}
+{#                                    </div>#}
+{#                                    <div class="birth">#}
+{#                                        <label for="birth">생년월일 6자리 YYMMDD</label>#}
+{#                                        <div>(법인카드(개인명의로 발급된 기명카드 제외)의 경우 사업자번호 10자리를 입력)</div>#}
+{#                                        <input class="uk-input birth" id="birth" type="text" name="birth" maxlength="10">#}
+{#                                    </div>#}
+{#                                    <div class="card-pw">#}
+{#                                        <label for="pwd_2digit">카드 비밀번호 앞 두자리 XX</label>#}
+{#                                        <input class="uk-input card-pw" id="pwd_2digit" type="password" name="pwd_2digit"><spqn> X X</spqn>#}
+{#                                    </div>#}
+{#                                    <input hidden type="text" value="{{ customer_uid }}" id="customer_uid" name="customer_uid">#}
+{#                                    <input class="uk-button uk-button-default" id="billing-checkout-btn" type="button" value="결제하기">#}
+{#                                </form>#}
+{#                            #}
                             </div>
+{#                            customer_uid: {{ customer_uid }}#}
                         {% else %}
                             <div class="main-width mb-20">
                             카트에 담긴게 없습니다.
@@ -421,5 +459,6 @@
 
     {#    <script src="{{ url_for('static', filename='statics/js/carts/promotions.js') }}"></script>#}
         <script src="{{ url_for('static', filename='statics/js/carts/cart.js') }}"></script>
+{#        <script src="{{ url_for('static', filename='statics/js/orders/billingKeyCheckout.js') }}"></script>#}
 {#    {% endif %}#}
 {% endblock %}

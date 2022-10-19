@@ -13,6 +13,11 @@ ORDER_STATUS = ('미결제',
                 '주문취소완료')
 
 
+PAY_TYPE = ('카드결제',
+            '가상계좌',
+            '계좌이체')
+
+
 class Order(BaseModel):
     __tablename__ = 'orders'
     order_num = db.Column(db.String(50))
@@ -123,8 +128,48 @@ class OrderTransaction(BaseModel):
 
     transaction_id = db.Column(db.String(120), nullable=True)
     transaction_status = db.Column(db.String(120), nullable=True)
-    type = db.Column(db.String(120), nullable=True)
+    type = db.Column(db.String(120), default="none")
+
+    is_success = db.Column(db.Boolean(), nullable=False, default=False)
+    cancel_amount = db.Column(db.Integer, default=0)
+    is_cancel = db.Column(db.Boolean(), nullable=False, default=False)
+
+
+class CancelPayOrder(BaseModel):
+    __tablename__ = 'cancelpay_orders'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
+    user = db.relationship('User', backref=db.backref('user_cancelpay_set'))
+
+    order_id = db.Column(db.Integer)
+    order = db.relationship('Order', backref=db.backref('cancelpay_order_set'),
+                            primaryjoin='foreign(CancelPayOrder.order_id) == remote(Order.id)')
+
+    ordertransaction_id = db.Column(db.Integer)
+    ordertransaction = db.relationship('OrderTransaction', backref=db.backref('cancelpay_ordertransaction_set'),
+                                       primaryjoin='foreign(CancelPayOrder.ordertransaction_id) == remote(OrderTransaction.id)')
+
+    order_title = db.Column(db.String(120))
+    buyer_name = db.Column(db.String(120))
+    cancel_amount = db.Column(db.Integer)
+    cancel_reason = db.Column(db.String(120))
+    merchant_uid = db.Column(db.String(250), nullable=False)
+    type = db.Column(db.String(120), default="none")
+
+    card_name = db.Column(db.String(120))
+    card_number = db.Column(db.String(120))
+
+    refund_holder = db.Column(db.String(120))
+    refund_bank = db.Column(db.String(120))
+    refund_account = db.Column(db.String(120))
 
     is_success = db.Column(db.Boolean(), nullable=False, default=False)
 
 
+class CustomerUid(BaseModel):
+    __tablename__ = 'customer_uids'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
+    user = db.relationship('User', backref=db.backref('user_customeruid_set'))
+
+    card_number = db.Column(db.String(120))
+    card_expiry = db.Column(db.String(120))
+    customer_uid = db.Column(db.String(250))

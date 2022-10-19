@@ -27,5 +27,8 @@ def routes_init(app):
     from flask_www.ecomm.orders import orders
     app.register_blueprint(orders.orders_bp)
 
+    from flask_www.lotto import lotto
+    app.register_blueprint(lotto.lotto_bp)
+
 
 

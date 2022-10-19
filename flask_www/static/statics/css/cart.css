@@ -94,6 +94,7 @@
 .decision .uk-accordion-title:before {content: none}
 #order_form_div.active {display: block}
 #order_form_div {display: none}
+/*#order_form_div {display: block}*/
 #order_form_div .order-form {max-width: 800px; margin: 0 auto}
 #order_form_div .order-form .form-group {margin-bottom: 10px}
 #order_form_div .order-form .pay-btn {text-align: right}
@@ -101,6 +102,14 @@
 #order_form_div .postcode {display: flex}
 #juso-wrap {display:none;border:1px solid;max-width:800px;height:468px!important;margin:5px 0;position:relative;}
 #btnFoldWrap {cursor:pointer;position:absolute;right:0;top:-1px;z-index:1; width: 15px; height: 15px}
+
+.billing-form div.card-number .card-grid {margin-left: 0}
+.billing-form div.card-number input.card-num {width: 65px; margin-right: 8px; text-align: center}
+.billing-form div.card-period .card-grid {margin-left: 0}
+.billing-form div.card-period input.card-period {width: 50px; margin-right: 8px; text-align: center}
+.billing-form div.birth input.birth {width: 130px; text-align: center}
+.billing-form div.card-pw input.card-pw {width: 50px; text-align: center}
+
 
 @media screen and (max-width: 560px) {
   .pd-change-btn {justify-content: flex-end; }

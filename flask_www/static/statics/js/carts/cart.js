@@ -790,12 +790,12 @@ function flashAlertDivInnerHtml (flashAlert_div, response) {
     if (response.flash_message) {
         flashAlert_div.style.display = "block";
         flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="check-alert">
-                                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
-                                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
+                                        <div class="alert alert-danger" role="alert">` + response.flash_message + `</div>
+                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`;
     } else {
         flashAlert_div.innerHTML = `<div class="flashes" uk-alert id="check-alert">
-                                                        <div class="alert alert-danger" role="alert">사용 가능합니다.</div>
-                                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`
+                                        <div class="alert alert-danger" role="alert">사용 가능합니다.</div>
+                                        <button class="uk-alert-close mt-5" type="button" uk-close></button></div>`;
     }
 }
 

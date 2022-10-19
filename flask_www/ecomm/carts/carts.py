@@ -2,12 +2,14 @@ from flask import Blueprint, request, make_response, jsonify, redirect, render_t
 from flask_login import current_user
 
 from flask_www.accounts.utils import login_required
-from flask_www.commons.models import VarRatio, BaseAmount
+from flask_www.commons.models import BaseAmount
 from flask_www.configs import db
 from flask_www.configs.config import NOW
 from flask_www.ecomm.carts.models import Cart, CartProduct, CartProductOption
 from flask_www.ecomm.carts.utils import new_cartproduct_create, new_cartproductoption_create, cartproduct_update, cart_total_price, _cart_id, cart_active_check, \
     cartproduct_update_remnant, over_discount_cart_apply, temp_op_list_for_cart_update
+from flask_www.ecomm.orders.models import CustomerUid
+from flask_www.ecomm.orders.utils import customer_uid_set
 from flask_www.ecomm.products.models import ProductOption, Product
 from flask_www.ecomm.promotions.forms import AddCouponForm
 from flask_www.ecomm.promotions.models import Coupon, UsedCoupon, Point, PointLog
@@ -164,6 +166,13 @@ def cart_view():
             """혹시 cart_update 시 저장을 하지않고 넘어가면, cart_view 를 이용자가 새로고침하면 적용하기 위해"""
             over_discount_cart_apply(used_coupons, point_log_obj.used_point, used_coupons_amount, cart, base_pay_amount, point_log_obj)
 
+            customer_uid_obj = CustomerUid.query.filter_by(user_id=current_user.id).first()
+            if customer_uid_obj:
+                customer_uid = customer_uid_obj.customer_uid
+            else:
+                customer_uid = customer_uid_set(cart.id)
+
+            print("customer_uid=========", customer_uid)
             context = {
                 "cart_id": cart.id,
                 'cart': cart,
@@ -183,6 +192,7 @@ def cart_view():
                 'used_point': cart.used_point(),
                 'remained_point': cart.remained_point(),
                 'new_remained_point': cart.new_remained_point(),  # used_point 가 없을 때 사용하기 위해 템플릿으로 넘긴다.
+                'customer_uid': customer_uid,
             }
             return render_template('ecomm/carts/cart_view.html', context=context)
         else:

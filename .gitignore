@@ -183,3 +183,4 @@ flask_www/templates/tests/
 flask_www/static/statics/unused/
 tests/
 requirements/
+flask_www/static/statics/js/lotto/lotto_test.js

@@ -45,6 +45,7 @@ def create_app(config_name=None):
     from flask_www.ecomm.carts import models
     from flask_www.ecomm.promotions import models
     from flask_www.ecomm.orders import models
+    from flask_www.lotto import models
 
     login_manager.init_app(application)
     login_manager.login_view = 'login'

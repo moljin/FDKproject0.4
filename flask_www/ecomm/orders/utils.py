@@ -1,8 +1,13 @@
 import hashlib
 
+from flask import g
+from flask_login import current_user
+
+from flask_www.commons.utils import random_word
 from flask_www.configs import db
+from flask_www.configs.config import NOW
 from flask_www.ecomm.orders.iamport import payments_prepare, find_transaction
-from flask_www.ecomm.orders.models import Order, OrderTransaction
+from flask_www.ecomm.orders.models import Order, OrderTransaction, CustomerUid
 from flask_www.ecomm.products.models import Product, ProductOption
 
 prod = ''
@@ -15,7 +20,7 @@ def order_transaction_create(order_id, amount, success=None, transaction_status=
     order = Order.query.filter_by(id=order_id).first()
     order_hash = hashlib.sha1(str(order_id).encode('utf-8')).hexdigest()
     email_hash = str(order.email).split("@")[0]
-    final_hash = hashlib.sha1((order_hash + email_hash).encode('utf-8')).hexdigest()[:20]
+    final_hash = hashlib.sha1((order_hash + email_hash).encode('utf-8')).hexdigest()[:20]+random_word(10)
     merchant_order_id = str(final_hash)
     print('저기2 ++++++++++++++++++++++ merchant_order_id', merchant_order_id)
     print('class OrderTransactionManager(models.Manager) 시작하고 payments_prepare 호출')
@@ -97,3 +102,35 @@ def get_transaction(merchant_order_id):
         return result
     else:
         return None
+
+
+def customer_uid_set(cart_id):
+    user_id = str(g.user.id)
+    username = g.user.email.split('@')[0]
+    random_string = random_word(7)
+
+    # customer_uid = username + "&_100" + user_id + "_%$" + random_string + "?" + str(NOW.microsecond)
+    customer_uid = username + "_100" + user_id + "_100" + str(cart_id)
+    new_customer_uid_obj = CustomerUid(user_id=user_id, customer_uid=customer_uid)
+    db.session.add(new_customer_uid_obj)
+    db.session.commit()
+    return customer_uid
+
+
+def check_customer_uid(req_card_number, expiry, req_customer_uid):
+    customer_uid_obj = CustomerUid.query.filter_by(user_id=current_user.id,
+                                                   card_number=req_card_number,
+                                                   customer_uid=req_customer_uid).first()
+    if customer_uid_obj:
+        customer_uid = customer_uid_obj.customer_uid
+        return customer_uid
+    else:
+        new_customer_uid_obj = CustomerUid(user_id=current_user.id,
+                                           card_number=req_card_number,
+                                           card_expiry=expiry,
+                                           customer_uid=req_customer_uid)
+        db.session.add(new_customer_uid_obj)
+        db.session.commit()
+        customer_uid = new_customer_uid_obj.customer_uid
+        return customer_uid
+
