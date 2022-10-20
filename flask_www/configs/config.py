@@ -28,7 +28,8 @@ def read_secret(secret_name):
 
 
 class Config(object):
-    DEBUG = False
+    DEBUG = True
+    # DEBUG = False
     TESTING = False
 
     SESSION_COOKIE_NAME = 'FDK_project0.4'
